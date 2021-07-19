@@ -1,0 +1,16 @@
+<style>
+  div {
+    width: 600px;
+    height: 300px;
+    overflow: auto;
+    position: relative;
+  }
+</style>
+
+<input type="button" value="1x1" (click)="fnc1x1()">
+<input type="button" value="10x20" (click)="fnc10x20()">
+<input type="button" value="20x20" (click)="fnc20x20()">
+<input type="button" value="100x20" (click)="fnc100x20()">
+<div style="left:50px">
+  <ngx-tym-table [rows]="rows" [cols]="cols"></ngx-tym-table>
+</div>
