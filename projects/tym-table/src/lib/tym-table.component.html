@@ -2,13 +2,13 @@
   <thead>
     <tr>
       <th><input type="checkbox" /></th>
-      <th *ngFor="let head of head_data" title="{{head.title}}">{{head.title}}</th>
+      <th *ngFor="let head of head_title" title="{{head}}">{{head}}<img></th>
     </tr>
   </thead>
   <tbody>
     <tr *ngFor="let row of rows_data">
       <th><input type="checkbox" /></th>
-      <td *ngFor="let col of row.cols" title="{{col}}">{{col}}</td>
+      <td *ngFor="let col of row" title="{{col}}">{{col}}</td>
     </tr>
   </tbody>
 </table>

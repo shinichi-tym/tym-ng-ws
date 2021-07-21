@@ -5,27 +5,23 @@
  * see https://opensource.org/licenses/MIT
  */
 
-$font-family: Consolas, monaco, monospace;
-
-$table-border-color: #888888;
-$table-border-radius: 3px;
-$table-broder-shadow: #cccccc;
-
-$table-header-background: #888888 linear-gradient(#888888, #666666);
-$table-header-color: #ffffff;
-
-$table-background: #ffffff;
-$table-font-color: #000000;
-
-$table-even-color: #eeeeee;
-$table-odd-color: #ffffff;
+:host {
+  --fo-fa: Consolas, monaco, monospace;
+  --bo-co: #888888;
+  --hd-bg: #888888 linear-gradient(#888888, #666666);
+  --hd-co: #ffffff;
+  --hd-sa: 1px 1px 3px 0 #cccccc inset;
+  --bd-co: #000000;
+  --bd-sa: 1px 1px 3px 0 #cccccc inset;
+  --ev-co: #eeeeee;
+  --od-co: #ffffff;
+  box-sizing: border-box;
+}
 
 table {
-  font-family: $font-family;
+  font-family: var(--fo-fa);
   border-collapse: separate;
   border-spacing: 0;
-  background: $table-background;
-  color: $table-font-color;
 
   thead {
     tr {
@@ -35,22 +31,18 @@ table {
         position: sticky;
         top: 0;
         z-index: 1;
-        background: $table-header-background;
-        color: $table-header-color;
-        border: solid $table-border-color;
+        resize: horizontal;
+        color: var(--hd-co);
+        border: solid var(--bo-co);
         border-width: 1px 1px 1px 0;
-        box-shadow: 1px 1px 2px 0 $table-broder-shadow inset;
+        box-shadow: var(--hd-sa);
+        background: var(--hd-bg);
 
         &:first-child {
           z-index: 2;
           left: 0;
           width: 1em;
-          border-radius: $table-border-radius 0 0 0;
-          border-left: 1px solid $table-border-color;
-        }
-
-        &:last-child {
-          border-radius: 0 $table-border-radius 0 0;
+          border-left: 1px solid var(--bo-co);
         }
       }
     }
@@ -59,36 +51,25 @@ table {
   tbody {
     tr {
       >* {
-        background: $table-background;
-        color: $table-font-color;
-        border: solid $table-border-color;
+        color: var(--bd-co);
+        border: solid var(--bo-co);
         border-width: 0 1px 1px 0;
-        box-shadow: 1px 1px 3px 0 $table-broder-shadow inset;
+        box-shadow: var(--bd-sa);
 
         &:first-child {
           position: sticky;
           left: 0;
-          border-left: 1px solid $table-border-color;
+          border-left: 1px solid var(--bo-co);
         }
 
       }
 
       &:nth-child(even)>* {
-        background: $table-even-color;
+        background: var(--ev-co);
       }
 
       &:nth-child(odd)>* {
-        background: $table-odd-color;
-      }
-
-      &:last-child {
-        *:first-child {
-          border-radius: 0 0 0 $table-border-radius;
-        }
-
-        *:last-child {
-          border-radius: 0 0 $table-border-radius 0;
-        }
+        background: var(--od-co);
       }
     }
   }
@@ -96,6 +77,7 @@ table {
   th,
   td {
     padding: .5rem .5rem;
+    height: 1.5rem;
     font-weight: normal;
     overflow: hidden;
     text-overflow: ellipsis;

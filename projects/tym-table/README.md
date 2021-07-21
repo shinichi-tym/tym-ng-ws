@@ -21,29 +21,31 @@ npm install tym-table
 ## 基本的な使い方 (Basic usage)
 <br>
 
-表示される場所に htmlタグ を用意し，その中に`<tym-table>`タグを作成します：
+表示される場所に htmlタグ を用意し，その中に`<ngx-tym-table>`タグを作成します：
 
 ```html
-<div stylle="width:300px;height:200px;">
-    <tym-table
-        [coldef]="coldef"
+<div stylle="width:300px;height:200px;overflow:auto;">
+    <ngx-tym-table
+        [defs]="defs"
         [data]="data"
-    >
+    ><ngx-tym-table>
 </div>
 ```
 
 表示するためのデータを用意します。
 
-``` javascript
-var coldef = [
-    { title: "単価" },
-    { title: "販売数" },
-    { title: "売上" }
-]; 
-var data = [
-    [ 980, 627, 614460],
-    [ 1980, 1219, 2413620],
-    [ 2980, 116, 345680]
+``` typescript
+let defs:DEFS = {
+    cols: [
+        { title: "単価" },
+        { title: "販売数" },
+        { title: "売上" }
+    ]
+}; 
+let data = [
+    [ 980, 627, 614460 ],
+    [ 1980, 1219, 2413620 ],
+    [ 2980, 116, 345680 ]
 ]; 
 
 ``` 

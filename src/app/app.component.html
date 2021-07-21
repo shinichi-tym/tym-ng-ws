@@ -1,16 +1,31 @@
 <style>
   div {
     width: 600px;
-    height: 300px;
+    height: 250px;
     overflow: auto;
     position: relative;
   }
 </style>
 
 <input type="button" value="1x1" (click)="fnc1x1()">
+<input type="button" value="3x3" (click)="fnc3x3()">
 <input type="button" value="10x20" (click)="fnc10x20()">
 <input type="button" value="20x20" (click)="fnc20x20()">
 <input type="button" value="100x20" (click)="fnc100x20()">
+
+<hr>
+
 <div style="left:50px">
-  <ngx-tym-table [rows]="rows" [cols]="cols"></ngx-tym-table>
+  <ngx-tym-table
+    [defs]="defs"
+    [data]="data"
+  ></ngx-tym-table>
+</div>
+
+<div style="left:50px">
+  <ngx-tym-table
+    [custom]="custom"
+    [defs]="defs"
+    [data]="data"
+  ></ngx-tym-table>
 </div>
