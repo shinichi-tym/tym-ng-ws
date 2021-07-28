@@ -4,14 +4,19 @@
     height: 250px;
     overflow: auto;
     position: relative;
+    resize: both;
   }
 </style>
 
-<input type="button" value="1x1" (click)="fnc1x1()">
-<input type="button" value="3x3" (click)="fnc3x3()">
+<input type="button" value="size 0x0" (click)="fnc0x0()">
+<input type="button" value="size 1x1" (click)="fnc1x1()">
+<input type="button" value="size 1x1w100" (click)="fnc1x1w100()">
+<input type="button" value="size 3x3" (click)="fnc3x3()">
+<input type="button" value="size 5x5" (click)="fnc5x5()">
 <input type="button" value="10x20" (click)="fnc10x20()">
 <input type="button" value="20x20" (click)="fnc20x20()">
-<input type="button" value="100x20" (click)="fnc100x20()">
+<input type="button" value="100x20" (click)="fnc100x20()">&nbsp;
+<input type="button" value="data update" (click)="update()">
 
 <hr>
 

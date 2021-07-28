@@ -22,6 +22,8 @@ table {
   font-family: var(--fo-fa);
   border-collapse: separate;
   border-spacing: 0;
+  table-layout: fixed;
+  width: 100%;
 
   thead {
     tr {
@@ -41,8 +43,14 @@ table {
         &:first-child {
           z-index: 2;
           left: 0;
-          width: 1em;
+          resize: none;
           border-left: 1px solid var(--bo-co);
+        }
+
+        &:last-child {
+          width: auto;
+          resize: none;
+          opacity: .5;
         }
       }
     }
@@ -62,6 +70,11 @@ table {
           border-left: 1px solid var(--bo-co);
         }
 
+        &:last-child {
+          width: auto;
+          resize: none;
+          opacity: .5;
+        }
       }
 
       &:nth-child(even)>* {
@@ -77,10 +90,11 @@ table {
   th,
   td {
     padding: .5rem .5rem;
-    height: 1.5rem;
-    font-weight: normal;
+    height: 2.7rem;
+    min-width: 2.7rem;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    box-sizing: border-box;
   }
 }

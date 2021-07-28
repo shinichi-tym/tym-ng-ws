@@ -5,7 +5,7 @@
  * see https://opensource.org/licenses/MIT
  */
 
-import { Component, Input, HostBinding, OnInit, OnChanges, AfterViewChecked } from '@angular/core';
+import { Component, Input, HostBinding, OnInit, OnChanges } from '@angular/core';
 
 @Component({
   selector: 'ngx-tym-table',
@@ -13,13 +13,15 @@ import { Component, Input, HostBinding, OnInit, OnChanges, AfterViewChecked } fr
   styleUrls: ['./tym-table.component.scss']
 })
 
-export class TymTableComponent implements OnInit, OnChanges, AfterViewChecked {
+export class TymTableComponent implements OnInit, OnChanges {
 
   @Input() custom: CUSTOM = {};
-  @Input() defs: DEFS = {cols:[]};
+  @Input() defs: DEFS = { cols: [] };
   @Input() data: any = [];
 
-  public head_title: string[] = [];
+  private col_defs: string = '';
+
+  public head_data: COL[] = [];
   public rows_data: string[][] = [];
 
   private getRowSize = (data: any) => {return (data as any[]).length;}
@@ -50,10 +52,6 @@ export class TymTableComponent implements OnInit, OnChanges, AfterViewChecked {
     this.doDrow();
   }
 
-  ngAfterViewChecked(): void {
-    console.log("ngAfterViewChecked");
-  }
-
   private setCustom() {
     if (this.custom) {
       this.fontFamily = this.custom.fontFamily || "";
@@ -66,14 +64,18 @@ export class TymTableComponent implements OnInit, OnChanges, AfterViewChecked {
       this.bodyEvenColor = this.custom.bodyEvenColor || "";
       this.bodyOddColor = this.custom.bodyOddColor || "";
     }
-    if (this.defs.getRow) {
+    if (this.defs?.getRowSize) {
+      this.getRowSize = this.defs.getRowSize;
+    }
+    if (this.defs?.getRow) {
       this.getRow = this.defs.getRow;
+    }
+    if (this.defs?.getVal) {
+      this.getVal = this.defs.getVal;
     }
   }
 
   private doDrow() {
-
-    this.head_title = [];
     this.rows_data = [];
     let colnum = 0;
     let rownum = 0;
@@ -86,8 +88,15 @@ export class TymTableComponent implements OnInit, OnChanges, AfterViewChecked {
     if (this.data) {
       rownum = this.getRowSize(this.data);
     }
-    for (let header_c = 0; header_c < colnum; header_c++) {
-      this.head_title.push(this.defs.cols[header_c].title);
+    const col_defs = JSON.stringify(this.defs?.cols);
+    if (col_defs == undefined) {
+      this.head_data = [];
+      this.col_defs = '';
+    }
+    if (col_defs != undefined && col_defs != this.col_defs) {
+      this.head_data = [];
+      this.col_defs = col_defs;
+      this.head_data = Array.from(this.defs.cols);
     }
     for (let row_c = 0; row_c < rownum; row_c++) {
       let row_data: string[] = [];
@@ -110,6 +119,7 @@ interface COL {
   sortable?: Boolean;
   resizable?: Boolean;
 }
+
 /**
  * テーブルの定義
  */
