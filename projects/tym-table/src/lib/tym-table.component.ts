@@ -5,7 +5,13 @@
  * see https://opensource.org/licenses/MIT
  */
 
-import { Component, Input, HostBinding, OnInit, OnChanges } from '@angular/core';
+import {
+  Component,
+  Input,
+  HostBinding,
+  OnInit,
+  OnChanges
+} from '@angular/core';
 
 @Component({
   selector: 'ngx-tym-table',
@@ -13,21 +19,75 @@ import { Component, Input, HostBinding, OnInit, OnChanges } from '@angular/core'
   styleUrls: ['./tym-table.component.scss']
 })
 
+/**
+ * 簡易なテーブルコンポーネント
+ * 
+ */
 export class TymTableComponent implements OnInit, OnChanges {
 
+  /**
+   * 親コンポーネントから受け取るデータ
+   *
+   * @type {CUSTOM}
+   * @memberof TymTableComponent
+   */
   @Input() custom: CUSTOM = {};
+
+  /**
+   * 親コンポーネントから受け取るデータ
+   *
+   * @type {DEFS}
+   * @memberof TymTableComponent
+   */
   @Input() defs: DEFS = { cols: [] };
+
+  /**
+   * 親コンポーネントから受け取るデータ
+   *
+   * @type {any[][]}
+   * @memberof TymTableComponent
+   */
   @Input() data: any = [];
 
+  /** カラムデータの変更確認用 */
   private col_defs: string = '';
 
+  /**
+   * テーブルヘッダー行表示用の定義
+   */
   public head_data: COL[] = [];
+
+  /**
+   * テーブル表示用のデータ
+   */
   public rows_data: string[][] = [];
 
+  /**
+   * テーブルデータから行数を取得する
+   * @param data テーブルデータ
+   * @returns 行数
+   */
   private getRowSize = (data: any) => {return (data as any[]).length;}
-  private getRow = (data: any, num: number) => {return (data as any[])[num];}
-  private getVal = (val: any, num: number) => {return (val as any[])[num] as string;}
 
+  /**
+   * テーブルデータから行データを取得する
+   * @param data テーブルデータ
+   * @param num 行番号
+   * @returns 行データ
+   */
+  private getRow = (data: any, num: number) => {return (data as any[])[num];}
+
+  /**
+   * 行データからカラムデータを取得する
+   * @param row 行データ
+   * @param num カラム番号
+   * @returns カラムデータ
+   */
+  private getVal = (row: any, num: number) => {return (row as any[])[num] as string;}
+
+  /**
+   * コンストラクター
+   */
   constructor() { }
 
   @HostBinding("style.--fo-fa") fontFamily: string = "";
@@ -40,6 +100,9 @@ export class TymTableComponent implements OnInit, OnChanges {
   @HostBinding("style.--ev-co") bodyEvenColor: string = "";
   @HostBinding("style.--od-co") bodyOddColor: string = "";
 
+  /**
+   * 初期設定
+   */
   ngOnInit(): void {
     console.log("ngOnInit");
     console.log("CUSTOM:" + JSON.stringify(this.custom));
@@ -116,8 +179,8 @@ export class TymTableComponent implements OnInit, OnChanges {
 interface COL {
   title: string;
   width?: string;
+  align?: string;
   sortable?: Boolean;
-  resizable?: Boolean;
 }
 
 /**

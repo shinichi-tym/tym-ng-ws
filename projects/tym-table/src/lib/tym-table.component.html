@@ -3,14 +3,15 @@
     <tr>
       <th style="width: 2.7rem;"><input type="checkbox" /></th>
       <th *ngFor="let head of head_data"
-       [style.width]="head.width" title="{{head.title}}">{{head.title}}</th>
+       [style.width]="head.width" title="{{head.title}}"><div resize>{{head.title}}</div></th>
       <th></th>
       </tr>
   </thead>
   <tbody>
     <tr *ngFor="let row of rows_data">
       <th><input type="checkbox" /></th>
-      <td *ngFor="let col of row" title="{{col}}">{{col}}</td>
+      <td *ngFor="let col of row; index as i"
+       [style.text-align]="head_data[i].align" title="{{col}}">{{col}}</td>
       <td></td>
     </tr>
   </tbody>

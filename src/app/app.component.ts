@@ -31,7 +31,7 @@ export class AppComponent {
   fnc1x1(): void {
     this.defs = {
       cols: [
-        { title: "単価" }
+        { title: "単価", align: "right" }
       ]
     }
     this.data = [
@@ -46,7 +46,7 @@ export class AppComponent {
   fnc1x1w100(): void {
     this.defs = {
       cols: [
-        { title: "単価", width: "100px" }
+        { title: "単価", width: "100px", align: "right" }
       ]
     }
     this.data = [
@@ -61,9 +61,9 @@ export class AppComponent {
   fnc3x3(): void {
     this.defs = {
       cols: [
-        { title: "単価", width: "10rem" },
-        { title: "販売数", width: "8rem" },
-        { title: "売上", width: "12rem" }
+        { title: "単価", width: "10rem", align: "right" },
+        { title: "販売数", width: "8rem", align: "right" },
+        { title: "売上", width: "12rem", align: "right" }
       ]
     }
     this.data = [
@@ -93,7 +93,6 @@ export class AppComponent {
 
   _mkdata(cols: number, rows: number): (string[][]) {
     let data: string[][] = [];
-    let v1: number = Math.floor(Math.random() * 3) + 1
     for (let index_r = 0; index_r < rows; index_r++) {
       let row = [];
       for (let index_c = 0; index_c < cols; index_c++) {
