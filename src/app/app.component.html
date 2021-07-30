@@ -15,17 +15,13 @@
 <input type="button" value="size 5x5" (click)="fnc5x5()">
 <input type="button" value="10x20" (click)="fnc10x20()">
 <input type="button" value="20x20" (click)="fnc20x20()">
-<input type="button" value="100x20" (click)="fnc100x20()">&nbsp;
+<input type="button" value="100x20" (click)="fnc100x20()">
+<input type="button" value="20x100" (click)="fnc20x100()">
+<input type="button" value="100x100" (click)="fnc100x100()">&nbsp;
 <input type="button" value="data update" (click)="update()">
+<input type="button" value="set custom" (click)="setCustom()">
 
 <hr>
-
-<div style="left:50px">
-  <ngx-tym-table
-    [defs]="defs"
-    [data]="data"
-  ></ngx-tym-table>
-</div>
 
 <div style="left:50px">
   <ngx-tym-table
@@ -34,3 +30,11 @@
     [data]="data"
   ></ngx-tym-table>
 </div>
+
+<!-- <div style="left:50px">
+  <ngx-tym-table
+    [custom]="custom"
+    [defs]="defs"
+    [data]="data"
+  ></ngx-tym-table>
+</div> -->

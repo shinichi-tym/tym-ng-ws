@@ -11,10 +11,7 @@ export class AppComponent {
   private save_col_num: number = 0;
   private save_row_num: number = 0;
 
-  @Output() custom: CUSTOM = {
-    headerBoxShadow: "0px 1px 1px rgba(255,255,255,0.3) inset",
-    headerBackground: "linear-gradient(#829ebc,#225588)"
-  }
+  @Output() custom: CUSTOM = {}
   @Output() defs: DEFS | any = null;
   @Output() data: any[][] | any = null;
 
@@ -137,8 +134,29 @@ export class AppComponent {
     this.data = this._mkdata(this.save_col_num, this.save_row_num);
     console.log("fnc100x20");
   }
+  fnc20x100(): void {
+    this.save_col_num = 20;
+    this.save_row_num = 100;
+    this.defs = this._mkdefs(this.save_col_num);
+    this.data = this._mkdata(this.save_col_num, this.save_row_num);
+    console.log("fnc20x100");
+  }
+  fnc100x100(): void {
+    this.save_col_num = 100;
+    this.save_row_num = 100;
+    this.defs = this._mkdefs(this.save_col_num);
+    this.data = this._mkdata(this.save_col_num, this.save_row_num);
+    console.log("fnc100x100");
+  }
   update(): void {
     this.data = this._mkdata(this.save_col_num, this.save_row_num);
     console.log("update");
+  }
+  setCustom(): void {
+    this.custom = {
+      headerBoxShadow: "0px 1px 1px rgba(255,255,255,0.3) inset",
+      headerBackground: "linear-gradient(#829ebc,#225588)"
+    }
+    console.log("setCustom");
   }
 }

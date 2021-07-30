@@ -1,17 +1,19 @@
 <table>
   <thead>
     <tr>
-      <th style="width: 2.7rem;"><input type="checkbox" /></th>
-      <th *ngFor="let head of head_data"
-       [style.width]="head.width" title="{{head.title}}"><div resize>{{head.title}}</div></th>
+      <th style="width: 2.7rem;" (click)="onAllCheckChange(!allCheck)"><input type="checkbox"
+        [(ngModel)]="allCheck" (ngModelChange)="onAllCheckChange($event)" /></th>
+      <th *ngFor="let head of head_data" title="{{head.title}}"
+        [style.width]="head.width"><div resize>{{head.title}}</div></th>
       <th></th>
-      </tr>
+    </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let row of rows_data">
-      <th><input type="checkbox" /></th>
-      <td *ngFor="let col of row; index as i"
-       [style.text-align]="head_data[i].align" title="{{col}}">{{col}}</td>
+    <tr *ngFor="let row of rows_data; index as r" [ngClass]="{'selected':rows_chkd[r]}">
+      <th style="width: 2.7rem;" (click)="onCheckChange(!rows_chkd[r],r)" ng><input type="checkbox" data-row="r"
+        [(ngModel)]="rows_chkd[r]" (ngModelChange)="onCheckChange($event,r)" /></th>
+      <td *ngFor="let col of row; index as c"
+        [style.text-align]="head_data[c].align" title="{{col}}">{{col}}</td>
       <td></td>
     </tr>
   </tbody>

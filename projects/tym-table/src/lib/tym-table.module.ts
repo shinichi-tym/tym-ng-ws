@@ -6,6 +6,7 @@
  */
 
 import { NgModule } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { TymTableComponent } from './tym-table.component';
 import { ResizeDirective } from './tym-resize.directive';
 import { CommonModule } from '@angular/common';  
@@ -17,7 +18,7 @@ import { BrowserModule } from '@angular/platform-browser';
     ResizeDirective
   ],
   imports: [
-    CommonModule, BrowserModule
+    CommonModule, BrowserModule, FormsModule
   ],
   exports: [
     TymTableComponent

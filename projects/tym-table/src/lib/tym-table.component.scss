@@ -15,7 +15,8 @@
   --bd-sa: 1px 1px 3px 0 #cccccc inset;
   --ev-co: #eeeeee;
   --od-co: #ffffff;
-  box-sizing: border-box;
+  --se-co: #ffeeee;
+  --ho-co: #eeffee;
 }
 
 table {
@@ -24,6 +25,7 @@ table {
   border-spacing: 0;
   table-layout: fixed;
   width: 100%;
+  line-height: 1.5rem;
 
   thead {
     tr {
@@ -68,6 +70,8 @@ table {
 
   tbody {
     tr {
+      opacity: .8;
+
       >* {
         color: var(--bd-co);
         border: solid var(--bo-co);
@@ -79,6 +83,7 @@ table {
           position: sticky;
           left: 0;
           border-left: 1px solid var(--bo-co);
+          padding: 0;
         }
 
         &:last-child {
@@ -94,6 +99,18 @@ table {
 
       &:nth-child(odd)>* {
         background: var(--od-co);
+      }
+
+      &.selected>* {
+        background-color: var(--se-co);
+      }
+
+      &:hover {
+        opacity: 1;
+
+        >* {
+          background-color: var(--ho-co);
+        }
       }
     }
   }
