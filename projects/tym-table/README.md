@@ -108,7 +108,7 @@ export interface CUSTOM {
 - [DEFS]
 ``` typescript
 /* テーブルカラムの定義 */
-interface COL {
+export interface COL {
   title: string;
   width?: string;
   align?: string;

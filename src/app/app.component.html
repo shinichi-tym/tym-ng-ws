@@ -6,6 +6,15 @@
     position: relative;
     resize: both;
   }
+  pre {
+    width: 600px;
+    height: 100px;
+    overflow: auto;
+    position: relative;
+    resize: both;
+    left:50px;
+    border: solid 1px #888;
+}
 </style>
 
 <input type="button" value="size 0x0" (click)="fnc0x0()">
@@ -38,3 +47,7 @@
     [data]="data"
   ></ngx-tym-table>
 </div> -->
+
+<pre id="target"
+  (dragover)="dragover($event)"
+  (drop)="drop($event)">{{DropZone}}</pre>

@@ -64,6 +64,30 @@ table {
           resize: horizontal;
           box-sizing: border-box;
         }
+
+        svg {
+          position: absolute;
+          top: 4px;
+          right: 0;
+          width: 11px;
+          height: 24px;
+
+          polygon {
+            stroke: #000;
+            stroke-width: 1.2px;
+            stroke-linejoin: round;
+            opacity: .2;
+          }
+
+        }
+
+        &.asc polygon:nth-child(1) {
+          opacity: .8;
+        }
+
+        &.desc polygon:nth-child(2) {
+          opacity: .8;
+        }
       }
     }
   }

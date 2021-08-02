@@ -3,8 +3,8 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppComponent } from './app.component';
 // import { TymTableModule } from "projects/tym-table/src/lib/tym-table.module";
-import { TymTableModule } from "dist/tym-table";
-// import { TymTableModule } from "tym-table";
+// import { TymTableModule } from "dist/tym-table";
+import { TymTableModule } from "tym-table";
 
 @NgModule({
   declarations: [

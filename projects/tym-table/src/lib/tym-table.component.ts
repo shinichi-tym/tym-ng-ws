@@ -132,7 +132,9 @@ export class TymTableComponent implements OnInit, OnChanges {
    * @memberof TymTableComponent
    */
   // @Input() data: any = [];
+  private _data:any[][] = [];
   @Input() set data(data: any[][]) {
+    this._data = data;
     console.log("set data:");
     this.allCheck = false;
     // this._drowData(this.data);
@@ -190,6 +192,12 @@ export class TymTableComponent implements OnInit, OnChanges {
     this._drowData(this.data);
   }
 
+  public dragstart(ev:any, row:number) {
+    ev.dataTransfer.setData("application/data", this.getRow(this._data, row));
+    ev.dataTransfer.setData("text/plain", row);
+    console.log(row);
+  }
+
   private _drowData(data: any[][]) {
     let rows_data = [];
     let rows_chkd = [];
@@ -216,11 +224,12 @@ export class TymTableComponent implements OnInit, OnChanges {
 /**
  * テーブルカラムの定義
  */
-interface COL {
+ export interface COL {
   title: string;
   width?: string;
   align?: string;
   sortable?: boolean;
+  order?: string;
 }
 
 /**

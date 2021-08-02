@@ -28,9 +28,9 @@ export class AppComponent {
   fnc1x1(): void {
     this.defs = {
       cols: [
-        { title: "単価", align: "right" }
+        { title: "単価", align: "right", sortable: true }
       ]
-    }
+    } as DEFS;
     this.data = [
       [980],
     ];
@@ -43,9 +43,9 @@ export class AppComponent {
   fnc1x1w100(): void {
     this.defs = {
       cols: [
-        { title: "単価", width: "100px", align: "right" }
+        { title: "単価", width: "100px", align: "right", sortable: true }
       ]
-    }
+    } as DEFS;
     this.data = [
       [980],
     ];
@@ -58,11 +58,11 @@ export class AppComponent {
   fnc3x3(): void {
     this.defs = {
       cols: [
-        { title: "単価", width: "10rem", align: "right" },
-        { title: "販売数", width: "8rem", align: "right" },
-        { title: "売上", width: "12rem", align: "right" }
+        { title: "単価", width: "10rem", align: "right", sortable: true, order: "asc" },
+        { title: "販売数", width: "8rem", align: "right", sortable: true },
+        { title: "売上", width: "12rem", align: "right", sortable: true }
       ]
-    }
+    } as DEFS;
     this.data = [
       [980, 627, 614460],
       [1980, 1219, 2413620],
@@ -153,10 +153,33 @@ export class AppComponent {
     console.log("update");
   }
   setCustom(): void {
-    this.custom = {
-      headerBoxShadow: "0px 1px 1px rgba(255,255,255,0.3) inset",
-      headerBackground: "linear-gradient(#829ebc,#225588)"
+    let org = false;
+    if (this.custom.headerBackground) {
+      if (this.custom.headerBackground[0] != "#") {
+        org = true;
+      }
     }
+    this.custom = (org)
+      ? {
+        headerBoxShadow: "1px 1px 3px 0 #cccccc inset",
+        headerBackground: "#888888 linear-gradient(#888888, #666666)"
+      }
+      : {
+        headerBoxShadow: "0px 1px 1px rgba(255,255,255,0.3) inset",
+        headerBackground: "linear-gradient(#829ebc,#225588)"
+      }
     console.log("setCustom");
+  }
+
+  dragover(ev: any) {
+    ev.preventDefault();
+    ev.dataTransfer.dropEffect = "copy";
+  }
+  DropZone: string = "Drop Zone"
+  drop(ev: any) {
+    ev.preventDefault();
+    let rownum = ev.dataTransfer.getData("text/plain");
+    let data = ev.dataTransfer.getData("application/data");
+    this.DropZone = rownum + "\r\n" + data;
   }
 }

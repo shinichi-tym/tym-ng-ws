@@ -20,6 +20,12 @@
 
 <br/>
 
+## 表示イメージ (Display image)
+- `tym-table` デフォルトカラー
+![イメージ1](/data/image01.png)
+- `tym-table` カスタマイズカラー
+![イメージ2](/data/image02.png)
+
 ### ライセンス (License)
 The components in tym-ng-ws are released under the MIT license. [Read license](//github.com/shinichi-tym/tym-ng-ws/blob/main/LICENSE).
 
