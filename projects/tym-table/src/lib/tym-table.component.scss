@@ -7,6 +7,7 @@
 
 :host {
   --fo-fa: Consolas, monaco, monospace;
+  --fo-sz: 1rem;
   --bo-co: #888888;
   --hd-bg: #888888 linear-gradient(#888888, #666666);
   --hd-co: #ffffff;
@@ -21,11 +22,12 @@
 
 table {
   font-family: var(--fo-fa);
+  font-size: var(--fo-sz);
   border-collapse: separate;
   border-spacing: 0;
   table-layout: fixed;
   width: 100%;
-  line-height: 1.5rem;
+  line-height: 1.5em;
 
   thead {
     tr {
@@ -47,6 +49,7 @@ table {
           z-index: 2;
           left: 0;
           resize: none;
+          width: 2.7em;
           border-left: 1px solid var(--bo-co);
         }
 
@@ -57,36 +60,22 @@ table {
         }
 
         div {
-          min-width: 2.7rem;
+          min-width: 2.7em;
           overflow: hidden;
           text-overflow: ellipsis;
-          padding: .5rem .5rem;
+          padding: .5em .5em;
           resize: horizontal;
           box-sizing: border-box;
         }
 
         svg {
           position: absolute;
-          top: 4px;
+          top: 2px;
           right: 0;
           width: 11px;
-          height: 24px;
-
-          polygon {
-            stroke: #000;
-            stroke-width: 1.2px;
-            stroke-linejoin: round;
-            opacity: .2;
-          }
-
-        }
-
-        &.asc polygon:nth-child(1) {
-          opacity: .8;
-        }
-
-        &.desc polygon:nth-child(2) {
-          opacity: .8;
+          height: 11px;
+          stroke: #000;
+          stroke-linejoin: round;
         }
       }
     }
@@ -101,7 +90,7 @@ table {
         border: solid var(--bo-co);
         border-width: 0 1px 1px 0;
         box-shadow: var(--bd-sa);
-        padding: .5rem .5rem;
+        padding: .5em .5em;
 
         &:first-child {
           position: sticky;
@@ -141,11 +130,17 @@ table {
 
   th,
   td {
-    height: 2.7rem;
-    min-width: 2.7rem;
+    height: 2.7em;
+    min-width: 2.7em;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     box-sizing: border-box;
+  }
+
+  input[type=checkbox] {
+    width: 1.2em;
+    height: 1.2em;
+    font-size: inherit;
   }
 }

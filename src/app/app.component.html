@@ -29,24 +29,29 @@
 <input type="button" value="100x100" (click)="fnc100x100()">&nbsp;
 <input type="button" value="data update" (click)="update()">
 <input type="button" value="set custom" (click)="setCustom()">
+<input type="button" value="set font9px" (click)="setFont9px()">
+<input type="button" value="set font12px" (click)="setFont12px()">
+<input type="button" value="set font1ram" (click)="setFont1ram()">
 
 <hr>
 
 <div style="left:50px">
   <ngx-tym-table
     [custom]="custom"
-    [defs]="defs"
+    [afnc]="afnc"
+    [cols]="cols"
     [data]="data"
+    [odrmk]="odrmk"
   ></ngx-tym-table>
 </div>
 
-<!-- <div style="left:50px">
+<div style="left:50px">
   <ngx-tym-table
-    [custom]="custom"
-    [defs]="defs"
-    [data]="data"
-  ></ngx-tym-table>
-</div> -->
+    [custom]="custom1" [cols]="cols1" [data]="data1" [odrmk]="odrmk1"></ngx-tym-table>
+  <br>
+  <ngx-tym-table
+    [custom]="custom2" [cols]="cols2" [data]="data2" [odrmk]="odrmk2"></ngx-tym-table>
+</div>
 
 <pre id="target"
   (dragover)="dragover($event)"

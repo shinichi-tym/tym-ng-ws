@@ -27,6 +27,7 @@ export class TymTableComponent implements OnInit, OnChanges {
 
   /** Host Binding style */
   @HostBinding("style.--fo-fa") fontFamily: string = "";
+  @HostBinding("style.--fo-sz") fontSize: string = "";
   @HostBinding("style.--bo-co") borderColor: string = "";
   @HostBinding("style.--hd-bg") headerBackground: string = "";
   @HostBinding("style.--hd-co") headerColor: string = "";
@@ -45,9 +46,10 @@ export class TymTableComponent implements OnInit, OnChanges {
    * @memberof TymTableComponent
    */
   @Input() set custom(custom: CUSTOM) {
-    console.log("set custom:" + JSON.stringify(custom));
+    console.log("set custom:", custom);
     if (custom) {
       this.fontFamily = custom.fontFamily || "";
+      this.fontSize = custom.fontSize || "";
       this.borderColor = custom.borderColor || "";
       this.headerBackground = custom.headerBackground || "";
       this.headerColor = custom.headerColor || "";
@@ -66,7 +68,7 @@ export class TymTableComponent implements OnInit, OnChanges {
    * @param data テーブルデータ
    * @returns 行数
    */
-  private getRowSize = (data: any) => { return (data as any[]).length; }
+  private _getRowSize = (data: any) => { return (data as any[]).length; }
 
   /**
    * テーブルデータから行データを取得する
@@ -74,7 +76,7 @@ export class TymTableComponent implements OnInit, OnChanges {
    * @param num 行番号
    * @returns 行データ
    */
-  private getRow = (data: any, num: number) => { return (data as any[])[num]; }
+  private _getRow = (data: any, num: number) => { return (data as any[])[num]; }
 
   /**
    * 行データからカラムデータを取得する
@@ -82,12 +84,20 @@ export class TymTableComponent implements OnInit, OnChanges {
    * @param num カラム番号
    * @returns カラムデータ
    */
-  private getVal = (row: any, num: number) => { return (row as any[])[num] as string; }
+  private _getVal = (row: any, num: number) => { return (row as any[])[num] as string; }
 
   /**
+   * 行データからカラムデータを取得する
+   * @param row 行データ
+   * @param num カラム番号
+   * @returns カラムデータ
+   */
+   private _doOrder = (order: string, col: number) => { this.head_odrs[col] = (order=='asc')?'desc':'asc'; }
+
+   /**
    * テーブルの定義の内部データ
    */
-  private _defs: DEFS = { cols: [] };
+  private _cols: COL[] = [];
 
   /** カラムデータの変更確認用 */
   private col_defs: string = '';
@@ -95,33 +105,63 @@ export class TymTableComponent implements OnInit, OnChanges {
   /**
    * 親コンポーネントから受け取るデータ
    *
-   * @type {DEFS}
+   * @type {ACCESS_FUNCTIONS}
    * @memberof TymTableComponent
    */
-  @Input() set defs(defs: DEFS) {
-    console.log("set defs:" + JSON.stringify(defs));
-    if (defs) {
-      this._defs = defs;
-      if (!(this._defs.cols)) {
-        this._defs.cols = [];
+  @Input() set afnc(afnc: ACCESS_FUNCTIONS) {
+    console.log("set afnc:", afnc);
+    if (afnc?.getRowSize) {
+      this._getRowSize = afnc.getRowSize;
+    }
+    if (afnc?.getRow) {
+      this._getRow = afnc.getRow;
+    }
+    if (afnc?.getVal) {
+      this._getVal = afnc.getVal;
+    }
+    if (afnc?.doOrder) {
+      this._doOrder = afnc.doOrder;
+    }
+  }
+
+  /**
+   * 親コンポーネントから受け取るデータ
+   *
+   * @type {COL[]}
+   * @memberof TymTableComponent
+   */
+   @Input() set cols(cols: COL[]) {
+    console.log("set cols:", cols);
+    if (cols) {
+      this._cols = cols;
+      if (!(this._cols)) {
+        this._cols = [];
       }
     } else {
-      this._defs = { cols: [] };
+      this._cols = [];
     }
-    if (this._defs?.getRowSize) {
-      this.getRowSize = this._defs.getRowSize;
-    }
-    if (this._defs?.getRow) {
-      this.getRow = this._defs.getRow;
-    }
-    if (this._defs?.getVal) {
-      this.getVal = this._defs.getVal;
-    }
-    const col_defs = JSON.stringify(this._defs.cols);
+    const col_defs = JSON.stringify(this._cols);
     if (col_defs != this.col_defs) {
       this.head_data = [];
       this.col_defs = col_defs;
-      this.head_data = Array.from(this._defs.cols);
+      this.head_data = Array.from(this._cols);
+    }
+    this.head_odrs = new Array(this.head_data.length);
+  }
+
+  /**
+   * 親コンポーネントから受け取るデータ
+   *
+   * @type {ORDER_MARK}
+   * @memberof TymTableComponent
+   */
+  @Input() set odrmk(odrmk: ORDER_MARK) {
+    console.log("set odrmk:", odrmk);
+    this.head_odrs = new Array(this.head_data.length);
+    if (odrmk) {
+      if (odrmk.column < this.head_odrs.length) {
+        this.head_odrs[odrmk.column] = odrmk.order;
+      }
     }
   }
 
@@ -153,6 +193,10 @@ export class TymTableComponent implements OnInit, OnChanges {
 
   public allCheck: boolean = false;
   public rows_chkd: boolean[] = [];
+  public head_odrs: string[] = [];
+
+  //-------------------------------------------------------------------
+  // 
 
   /**
    * コンストラクター
@@ -179,6 +223,7 @@ export class TymTableComponent implements OnInit, OnChanges {
       this.rows_chkd[index] = event;
     }
   }
+
   public onCheckChange(event: any, row: number) {
     this.rows_chkd[row] = event;
     if (this.rows_chkd.every(checked => checked == true)) {
@@ -193,24 +238,38 @@ export class TymTableComponent implements OnInit, OnChanges {
   }
 
   public dragstart(ev:any, row:number) {
-    ev.dataTransfer.setData("application/data", this.getRow(this._data, row));
+    ev.dataTransfer.setData("application/data", this._getRow(this._data, row));
     ev.dataTransfer.setData("text/plain", row);
     console.log(row);
   }
 
+  public doOrder(col: number) {
+    console.log("this.head_odrs", this.head_odrs)
+    if (this.head_data[col].sortable) {
+      this._doOrder(this.head_odrs[col], col);
+    }
+  }
+
+  //-------------------------------------------------------------------
+  // inner
+
+  /**
+   * 表示データの作成
+   * @param data 
+   */
   private _drowData(data: any[][]) {
     let rows_data = [];
     let rows_chkd = [];
-    let colnum = this._defs.cols.length;
+    let colnum = this._cols.length;
     let rownum = 0;
     if (data) {
-      rownum = this.getRowSize(data);
+      rownum = this._getRowSize(data);
     }
     for (let row_c = 0; row_c < rownum; row_c++) {
       let row_data: string[] = [];
-      let row = this.getRow(data, row_c);
+      let row = this._getRow(data, row_c);
       for (let col_c = 0; col_c < colnum; col_c++) {
-        row_data.push(this.getVal(row, col_c));
+        row_data.push(this._getVal(row, col_c));
       }
       rows_data.push(row_data);
       rows_chkd.push(false);
@@ -221,36 +280,15 @@ export class TymTableComponent implements OnInit, OnChanges {
 
 }
 
-/**
- * テーブルカラムの定義
- */
- export interface COL {
-  title: string;
-  width?: string;
-  align?: string;
-  sortable?: boolean;
-  order?: string;
-}
-
-/**
- * テーブルの定義
- */
-export interface DEFS {
-  /** カラムの定義 */
-  cols: COL[],
-  /** data から表示行数を取得するための関数を定義, 規定値: data.length */
-  getRowSize?: (data: any) => number;
-  /** data から行データを取得するための関数を定義, 規定値: data[] */
-  getRow?: (data: any, num: number) => any;
-  /** 行データから列データを取得するための関数を定義, 規定値: row[] */
-  getVal?: (row: any, num: number) => string;
-}
+//---------------------------------------------------------------------
+// defs
 
 /**
  * ターブルカスタマイズの定義
  */
-export interface CUSTOM {
+ export interface CUSTOM {
   fontFamily?: string;        // --fo-fa: Consolas, monaco, monospace
+  fontSize?: string;          // --fo-sz: 1rem
   borderColor?: string;       // --bo-co: #888888
   headerBackground?: string;  // --hd-bg: #888888 linear-gradient(#888888, #666666)
   headerColor?: string;       // --hd-co: #ffffff
@@ -261,4 +299,37 @@ export interface CUSTOM {
   bodyOddColor?: string;      // --od-co: ffffff;
   bodySeldColor?: string;     // --se-co: #ffeeee;
   bodyHovrColor?: string;     // --ho-co: #eeffee;
+}
+
+/**
+ * データアクセス関数の定義
+ */
+ export interface ACCESS_FUNCTIONS {
+  /** data から表示行数を取得するための関数を定義, 規定値: data.length */
+  getRowSize?: (data: any) => number;
+  /** data から行データを取得するための関数を定義, 規定値: data[] */
+  getRow?: (data: any, num: number) => any;
+  /** 行データから列データを取得するための関数を定義, 規定値: row[] */
+  getVal?: (row: any, num: number) => string;
+  /** ソート対象ヘッダークリック時の関数を定義 */
+  doOrder?: (order: string, col: number) => void;
+}
+
+/**
+ * テーブルカラムの定義
+ */
+ export interface COL {
+  title: string;
+  width?: string;
+  align?: string;
+  sortable?: boolean;
+}
+
+
+/**
+ * ソートマークの定義
+ */
+export interface ORDER_MARK {
+  column: number;
+  order: string;
 }

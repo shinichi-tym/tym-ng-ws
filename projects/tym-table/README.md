@@ -30,7 +30,7 @@ npm install tym-table
 ``` html
 <div stylle="width:300px;height:200px;overflow:auto;">
     <ngx-tym-table
-        [defs]="defs"
+        [cols]="cols"
         [data]="data"
     ><ngx-tym-table>
 </div>
@@ -39,13 +39,12 @@ npm install tym-table
 表示するためのデータを用意します。
 
 ``` typescript
-let defs:DEFS = {
-    cols: [
-        { title: "単価" },
-        { title: "販売数" },
-        { title: "売上" }
-    ]
-}; 
+let cols: COL[] = [
+    { title: "単価" },
+    { title: "販売数" },
+    { title: "売上" }
+]
+
 let data = [
     [ 980, 627, 614460 ],
     [ 1980, 1219, 2413620 ],
@@ -78,14 +77,16 @@ let data = [
 
 ### 基本機能
 
-- custom, defs, data 値を変更すると，その値に従ってテーブルを表示します。
+- custom, afnc, cols, data, odrmk 値を変更すると，その値に従ってテーブルを表示します。
 
 - [定義]
 ``` html
 <ngx-tym-table
     [custom]="custom"
-    [defs]="defs"
+    [afnc]="afnc"
+    [cols]="cols"
     [data]="data"
+    [odrmk]="odrmk"
 ><ngx-tym-table>
 ```
 - [CUSTOM]
@@ -93,6 +94,7 @@ let data = [
 export interface CUSTOM {
                               // innerid: default
   fontFamily?: string;        // --fo-fa: Consolas, monaco, monospace
+  fontSize?: string           // --fo-sz: 1rem
   borderColor?: string;       // --bo-co: #888888
   headerBackground?: string;  // --hd-bg: #888888 linear-gradient(#888888, #666666)
   headerColor?: string;       // --hd-co: #ffffff
@@ -105,7 +107,21 @@ export interface CUSTOM {
   bodyHovrColor?: string;     // --ho-co: #eeffee;
 }
 ```
-- [DEFS]
+- [ACCESS_FUNCTIONS]
+``` typescript
+/* テーブルの定義 */
+export interface ACCESS_FUNCTIONS {
+  /** data から表示行数を取得するための関数を定義, 規定値: data.length */
+  getRowSize?: (data: any) => number;
+  /** data から行データを取得するための関数を定義, 規定値: data[] */
+  getRow?: (data: any, num: number) => any;
+  /** 行データから列データを取得するための関数を定義, 規定値: row[] */
+  getVal?: (row: any, num: number) => string;
+  /** ソート対象ヘッダークリック時の関数を定義 */
+  doOrder?: (order: string, col: number) => void;
+}
+```
+- [COL]
 ``` typescript
 /* テーブルカラムの定義 */
 export interface COL {
@@ -114,17 +130,13 @@ export interface COL {
   align?: string;
   sortable?: boolean;
 }
-
-/* テーブルの定義 */
-export interface DEFS {
-  /** カラムの定義 */
-  cols: COL[],
-  /** data から表示行数を取得するための関数を定義, 規定値: data.length */
-  getRowSize?: (data: any) => number;
-  /** data から行データを取得するための関数を定義, 規定値: data[] */
-  getRow?: (data: any, num: number) => any;
-  /** 行データから列データを取得するための関数を定義, 規定値: row[] */
-  getVal?: (row: any, num: number) => string;
+```
+- [ORDER_MARK]
+``` typescript
+/* テーブルカラムの定義 */
+export interface ORDER_MARK {
+  column: number;
+  order: string;
 }
 ```
 
@@ -158,7 +170,7 @@ custom = {
 ### カラムサイズ変更 (ColumnSizeChange)
 
 - ヘッダー部分にリサイズマークを左右に移動させるとカラムサイズが変わります。
-- カラムサイズは，`DEFS` を設定するとリセットされます。
+- カラムサイズは，`COL[]` を設定するとリセットされます。
 
 <br/>
 
