@@ -9,6 +9,7 @@ import {
   Component,
   Input,
   HostBinding,
+  ChangeDetectorRef,
   OnInit,
   OnChanges
 } from '@angular/core';
@@ -25,19 +26,21 @@ import {
  */
 export class TymTableComponent implements OnInit, OnChanges {
 
+  //-------------------------------------------------------------------
+
   /** Host Binding style */
-  @HostBinding("style.--fo-fa") fontFamily: string = "";
-  @HostBinding("style.--fo-sz") fontSize: string = "";
-  @HostBinding("style.--bo-co") borderColor: string = "";
-  @HostBinding("style.--hd-bg") headerBackground: string = "";
-  @HostBinding("style.--hd-co") headerColor: string = "";
-  @HostBinding("style.--hd-sa") headerBoxShadow: string = "";
-  @HostBinding("style.--bd-co") bodyColor: string = "";
-  @HostBinding("style.--bd-sa") bodyBoxShadow: string = "";
-  @HostBinding("style.--ev-co") bodyEvenColor: string = "";
-  @HostBinding("style.--od-co") bodyOddColor: string = "";
-  @HostBinding("style.--se-co") bodySeldColor: string = "";
-  @HostBinding("style.--ho-co") bodyHovrColor: string = "";
+  @HostBinding("style.--fo-fa") fontFamily!: string;
+  @HostBinding("style.--fo-sz") fontSize!: string;
+  @HostBinding("style.--bo-co") borderColor!: string;
+  @HostBinding("style.--hd-bg") headerBackground!: string;
+  @HostBinding("style.--hd-co") headerColor!: string;
+  @HostBinding("style.--hd-sa") headerBoxShadow!: string;
+  @HostBinding("style.--bd-co") bodyColor!: string;
+  @HostBinding("style.--bd-sa") bodyBoxShadow!: string;
+  @HostBinding("style.--ev-co") bodyEvenColor!: string;
+  @HostBinding("style.--od-co") bodyOddColor!: string;
+  @HostBinding("style.--se-co") bodySeldColor!: string;
+  @HostBinding("style.--ho-co") bodyHovrColor!: string;
 
   /**
    * 親コンポーネントから受け取るデータ
@@ -63,6 +66,8 @@ export class TymTableComponent implements OnInit, OnChanges {
     }
   }
 
+  //-------------------------------------------------------------------
+
   /**
    * テーブルデータから行数を取得する
    * @param data テーブルデータ
@@ -87,20 +92,14 @@ export class TymTableComponent implements OnInit, OnChanges {
   private _getVal = (row: any, num: number) => { return (row as any[])[num] as string; }
 
   /**
-   * 行データからカラムデータを取得する
+   * ソート対象ヘッダークリック時に実行する
    * @param row 行データ
    * @param num カラム番号
    * @returns カラムデータ
    */
-   private _doOrder = (order: string, col: number) => { this.head_odrs[col] = (order=='asc')?'desc':'asc'; }
-
-   /**
-   * テーブルの定義の内部データ
-   */
-  private _cols: COL[] = [];
-
-  /** カラムデータの変更確認用 */
-  private col_defs: string = '';
+  private _doOrder = (order: string, col: number) => {
+    this.odrmk = { column: col, order: (order == 'asc') ? 'desc' : 'asc' } as ORDER_MARK
+  }
 
   /**
    * 親コンポーネントから受け取るデータ
@@ -124,30 +123,55 @@ export class TymTableComponent implements OnInit, OnChanges {
     }
   }
 
+  //-------------------------------------------------------------------
+
+  /**
+   * テーブルのカラム定義の指定値
+   */
+  private _cols: COL[] = [];
+
+  /**
+   * カラムデータの変更確認用
+   */
+  private col_defs: string = '';
+
   /**
    * 親コンポーネントから受け取るデータ
    *
    * @type {COL[]}
    * @memberof TymTableComponent
    */
-   @Input() set cols(cols: COL[]) {
+  @Input() set cols(cols: COL[]) {
     console.log("set cols:", cols);
     if (cols) {
       this._cols = cols;
-      if (!(this._cols)) {
-        this._cols = [];
-      }
     } else {
       this._cols = [];
     }
-    const col_defs = JSON.stringify(this._cols);
-    if (col_defs != this.col_defs) {
-      this.head_data = [];
-      this.col_defs = col_defs;
-      this.head_data = Array.from(this._cols);
-    }
-    this.head_odrs = new Array(this.head_data.length);
+    this._drowHead();
   }
+
+  //-------------------------------------------------------------------
+
+  /** 
+   * テーブル表示データの指定値
+   */
+  private _data: any[] = [];
+
+  /**
+   * 親コンポーネントから受け取るデータ
+   *
+   * @type {any[][]}
+   * @memberof TymTableComponent
+   */
+  @Input() set data(data: any[]) {
+    this._data = data;
+    console.log("set data:");
+    this.allCheck = false;
+    this._drowData();
+  }
+
+  //-------------------------------------------------------------------
 
   /**
    * 親コンポーネントから受け取るデータ
@@ -166,42 +190,39 @@ export class TymTableComponent implements OnInit, OnChanges {
   }
 
   /**
-   * 親コンポーネントから受け取るデータ
-   *
-   * @type {any[][]}
-   * @memberof TymTableComponent
+   * テーブルヘッダー行表示用の定義(templae内で利用)
    */
-  // @Input() data: any = [];
-  private _data:any[][] = [];
-  @Input() set data(data: any[][]) {
-    this._data = data;
-    console.log("set data:");
-    this.allCheck = false;
-    // this._drowData(this.data);
-    this._drowData(data);
-  }
+  head_data: COL[] = [];
 
   /**
-   * テーブルヘッダー行表示用の定義
+   * テーブル表示用のデータ(templae内で利用)
    */
-  public head_data: COL[] = [];
+  rows_data: string[][] = [];
 
   /**
-   * テーブル表示用のデータ
+   * テーブル各列ソートマーク用('asc','desc',empty)(templae内で利用)
    */
-  public rows_data: string[][] = [];
+  head_odrs: string[] = [];
 
-  public allCheck: boolean = false;
-  public rows_chkd: boolean[] = [];
-  public head_odrs: string[] = [];
+  /**
+   * テーブル全行チェック用のフラグ(templae内で利用)(ngModelで指定)
+   */
+  allCheck: boolean = false;
+
+  /**
+   * テーブル各行チェック用のフラグ(templae内で利用)(ngModelで指定)
+   */
+  rows_chkd: boolean[] = [];
 
   //-------------------------------------------------------------------
-  // 
 
   /**
    * コンストラクター
    */
-  constructor() { }
+  constructor(
+    public changeDetectorRef: ChangeDetectorRef) { }
+
+  //-------------------------------------------------------------------
 
   /**
    * 最初のデータバインド時
@@ -213,18 +234,29 @@ export class TymTableComponent implements OnInit, OnChanges {
   /**
    * バインドされたデータの変更時
    */
-   ngOnChanges(): void {
+  ngOnChanges(): void {
     console.log("ngOnChanges");
   }
 
-  public onAllCheckChange(event: any) {
+  //-------------------------------------------------------------------
+
+  /**
+   * テーブル全行チェックボックスクリック用関数
+   * @param event イベント
+   */
+  onAllCheckChange(event: any) {
     this.allCheck = event;
     for (let index = 0; index < this.rows_chkd.length; index++) {
       this.rows_chkd[index] = event;
     }
   }
 
-  public onCheckChange(event: any, row: number) {
+  /**
+   * テーブル各行チェックボックスクリック用関数
+   * @param event イベント
+   * @param row 行
+   */
+  onCheckChange(event: any, row: number) {
     this.rows_chkd[row] = event;
     if (this.rows_chkd.every(checked => checked == true)) {
       this.allCheck = true;
@@ -232,19 +264,41 @@ export class TymTableComponent implements OnInit, OnChanges {
       this.allCheck = false;
     }
   }
-  
-  public drowData() {
-    this._drowData(this.data);
+
+  //-------------------------------------------------------------------
+
+  /** 
+   * 再描画する関数
+   * 
+   *  cols, data が描画用に再取得され表示される
+   */
+  drowHead() {
+    console.log("drowHead");
+    this._drowHead();
+    this.changeDetectorRef.detectChanges();
   }
 
-  public dragstart(ev:any, row:number) {
-    ev.dataTransfer.setData("application/data", this._getRow(this._data, row));
-    ev.dataTransfer.setData("text/plain", row);
-    console.log(row);
+  /** 
+   * 再描画する関数
+   * 
+   *  cols, data が描画用に再取得され表示される
+   */
+  drowData() {
+    console.log("drowData");
+    this._drowHead();
+    this._drowData();
+    this.changeDetectorRef.detectChanges();
   }
 
-  public doOrder(col: number) {
-    console.log("this.head_odrs", this.head_odrs)
+  dragstart(ev: DragEvent, row: number) {
+    ev.dataTransfer?.setData(
+      "application/json", JSON.stringify(this._getRow(this._data, row)));
+    ev.dataTransfer?.setData("text/plain", row.toString());
+    console.log(ev, row);
+  }
+
+  doOrder(col: number) {
+    console.log("doOrder", col)
     if (this.head_data[col].sortable) {
       this._doOrder(this.head_odrs[col], col);
     }
@@ -257,17 +311,17 @@ export class TymTableComponent implements OnInit, OnChanges {
    * 表示データの作成
    * @param data 
    */
-  private _drowData(data: any[][]) {
+  private _drowData() {
     let rows_data = [];
     let rows_chkd = [];
     let colnum = this._cols.length;
     let rownum = 0;
-    if (data) {
-      rownum = this._getRowSize(data);
+    if (this._data) {
+      rownum = this._getRowSize(this._data);
     }
     for (let row_c = 0; row_c < rownum; row_c++) {
       let row_data: string[] = [];
-      let row = this._getRow(data, row_c);
+      let row = this._getRow(this._data, row_c);
       for (let col_c = 0; col_c < colnum; col_c++) {
         row_data.push(this._getVal(row, col_c));
       }
@@ -278,6 +332,19 @@ export class TymTableComponent implements OnInit, OnChanges {
     this.rows_chkd = rows_chkd;
   }
 
+  /**
+   * 表示データの作成
+   * @param data 
+   */
+  private _drowHead() {
+    const col_defs = JSON.stringify(this._cols);
+    if (col_defs != this.col_defs) {
+      this.head_data = [];
+      this.col_defs = col_defs;
+      this.head_data = Array.from(this._cols);
+      this.head_odrs = new Array(this.head_data.length);
+    }
+  }
 }
 
 //---------------------------------------------------------------------
@@ -286,7 +353,7 @@ export class TymTableComponent implements OnInit, OnChanges {
 /**
  * ターブルカスタマイズの定義
  */
- export interface CUSTOM {
+export interface CUSTOM {
   fontFamily?: string;        // --fo-fa: Consolas, monaco, monospace
   fontSize?: string;          // --fo-sz: 1rem
   borderColor?: string;       // --bo-co: #888888
@@ -304,7 +371,7 @@ export class TymTableComponent implements OnInit, OnChanges {
 /**
  * データアクセス関数の定義
  */
- export interface ACCESS_FUNCTIONS {
+export interface ACCESS_FUNCTIONS {
   /** data から表示行数を取得するための関数を定義, 規定値: data.length */
   getRowSize?: (data: any) => number;
   /** data から行データを取得するための関数を定義, 規定値: data[] */
@@ -318,18 +385,23 @@ export class TymTableComponent implements OnInit, OnChanges {
 /**
  * テーブルカラムの定義
  */
- export interface COL {
+export interface COL {
+  /** タイトル */
   title: string;
+  /** 桁幅, 例:8em, 規定値:なし */
   width?: string;
+  /** 揃え, 例:right, 規定値:なし(left) */
   align?: string;
+  /** ソート対象, 規定値:なし(false) */
   sortable?: boolean;
 }
-
 
 /**
  * ソートマークの定義
  */
 export interface ORDER_MARK {
+  /** ソートマーク位置 */
   column: number;
+  /** ソート方向, {'asc','desc',empty}, 規定値:empty */
   order: string;
 }

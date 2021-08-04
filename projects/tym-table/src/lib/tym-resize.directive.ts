@@ -32,6 +32,7 @@ export class ResizeDirective implements OnInit {
     const resizeable = this.elementRef.nativeElement;
     const observer = new MutationObserver(() => {
       resizeable.parentNode.style.width = resizeable.style.width;
+      resizeable.parentNode.style.height = resizeable.style.height;
     });
     observer.observe(resizeable, { attributes: true, attributeFilter: ["style"] });
   }

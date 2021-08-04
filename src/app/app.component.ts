@@ -1,5 +1,5 @@
-import { Component, Output } from '@angular/core';
-import { CUSTOM, ACCESS_FUNCTIONS, COL, ORDER_MARK } from 'projects/tym-table/src/public-api';
+import { Component, Output, ViewChild } from '@angular/core';
+import { CUSTOM, ACCESS_FUNCTIONS, COL, ORDER_MARK, TymTableComponent } from 'projects/tym-table/src/public-api';
 
 @Component({
   selector: 'app-root',
@@ -11,15 +11,28 @@ export class AppComponent {
   private save_col_num: number = 0;
   private save_row_num: number = 0;
 
+  @ViewChild("tymTable")
+  private tymTable?: TymTableComponent;
+  /////////////////////////////////////////////////////////////////////
   @Output() custom: CUSTOM = {}
   @Output() afnc: ACCESS_FUNCTIONS = {};
-  @Output() cols: COL[] | any = null;
-  @Output() data: any[][] | any = null;
-  @Output() odrmk: ORDER_MARK | any = null;
-
+  @Output() cols: COL[] | any = [
+    { title: "単価", width: "10em", align: "right", sortable: true },
+    { title: "販売数", width: "8em", align: "right", sortable: true },
+    { title: "売上", width: "12em", align: "right", sortable: true }
+  ];
+  @Output() data: any[][] | any = [
+    [980, 627, 614460],
+    [1980, 1219, 2413620],
+    [2980, 116, 345680]
+  ];
+  @Output() odrmk: ORDER_MARK | any = {
+    order: 'asc',
+    column: 0
+  };
   /////////////////////////////////////////////////////////////////////
   @Output() custom1: CUSTOM = {
-    fontSize: "9px",
+    fontSize: "10px",
     headerBoxShadow: "0px 1px 1px rgba(255,255,255,0.3) inset",
     headerBackground: "linear-gradient(#829ebc,#225588)"
   }
@@ -39,7 +52,7 @@ export class AppComponent {
   };
   /////////////////////////////////////////////////////////////////////
   @Output() custom2: CUSTOM = {
-    fontSize: "9px",
+    fontSize: "10px",
     headerBackground: "#444",
     headerBoxShadow: "#fff",
     bodyBoxShadow: "#fff",
@@ -105,12 +118,9 @@ export class AppComponent {
           column: col
         }
         let f = (order == 'asc') ? -1 : 1;
-        this.data = [
-          [980, 627, 614460],
-          [1980, 1219, 2413620],
-          [2980, 116, 345680]
-        ].sort(function (a, b) { return (a[col] - b[col]) * f; });
+        this.data = (this.data as number[][]).sort(function (a, b) { return (a[col] - b[col]) * f; });
         console.log(this.data);
+        this.tymTable?.drowData(); // データ更新だけのため直接再描画を実行
       }
     }
     this.cols = [
@@ -229,9 +239,9 @@ export class AppComponent {
       }
     console.log("setCustom");
   }
-  setFont9px(): void {
+  setFont10px(): void {
     this.custom = {
-      fontSize: "9px"
+      fontSize: "10px"
     }
   }
   setFont12px(): void {
@@ -239,9 +249,19 @@ export class AppComponent {
       fontSize: "12px"
     }
   }
+  setFont14px(): void {
+    this.custom = {
+      fontSize: "14px"
+    }
+  }
   setFont1ram(): void {
     this.custom = {
       fontSize: "1ram"
+    }
+  }
+  setFont20px(): void {
+    this.custom = {
+      fontSize: "20px"
     }
   }
 
@@ -250,10 +270,10 @@ export class AppComponent {
     ev.dataTransfer.dropEffect = "copy";
   }
   DropZone: string = "Drop Zone"
-  drop(ev: any) {
+  drop(ev: DragEvent) {
     ev.preventDefault();
-    let rownum = ev.dataTransfer.getData("text/plain");
-    let data = ev.dataTransfer.getData("application/data");
+    let rownum = ev.dataTransfer?.getData("text/plain");
+    let data = ev.dataTransfer?.getData("application/json");
     this.DropZone = rownum + "\r\n" + data;
   }
 }

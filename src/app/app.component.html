@@ -26,17 +26,20 @@
 <input type="button" value="20x20" (click)="fnc20x20()">
 <input type="button" value="100x20" (click)="fnc100x20()">
 <input type="button" value="20x100" (click)="fnc20x100()">
-<input type="button" value="100x100" (click)="fnc100x100()">&nbsp;
+<input type="button" value="100x100" (click)="fnc100x100()">
+<br>
 <input type="button" value="data update" (click)="update()">
-<input type="button" value="set custom" (click)="setCustom()">
-<input type="button" value="set font9px" (click)="setFont9px()">
+<input type="button" value="set custom" (click)="setCustom()">&nbsp;
+<input type="button" value="set font10px" (click)="setFont10px()">
 <input type="button" value="set font12px" (click)="setFont12px()">
+<input type="button" value="set font14px" (click)="setFont14px()">
 <input type="button" value="set font1ram" (click)="setFont1ram()">
+<input type="button" value="set font20px" (click)="setFont20px()">
 
 <hr>
 
 <div style="left:50px">
-  <ngx-tym-table
+  <ngx-tym-table #tymTable
     [custom]="custom"
     [afnc]="afnc"
     [cols]="cols"

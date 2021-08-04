@@ -62,9 +62,9 @@ let data = [
 
 - [基本機能](#Basicfunction)
 - [カラーカスタマイズ](#ColorCustomization)
-- カラムサイズ変更 (Column size change)
-- 行選択 (Row selection)
-- ソートイベント (Sort event) (coming soon..)
+- [カラムサイズ変更](#ColumnSizeChange)
+- [行選択](#RowSelection)
+- [ソートイベント](#SortEvent)
 - ドラッグアンドドロップ (Drag and drop) (coming soon..)
 
 <br/>
@@ -125,9 +125,13 @@ export interface ACCESS_FUNCTIONS {
 ``` typescript
 /* テーブルカラムの定義 */
 export interface COL {
+  /** タイトル */
   title: string;
+  /** 桁幅, 例:8em, 規定値:なし */
   width?: string;
+  /** 揃え, 例:right, 規定値:なし(left) */
   align?: string;
+  /** ソート対象, 規定値:なし(false) */
   sortable?: boolean;
 }
 ```
@@ -135,7 +139,9 @@ export interface COL {
 ``` typescript
 /* テーブルカラムの定義 */
 export interface ORDER_MARK {
+  /** ソートマーク位置 */
   column: number;
+  /** ソート方向, {'asc','desc',empty}, 規定値:empty */
   order: string;
 }
 ```
@@ -170,7 +176,7 @@ custom = {
 ### カラムサイズ変更 (ColumnSizeChange)
 
 - ヘッダー部分にリサイズマークを左右に移動させるとカラムサイズが変わります。
-- カラムサイズは，`COL[]` を設定するとリセットされます。
+- カラムサイズは，`cols` を設定するとリセットされます。
 
 <br/>
 
@@ -184,7 +190,7 @@ custom = {
 
 - 行頭のチェックボックスによって選択行になります。
 - 選択された行は，`custom.bodySeldColor` の色に変化します。
-- 選択された行は `Drag and drop (coming soon..)` の対象になります。
+- 選択された行は，ドラッグアンドドロップの対象になります。
 
 <br/>
 
@@ -194,9 +200,11 @@ custom = {
 
 <a id="SortEvent"></a>
 
-### ソートイベント (SortEvent) `(coming soon..)`
+### ソートイベント (SortEvent)
 
-<a id="DragAndDrop"></a>
+- `COL` の `sortable` を設定したカラムにはオーダーマークが表示されます。
+- オーダーマークが表示されたヘッダー行の文字をクリックすると `doOrder` がコールバックされます。
+- `doOrder` 内で必要な処理を行い `odrmk` を設定してください。
 
 <br/>
 
@@ -204,7 +212,20 @@ custom = {
 
 <br/>
 
-### ドラッグアンドドロップ (DragAndDrop) `(coming soon..)`
+<a id="DragAndDrop"></a>
+
+### ドラッグアンドドロップ (DragAndDrop)
+
+- 行選択すると行をドロップできます。
+- ドロップデータは `data` に設定された行のデータです。
+- タイプは `application/json` で設定します。
+```typescript
+doDrop(event: DragEvent) {
+  let json = event.dataTransfer?.getData("application/json");
+  let obj = JSON.parse(json)
+  ...
+}
+```
 
 <br/>
 
