@@ -264,7 +264,32 @@ export class AppComponent {
       fontSize: "20px"
     }
   }
-
+  setPadding1(): void {
+    this.custom = {
+      bodyBoxPadding: ".1em"
+    }
+  }
+  setPadding2(): void {
+    this.custom = {
+      bodyBoxPadding: ".2em"
+    }
+  }
+  setPadding3(): void {
+    this.custom = {
+      bodyBoxPadding: ".3em"
+    }
+  }
+  setPadding4(): void {
+    this.custom = {
+      bodyBoxPadding: ".4em"
+    }
+  }
+  setPadding5(): void {
+    this.custom = {
+      bodyBoxPadding: ".5em"
+    }
+  }
+  
   dragover(ev: any) {
     ev.preventDefault();
     ev.dataTransfer.dropEffect = "copy";

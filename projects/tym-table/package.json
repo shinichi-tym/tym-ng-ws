@@ -1,11 +1,18 @@
 {
   "name": "tym-table",
-  "version": "0.0.1",
+  "version": "0.7.1",
+  "description": "'tym-table' is a simple table component.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/shinichi-tym/tym-ng-ws.git"
+  },
+  "author": "Shinichi Tayama <shinichi.tym@gmail.com> (https://github.com/shinichi-tym/)",
+  "license" : "MIT",
   "peerDependencies": {
-    "@angular/common": "^12.1.1",
-    "@angular/core": "^12.1.1"
+    "@angular/common": ">=10.0.0",
+    "@angular/core": ">=10.0.0"
   },
   "dependencies": {
-    "tslib": "^2.2.0"
+    "tslib": "^2.0.0"
   }
 }

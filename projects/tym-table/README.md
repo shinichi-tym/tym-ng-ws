@@ -2,10 +2,6 @@
 # `[tym-table]`
 `tym-table` は，シンプルなtable表示のコンポーネントです。
 
-```
-作業中です (working...)
-```
-
 <br>
 
 ## インストール `(Installation)`
@@ -60,12 +56,14 @@ let data = [
 
 ## 機能 `(Features)`
 
-- [基本機能](#Basicfunction)
-- [カラーカスタマイズ](#ColorCustomization)
-- [カラムサイズ変更](#ColumnSizeChange)
-- [行選択](#RowSelection)
-- [ソートイベント](#SortEvent)
-- ドラッグアンドドロップ (Drag and drop) (coming soon..)
+- [基本機能](#Basicfunction) (Basic function)
+- [カラーカスタマイズ](#ColorCustomization) (Color Customization)
+- [カラムサイズ変更](#ColumnSizeChange) (ColumnSize Change)
+- [行選択](#RowSelection) (Row Selection)
+- [ソートイベント](#SortEvent) (Sort Event)
+- [ドラッグアンドドロップ](#DragAndDrop) (Drag And Drop)
+
+- [公開関数](#PublicFunctions) (Public Functions)
 
 <br/>
 
@@ -75,9 +73,9 @@ let data = [
 
 <a id="Basicfunction"></a>
 
-### 基本機能
+### 基本機能 `(Basic function)`
 
-- custom, afnc, cols, data, odrmk 値を変更すると，その値に従ってテーブルを表示します。
+- custom, afnc, cols, data, odrmk 値を指定すると，その値に従ってテーブルを表示します。
 
 - [定義]
 ``` html
@@ -101,6 +99,7 @@ export interface CUSTOM {
   headerBoxShadow?: string;   // --hd-sa: 1px 1px 3px 0 #cccccc inset
   bodyColor?: string;         // --bd-co: #000000
   bodyBoxShadow?: string;     // --bd-sa: 1px 1px 3px 0 #cccccc inset
+  bodyBoxPadding?: string;    // --bd-pa: .4em
   bodyEvenColor?: string;     // --ev-co: #eeeeee
   bodyOddColor?: string;      // --od-co: ffffff;
   bodySeldColor?: string;     // --se-co: #ffeeee;
@@ -113,13 +112,28 @@ export interface CUSTOM {
 export interface ACCESS_FUNCTIONS {
   /** data から表示行数を取得するための関数を定義, 規定値: data.length */
   getRowSize?: (data: any) => number;
-  /** data から行データを取得するための関数を定義, 規定値: data[] */
+  /** data から行データを取得するための関数を定義, 規定値: data[num] */
   getRow?: (data: any, num: number) => any;
-  /** 行データから列データを取得するための関数を定義, 規定値: row[] */
+  /** 行データから列データを取得するための関数を定義, 規定値: row[num] */
   getVal?: (row: any, num: number) => string;
   /** ソート対象ヘッダークリック時の関数を定義 */
   doOrder?: (order: string, col: number) => void;
+  /** ドラッグ開始時の関数を定義 */
+  doDragStart?: (event: DragEvent, num: number, row: any) => void;
+  /** コンテキスト開始時の関数を定義, row: any */
+  doContext?: (event: MouseEvent, num: number, row: any) => void;
 }
+/* 規定値 */
+doOrder(order: string, num: number) {
+  this.odrmk = {
+    column: num,
+    order: (order == 'asc') ? 'desc' : 'asc' } as ORDER_MARK;
+}
+doDragStart(event: DragEvent, num: number, row: any) {
+  event.dataTransfer?.setData('text/plain', num.toString());
+  event.dataTransfer?.setData('application/json', JSON.stringify(row));
+}
+doContext(event: MouseEvent, num: number, row: any) { }
 ```
 - [COL]
 ``` typescript
@@ -154,9 +168,9 @@ export interface ORDER_MARK {
 
 <a id="ColorCustomization"></a>
 
-### カラーカスタマイズ (Color customization)
+### カラーカスタマイズ `(Color customization)`
 
-- custom 値を設定するとカラーをカスタマイズできます。
+- `custom` 値を設定するとカラーをカスタマイズできます。
 
 ``` typescript
 custom = {
@@ -186,7 +200,7 @@ custom = {
 
 <a id="RowSelection"></a>
 
-### 行選択 (RowSelection)
+### 行選択 `(Row Selection)`
 
 - 行頭のチェックボックスによって選択行になります。
 - 選択された行は，`custom.bodySeldColor` の色に変化します。
@@ -200,7 +214,7 @@ custom = {
 
 <a id="SortEvent"></a>
 
-### ソートイベント (SortEvent)
+### ソートイベント `(Sort Event)`
 
 - `COL` の `sortable` を設定したカラムにはオーダーマークが表示されます。
 - オーダーマークが表示されたヘッダー行の文字をクリックすると `doOrder` がコールバックされます。
@@ -214,9 +228,9 @@ custom = {
 
 <a id="DragAndDrop"></a>
 
-### ドラッグアンドドロップ (DragAndDrop)
+### ドラッグアンドドロップ `(Drag And Drop)`
 
-- 行選択すると行をドロップできます。
+- 行選択すると，行をドロップできます。
 - ドロップデータは `data` に設定された行のデータです。
 - タイプは `application/json` で設定します。
 ```typescript
@@ -226,6 +240,41 @@ doDrop(event: DragEvent) {
   ...
 }
 ```
+
+<br/>
+
+---
+
+<br/>
+
+<a id="PublicFunctions"></a>
+
+### 公開関数 `(Public Functions)`
+
+<br/>
+
+#### drowData : 再描画する関数
+
+- htmlタグで指定した `cols`, `data`, `odrmk` の値だけを変更した場合，変更が検出されない。  
+  この関数を呼び出すと再描画が行われます。
+
+- [引数]
+  - なし
+
+- [戻値]
+  - なし
+
+<br/>
+
+#### getSelections : 選択行を返却する関数
+
+- 選択された状態になっている行番号(複数)を返却する。
+
+- [引数]
+  - なし
+
+- [戻値]
+  - rownums: number[]
 
 <br/>
 

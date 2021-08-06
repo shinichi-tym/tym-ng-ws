@@ -9,9 +9,7 @@ import {
   Component,
   Input,
   HostBinding,
-  ChangeDetectorRef,
-  OnInit,
-  OnChanges
+  ChangeDetectorRef
 } from '@angular/core';
 
 @Component({
@@ -24,23 +22,24 @@ import {
  * 簡易なテーブルコンポーネント
  * 
  */
-export class TymTableComponent implements OnInit, OnChanges {
+export class TymTableComponent {
 
   //-------------------------------------------------------------------
 
   /** Host Binding style */
-  @HostBinding("style.--fo-fa") fontFamily!: string;
-  @HostBinding("style.--fo-sz") fontSize!: string;
-  @HostBinding("style.--bo-co") borderColor!: string;
-  @HostBinding("style.--hd-bg") headerBackground!: string;
-  @HostBinding("style.--hd-co") headerColor!: string;
-  @HostBinding("style.--hd-sa") headerBoxShadow!: string;
-  @HostBinding("style.--bd-co") bodyColor!: string;
-  @HostBinding("style.--bd-sa") bodyBoxShadow!: string;
-  @HostBinding("style.--ev-co") bodyEvenColor!: string;
-  @HostBinding("style.--od-co") bodyOddColor!: string;
-  @HostBinding("style.--se-co") bodySeldColor!: string;
-  @HostBinding("style.--ho-co") bodyHovrColor!: string;
+  @HostBinding('style.--fo-fa') protected fontFamily!: string;
+  @HostBinding('style.--fo-sz') protected fontSize!: string;
+  @HostBinding('style.--bo-co') protected borderColor!: string;
+  @HostBinding('style.--hd-bg') protected headerBackground!: string;
+  @HostBinding('style.--hd-co') protected headerColor!: string;
+  @HostBinding('style.--hd-sa') protected headerBoxShadow!: string;
+  @HostBinding('style.--bd-co') protected bodyColor!: string;
+  @HostBinding('style.--bd-sa') protected bodyBoxShadow!: string;
+  @HostBinding('style.--bd-pa') protected bodyBoxPadding!: string;
+  @HostBinding('style.--ev-co') protected bodyEvenColor!: string;
+  @HostBinding('style.--od-co') protected bodyOddColor!: string;
+  @HostBinding('style.--se-co') protected bodySeldColor!: string;
+  @HostBinding('style.--ho-co') protected bodyHovrColor!: string;
 
   /**
    * 親コンポーネントから受け取るデータ
@@ -49,20 +48,20 @@ export class TymTableComponent implements OnInit, OnChanges {
    * @memberof TymTableComponent
    */
   @Input() set custom(custom: CUSTOM) {
-    console.log("set custom:", custom);
     if (custom) {
-      this.fontFamily = custom.fontFamily || "";
-      this.fontSize = custom.fontSize || "";
-      this.borderColor = custom.borderColor || "";
-      this.headerBackground = custom.headerBackground || "";
-      this.headerColor = custom.headerColor || "";
-      this.headerBoxShadow = custom.headerBoxShadow || "";
-      this.bodyColor = custom.bodyColor || "";
-      this.bodyBoxShadow = custom.bodyBoxShadow || "";
-      this.bodyEvenColor = custom.bodyEvenColor || "";
-      this.bodyOddColor = custom.bodyOddColor || "";
-      this.bodySeldColor = custom.bodySeldColor || "";
-      this.bodyHovrColor = custom.bodyHovrColor || "";
+      this.fontFamily = custom.fontFamily || '';
+      this.fontSize = custom.fontSize || '';
+      this.borderColor = custom.borderColor || '';
+      this.headerBackground = custom.headerBackground || '';
+      this.headerColor = custom.headerColor || '';
+      this.headerBoxShadow = custom.headerBoxShadow || '';
+      this.bodyColor = custom.bodyColor || '';
+      this.bodyBoxShadow = custom.bodyBoxShadow || '';
+      this.bodyBoxPadding = custom.bodyBoxPadding || '';
+      this.bodyEvenColor = custom.bodyEvenColor || '';
+      this.bodyOddColor = custom.bodyOddColor || '';
+      this.bodySeldColor = custom.bodySeldColor || '';
+      this.bodyHovrColor = custom.bodyHovrColor || '';
     }
   }
 
@@ -73,7 +72,9 @@ export class TymTableComponent implements OnInit, OnChanges {
    * @param data テーブルデータ
    * @returns 行数
    */
-  private _getRowSize = (data: any) => { return (data as any[]).length; }
+  private _getRowSize = (data: any): number => {
+    return (data as any[]).length;
+  }
 
   /**
    * テーブルデータから行データを取得する
@@ -81,7 +82,9 @@ export class TymTableComponent implements OnInit, OnChanges {
    * @param num 行番号
    * @returns 行データ
    */
-  private _getRow = (data: any, num: number) => { return (data as any[])[num]; }
+  private _getRow = (data: any, num: number): any => {
+    return (data as any[])[num];
+  }
 
   /**
    * 行データからカラムデータを取得する
@@ -89,17 +92,37 @@ export class TymTableComponent implements OnInit, OnChanges {
    * @param num カラム番号
    * @returns カラムデータ
    */
-  private _getVal = (row: any, num: number) => { return (row as any[])[num] as string; }
+  private _getVal = (row: any, num: number): string => {
+    return (row as any[])[num] as string;
+  }
 
   /**
    * ソート対象ヘッダークリック時に実行する
-   * @param row 行データ
+   * @param order 現在のorder
    * @param num カラム番号
-   * @returns カラムデータ
    */
-  private _doOrder = (order: string, col: number) => {
-    this.odrmk = { column: col, order: (order == 'asc') ? 'desc' : 'asc' } as ORDER_MARK
+  private _doOrder = (order: string, num: number): void => {
+    this.odrmk = { column: num, order: (order == 'asc') ? 'desc' : 'asc' } as ORDER_MARK
   }
+
+  /**
+   * ドラッグ開始時に実行する
+   * @param event ドラッグイベント
+   * @param num 行番号
+   * @param row 行データ
+   */
+  private _doDragStart = (event: DragEvent, num: number, row: any): void => {
+    event.dataTransfer?.setData('text/plain', num.toString());
+    event.dataTransfer?.setData('application/json', JSON.stringify(row));
+  }
+
+  /**
+   * コンテキスト開始時に実行する
+   * @param event コンテキストイベント
+   * @param num 行番号
+   * @param row 行データ
+   */
+  private _doContext = (event: MouseEvent, num: number, row: any): void => { }
 
   /**
    * 親コンポーネントから受け取るデータ
@@ -108,7 +131,6 @@ export class TymTableComponent implements OnInit, OnChanges {
    * @memberof TymTableComponent
    */
   @Input() set afnc(afnc: ACCESS_FUNCTIONS) {
-    console.log("set afnc:", afnc);
     if (afnc?.getRowSize) {
       this._getRowSize = afnc.getRowSize;
     }
@@ -120,6 +142,12 @@ export class TymTableComponent implements OnInit, OnChanges {
     }
     if (afnc?.doOrder) {
       this._doOrder = afnc.doOrder;
+    }
+    if (afnc?.doDragStart) {
+      this._doDragStart = afnc.doDragStart;
+    }
+    if (afnc?.doContext) {
+      this._doContext = afnc.doContext;
     }
   }
 
@@ -133,7 +161,7 @@ export class TymTableComponent implements OnInit, OnChanges {
   /**
    * カラムデータの変更確認用
    */
-  private col_defs: string = '';
+  private _col_defs: string = '';
 
   /**
    * 親コンポーネントから受け取るデータ
@@ -142,7 +170,6 @@ export class TymTableComponent implements OnInit, OnChanges {
    * @memberof TymTableComponent
    */
   @Input() set cols(cols: COL[]) {
-    console.log("set cols:", cols);
     if (cols) {
       this._cols = cols;
     } else {
@@ -166,8 +193,7 @@ export class TymTableComponent implements OnInit, OnChanges {
    */
   @Input() set data(data: any[]) {
     this._data = data;
-    console.log("set data:");
-    this.allCheck = false;
+    this._allCheck = false;
     this._drowData();
   }
 
@@ -180,39 +206,43 @@ export class TymTableComponent implements OnInit, OnChanges {
    * @memberof TymTableComponent
    */
   @Input() set odrmk(odrmk: ORDER_MARK) {
-    console.log("set odrmk:", odrmk);
-    this.head_odrs = new Array(this.head_data.length);
+    this._head_odrs = new Array(this._head_data.length);
     if (odrmk) {
-      if (odrmk.column < this.head_odrs.length) {
-        this.head_odrs[odrmk.column] = odrmk.order;
+      if (odrmk.column < this._head_odrs.length) {
+        this._head_odrs[odrmk.column] = odrmk.order;
       }
     }
   }
 
   /**
    * テーブルヘッダー行表示用の定義(templae内で利用)
+   * @private @access private
    */
-  head_data: COL[] = [];
+  _head_data: COL[] = [];
 
   /**
    * テーブル表示用のデータ(templae内で利用)
+   * @private @access private
    */
-  rows_data: string[][] = [];
+  _rows_data: string[][] = [];
 
   /**
    * テーブル各列ソートマーク用('asc','desc',empty)(templae内で利用)
+   * @private @access private
    */
-  head_odrs: string[] = [];
+  _head_odrs: string[] = [];
 
   /**
    * テーブル全行チェック用のフラグ(templae内で利用)(ngModelで指定)
+   * @private @access private
    */
-  allCheck: boolean = false;
+  _allCheck: boolean = false;
 
   /**
    * テーブル各行チェック用のフラグ(templae内で利用)(ngModelで指定)
+   * @private @access private
    */
-  rows_chkd: boolean[] = [];
+  _rows_chkd: boolean[] = [];
 
   //-------------------------------------------------------------------
 
@@ -220,23 +250,7 @@ export class TymTableComponent implements OnInit, OnChanges {
    * コンストラクター
    */
   constructor(
-    public changeDetectorRef: ChangeDetectorRef) { }
-
-  //-------------------------------------------------------------------
-
-  /**
-   * 最初のデータバインド時
-   */
-  ngOnInit(): void {
-    console.log("ngOnInit");
-  }
-
-  /**
-   * バインドされたデータの変更時
-   */
-  ngOnChanges(): void {
-    console.log("ngOnChanges");
-  }
+    protected changeDetectorRef: ChangeDetectorRef) { }
 
   //-------------------------------------------------------------------
 
@@ -245,9 +259,9 @@ export class TymTableComponent implements OnInit, OnChanges {
    * @param event イベント
    */
   onAllCheckChange(event: any) {
-    this.allCheck = event;
-    for (let index = 0; index < this.rows_chkd.length; index++) {
-      this.rows_chkd[index] = event;
+    this._allCheck = event;
+    for (let index = 0; index < this._rows_chkd.length; index++) {
+      this._rows_chkd[index] = event;
     }
   }
 
@@ -257,12 +271,40 @@ export class TymTableComponent implements OnInit, OnChanges {
    * @param row 行
    */
   onCheckChange(event: any, row: number) {
-    this.rows_chkd[row] = event;
-    if (this.rows_chkd.every(checked => checked == true)) {
-      this.allCheck = true;
+    this._rows_chkd[row] = event;
+    if (this._rows_chkd.every(checked => checked == true)) {
+      this._allCheck = true;
     } else {
-      this.allCheck = false;
+      this._allCheck = false;
     }
+  }
+
+  /**
+   * ドソート対象ヘッダークリック時に実行する
+   * @param col カラム番号
+   */
+  onOrder(col: number) {
+    if (this._head_data[col].sortable) {
+      this._doOrder(this._head_odrs[col], col);
+    }
+  }
+
+  /**
+   * ドラッグ開始時に実行する
+   * @param ev ドラッグイベント
+   * @param row 行番号
+   */
+  onDragStart(ev: DragEvent, row: number) {
+    this._doDragStart(ev, row, this._getRow(this._data, row));
+  }
+
+  /**
+   * コンテキスト開始時に実行する
+   * @param ev コンテキストイベント
+   * @param row 行番号
+   */
+  onContext(ev: MouseEvent, row: number) {
+    this._doContext(ev, row, this._getRow(this._data, row));
   }
 
   //-------------------------------------------------------------------
@@ -273,7 +315,6 @@ export class TymTableComponent implements OnInit, OnChanges {
    *  cols, data が描画用に再取得され表示される
    */
   drowHead() {
-    console.log("drowHead");
     this._drowHead();
     this.changeDetectorRef.detectChanges();
   }
@@ -284,24 +325,27 @@ export class TymTableComponent implements OnInit, OnChanges {
    *  cols, data が描画用に再取得され表示される
    */
   drowData() {
-    console.log("drowData");
     this._drowHead();
     this._drowData();
     this.changeDetectorRef.detectChanges();
   }
 
-  dragstart(ev: DragEvent, row: number) {
-    ev.dataTransfer?.setData(
-      "application/json", JSON.stringify(this._getRow(this._data, row)));
-    ev.dataTransfer?.setData("text/plain", row.toString());
-    console.log(ev, row);
-  }
+  /**
+   * 選択行を返却する関数
+   * 
+   *  選択された状態になっている行番号(複数)を返却する。
+   * 
+   * @returns rownums: number[]
+   */
+  getSelections(): number[] {
+    let ret: number[] = [];
+    for (let index = 0; index < this._rows_chkd.length; index++) {
+      if (this._rows_chkd[index]) {
+        ret.push(index);
 
-  doOrder(col: number) {
-    console.log("doOrder", col)
-    if (this.head_data[col].sortable) {
-      this._doOrder(this.head_odrs[col], col);
+      }
     }
+    return ret;
   }
 
   //-------------------------------------------------------------------
@@ -328,8 +372,8 @@ export class TymTableComponent implements OnInit, OnChanges {
       rows_data.push(row_data);
       rows_chkd.push(false);
     }
-    this.rows_data = rows_data;
-    this.rows_chkd = rows_chkd;
+    this._rows_data = rows_data;
+    this._rows_chkd = rows_chkd;
   }
 
   /**
@@ -338,11 +382,11 @@ export class TymTableComponent implements OnInit, OnChanges {
    */
   private _drowHead() {
     const col_defs = JSON.stringify(this._cols);
-    if (col_defs != this.col_defs) {
-      this.head_data = [];
-      this.col_defs = col_defs;
-      this.head_data = Array.from(this._cols);
-      this.head_odrs = new Array(this.head_data.length);
+    if (col_defs != this._col_defs) {
+      this._head_data = [];
+      this._col_defs = col_defs;
+      this._head_data = Array.from(this._cols);
+      this._head_odrs = new Array(this._head_data.length);
     }
   }
 }
@@ -362,6 +406,7 @@ export interface CUSTOM {
   headerBoxShadow?: string;   // --hd-sa: 1px 1px 3px 0 #cccccc inset
   bodyColor?: string;         // --bd-co: #000000
   bodyBoxShadow?: string;     // --bd-sa: 1px 1px 3px 0 #cccccc inset
+  bodyBoxPadding?: string;    // --bd-pa: .4em
   bodyEvenColor?: string;     // --ev-co: #eeeeee
   bodyOddColor?: string;      // --od-co: ffffff;
   bodySeldColor?: string;     // --se-co: #ffeeee;
@@ -380,6 +425,10 @@ export interface ACCESS_FUNCTIONS {
   getVal?: (row: any, num: number) => string;
   /** ソート対象ヘッダークリック時の関数を定義 */
   doOrder?: (order: string, col: number) => void;
+  /** ドラッグ開始時の関数を定義 */
+  doDragStart?: (event: DragEvent, num: number, row: any) => void;
+  /** コンテキスト開始時の関数を定義, row: any */
+  doContext?: (event: MouseEvent, num: number, row: any) => void;
 }
 
 /**
