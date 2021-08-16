@@ -45,7 +45,7 @@ export class OrdermkDirective implements OnInit {
 
   private _mkPolygon(ordermk: string) {
     const svgElm = this.elementRef.nativeElement as HTMLElement;
-    let point = '';
+    let point = this.none_point;
     let width = '1.2';
     let style = 'opacity: .8';
     if (ordermk == 'asc') {
@@ -53,7 +53,6 @@ export class OrdermkDirective implements OnInit {
     } else if (ordermk == 'desc') {
       point = this.desc_point;
     } else {
-      point = this.none_point;
       width = '1';
       style = 'opacity: .2';
     }

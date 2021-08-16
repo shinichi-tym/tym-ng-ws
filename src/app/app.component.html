@@ -1,6 +1,6 @@
 <style>
   div {
-    width: 600px;
+    width: 650px;
     height: 250px;
     overflow: auto;
     position: relative;
@@ -14,7 +14,18 @@
     resize: both;
     left:50px;
     border: solid 1px #888;
-}
+  }
+  table {
+    font-family: Consolas, monaco, monospace;
+    font-size: small;
+  }
+  table td:nth-child(1) {
+    text-align: right;
+  }
+  table td input {
+    width: 23em;
+    font-family: Consolas, monaco, monospace;
+  }
 </style>
 
 <input type="button" value="size 0x0" (click)="fnc0x0()">
@@ -25,21 +36,41 @@
 <input type="button" value="10x20" (click)="fnc10x20()">
 <input type="button" value="20x20" (click)="fnc20x20()">
 <input type="button" value="100x20" (click)="fnc100x20()">
-<input type="button" value="20x100" (click)="fnc20x100()">
-<input type="button" value="100x100" (click)="fnc100x100()">
-<input type="button" value="data update" (click)="update()">&nbsp;
-<br>
-<input type="button" value="set custom" (click)="setCustom()">&nbsp;
-<input type="button" value="set ft10px" (click)="setFont10px()">
-<input type="button" value="set ft12px" (click)="setFont12px()">
-<input type="button" value="set ft14px" (click)="setFont14px()">
-<input type="button" value="set ft1ram" (click)="setFont1ram()">
-<input type="button" value="set ft20px" (click)="setFont20px()">&nbsp;
-<input type="button" value="set pad1" (click)="setPadding1()">
-<input type="button" value="set pad2" (click)="setPadding2()">
-<input type="button" value="set pad3" (click)="setPadding3()">
-<input type="button" value="set pad4" (click)="setPadding4()">
-<input type="button" value="set pad5" (click)="setPadding5()">
+<input type="button" value="20x100" (click)="fnc20x100()">&nbsp;
+<input type="button" value="data update" (click)="update()">
+<input type="button" value="sample" (click)="sample()">
+<input type="button" value="set custom" (click)="setCustom()">
+
+<form><table>
+  <tr>
+    <td>fontFamily</td><td><input type="text" value="Consolas, monaco, monospace"></td>
+    <td>bodyColor</td><td><input type="text" value="#000000"></td>
+  </tr>
+  <tr>
+    <td>fontSize</td><td><input type="text" value="1rem"></td>
+    <td>bodyBoxShadow</td><td><input type="text" value="1px 1px 3px 0 #cccccc inset"></td>
+  </tr>
+  <tr>
+    <td>borderColor</td><td><input type="text" value="#888888"></td>
+    <td>bodyBoxPadding</td><td><input type="text" value=".4em"></td>
+  </tr>
+  <tr>
+    <td>headerBackground</td><td><input type="text" value="#888888 linear-gradient(#888888, #666666)"></td>
+    <td>bodyEvenColor</td><td><input type="text" value="#eeeeee"></td>
+  </tr>
+  <tr>
+    <td>headerColor</td><td><input type="text" value="#ffffff"></td>
+    <td>bodyOddColor</td><td><input type="text" value="#ffffff"></td>
+  </tr>
+  <tr>
+    <td>headerBoxShadow</td><td><input type="text" value="1px 1px 3px 0 #cccccc inset"></td>
+    <td>bodySeldColor</td><td><input type="text" value="#ffeeee"></td>
+  </tr>
+  <tr>
+    <td></td><td></td>
+    <td>bodyHovrColor</td><td><input type="text" value="#eeffee"></td>
+  </tr>
+</table></form>
 
 <hr>
 

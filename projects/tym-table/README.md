@@ -1,8 +1,11 @@
 
 # `[tym-table]`
-`tym-table` は，シンプルなtable表示のコンポーネントです。
+`tym-table` は，シンプルなtable表示の `angular` コンポーネントです。
 
 <br>
+
+表示サンプル (Display image)
+![表示サンプル](/tym-table-demo.png)
 
 ## インストール `(Installation)`
 <br>
@@ -21,20 +24,47 @@ npm install tym-table
 ## 基本的な使い方 `(Basic usage)`
 <br>
 
-表示される場所に htmlタグ を用意し，その中に`<ngx-tym-table>`タグを作成します：
+表示される場所に htmlタグ を用意し，その中に`<ngx-tym-table>`タグを作成します。
 
 ``` html
 <div stylle="width:300px;height:200px;overflow:auto;">
-    <ngx-tym-table
+    <ngx-tym-table #tymTable
         [cols]="cols"
         [data]="data"
     ><ngx-tym-table>
 </div>
 ```
 
+コンポーネントを利用できるようにします。
+
+``` typescript :app.module.ts
+  :
+import { TymTableModule } from "tym-table";
+  :
+@NgModule({
+  declarations: [ .. ],
+  imports: [ TymTableModule ],
+
+```
+
+コンポーネントの機能を利用する。
+
+``` typescript :app.component.ts
+  :
+import { TymTableModule } from "tym-table";
+  :
+  @ViewChild("tymTable")
+  private tymTable?: TymTableComponent;
+  :
+  // 直接再描画を実行
+  this.tymTable?.drowData();
+```
+
 表示するためのデータを用意します。
 
 ``` typescript
+let cols: string[] = [ "単価", "販売数", "売上" ]
+or
 let cols: COL[] = [
     { title: "単価" },
     { title: "販売数" },
@@ -79,7 +109,7 @@ let data = [
 
 - [定義]
 ``` html
-<ngx-tym-table
+<ngx-tym-table #tymTable
     [custom]="custom"
     [afnc]="afnc"
     [cols]="cols"
@@ -87,9 +117,9 @@ let data = [
     [odrmk]="odrmk"
 ><ngx-tym-table>
 ```
-- [CUSTOM]
+- [TYM_CUSTOM]
 ``` typescript
-export interface CUSTOM {
+export interface TYM_CUSTOM {
                               // innerid: default
   fontFamily?: string;        // --fo-fa: Consolas, monaco, monospace
   fontSize?: string           // --fo-sz: 1rem
@@ -101,15 +131,15 @@ export interface CUSTOM {
   bodyBoxShadow?: string;     // --bd-sa: 1px 1px 3px 0 #cccccc inset
   bodyBoxPadding?: string;    // --bd-pa: .4em
   bodyEvenColor?: string;     // --ev-co: #eeeeee
-  bodyOddColor?: string;      // --od-co: ffffff;
+  bodyOddColor?: string;      // --od-co: #ffffff;
   bodySeldColor?: string;     // --se-co: #ffeeee;
   bodyHovrColor?: string;     // --ho-co: #eeffee;
 }
 ```
-- [ACCESS_FUNCTIONS]
+- [TYM_FUNCS]
 ``` typescript
 /* テーブルの定義 */
-export interface ACCESS_FUNCTIONS {
+export interface TYM_FUNCS {
   /** data から表示行数を取得するための関数を定義, 規定値: data.length */
   getRowSize?: (data: any) => number;
   /** data から行データを取得するための関数を定義, 規定値: data[num] */
@@ -127,7 +157,7 @@ export interface ACCESS_FUNCTIONS {
 doOrder(order: string, num: number) {
   this.odrmk = {
     column: num,
-    order: (order == 'asc') ? 'desc' : 'asc' } as ORDER_MARK;
+    order: (order == 'asc') ? 'desc' : 'asc' } as TYM_ORDER;
 }
 doDragStart(event: DragEvent, num: number, row: any) {
   event.dataTransfer?.setData('text/plain', num.toString());
@@ -135,10 +165,10 @@ doDragStart(event: DragEvent, num: number, row: any) {
 }
 doContext(event: MouseEvent, num: number, row: any) { }
 ```
-- [COL]
+- [TYM_COL]
 ``` typescript
 /* テーブルカラムの定義 */
-export interface COL {
+export interface TYM_COL {
   /** タイトル */
   title: string;
   /** 桁幅, 例:8em, 規定値:なし */
@@ -149,10 +179,10 @@ export interface COL {
   sortable?: boolean;
 }
 ```
-- [ORDER_MARK]
+- [TYM_ORDER]
 ``` typescript
 /* テーブルカラムの定義 */
-export interface ORDER_MARK {
+export interface TYM_ORDER {
   /** ソートマーク位置 */
   column: number;
   /** ソート方向, {'asc','desc',empty}, 規定値:empty */

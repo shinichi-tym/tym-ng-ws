@@ -44,10 +44,10 @@ export class TymTableComponent {
   /**
    * 親コンポーネントから受け取るデータ
    *
-   * @type {CUSTOM}
+   * @type {TYM_CUSTOM}
    * @memberof TymTableComponent
    */
-  @Input() set custom(custom: CUSTOM) {
+  @Input() set custom(custom: TYM_CUSTOM) {
     if (custom) {
       this.fontFamily = custom.fontFamily || '';
       this.fontSize = custom.fontSize || '';
@@ -102,7 +102,7 @@ export class TymTableComponent {
    * @param num カラム番号
    */
   private _doOrder = (order: string, num: number): void => {
-    this.odrmk = { column: num, order: (order == 'asc') ? 'desc' : 'asc' } as ORDER_MARK
+    this.odrmk = { column: num, order: (order == 'asc') ? 'desc' : 'asc' } as TYM_ORDER
   }
 
   /**
@@ -127,10 +127,10 @@ export class TymTableComponent {
   /**
    * 親コンポーネントから受け取るデータ
    *
-   * @type {ACCESS_FUNCTIONS}
+   * @type {TYM_FUNCS}
    * @memberof TymTableComponent
    */
-  @Input() set afnc(afnc: ACCESS_FUNCTIONS) {
+  @Input() set afnc(afnc: TYM_FUNCS) {
     if (afnc?.getRowSize) {
       this._getRowSize = afnc.getRowSize;
     }
@@ -156,7 +156,7 @@ export class TymTableComponent {
   /**
    * テーブルのカラム定義の指定値
    */
-  private _cols: COL[] = [];
+  private _cols: TYM_COL[] | string[] = [];
 
   /**
    * カラムデータの変更確認用
@@ -166,10 +166,10 @@ export class TymTableComponent {
   /**
    * 親コンポーネントから受け取るデータ
    *
-   * @type {COL[]}
+   * @type {TYM_COL[]}
    * @memberof TymTableComponent
    */
-  @Input() set cols(cols: COL[]) {
+  @Input() set cols(cols: TYM_COL[] | string[]) {
     if (cols) {
       this._cols = cols;
     } else {
@@ -202,10 +202,10 @@ export class TymTableComponent {
   /**
    * 親コンポーネントから受け取るデータ
    *
-   * @type {ORDER_MARK}
+   * @type {TYM_ORDER}
    * @memberof TymTableComponent
    */
-  @Input() set odrmk(odrmk: ORDER_MARK) {
+  @Input() set odrmk(odrmk: TYM_ORDER) {
     this._head_odrs = new Array(this._head_data.length);
     if (odrmk) {
       if (odrmk.column < this._head_odrs.length) {
@@ -218,7 +218,7 @@ export class TymTableComponent {
    * テーブルヘッダー行表示用の定義(templae内で利用)
    * @private @access private
    */
-  _head_data: COL[] = [];
+  _head_data: TYM_COL[] = [];
 
   /**
    * テーブル表示用のデータ(templae内で利用)
@@ -286,6 +286,7 @@ export class TymTableComponent {
   onOrder(col: number) {
     if (this._head_data[col].sortable) {
       this._doOrder(this._head_odrs[col], col);
+      this._allCheck = false;
     }
   }
 
@@ -383,9 +384,17 @@ export class TymTableComponent {
   private _drowHead() {
     const col_defs = JSON.stringify(this._cols);
     if (col_defs != this._col_defs) {
-      this._head_data = [];
+      let head_data: TYM_COL[] = [];
       this._col_defs = col_defs;
-      this._head_data = Array.from(this._cols);
+      for (let index = 0; index < this._cols.length; index++) {
+        const element = this._cols[index];
+        if (typeof element === 'string') {
+          head_data.push({ title: element });
+        } else {
+          head_data.push(element);
+        }
+      }
+      this._head_data = head_data;
       this._head_odrs = new Array(this._head_data.length);
     }
   }
@@ -395,9 +404,9 @@ export class TymTableComponent {
 // defs
 
 /**
- * ターブルカスタマイズの定義
+ * テーブルカスタマイズの定義
  */
-export interface CUSTOM {
+export interface TYM_CUSTOM {
   fontFamily?: string;        // --fo-fa: Consolas, monaco, monospace
   fontSize?: string;          // --fo-sz: 1rem
   borderColor?: string;       // --bo-co: #888888
@@ -408,7 +417,7 @@ export interface CUSTOM {
   bodyBoxShadow?: string;     // --bd-sa: 1px 1px 3px 0 #cccccc inset
   bodyBoxPadding?: string;    // --bd-pa: .4em
   bodyEvenColor?: string;     // --ev-co: #eeeeee
-  bodyOddColor?: string;      // --od-co: ffffff;
+  bodyOddColor?: string;      // --od-co: #ffffff;
   bodySeldColor?: string;     // --se-co: #ffeeee;
   bodyHovrColor?: string;     // --ho-co: #eeffee;
 }
@@ -416,7 +425,7 @@ export interface CUSTOM {
 /**
  * データアクセス関数の定義
  */
-export interface ACCESS_FUNCTIONS {
+export interface TYM_FUNCS {
   /** data から表示行数を取得するための関数を定義, 規定値: data.length */
   getRowSize?: (data: any) => number;
   /** data から行データを取得するための関数を定義, 規定値: data[] */
@@ -434,7 +443,7 @@ export interface ACCESS_FUNCTIONS {
 /**
  * テーブルカラムの定義
  */
-export interface COL {
+export interface TYM_COL {
   /** タイトル */
   title: string;
   /** 桁幅, 例:8em, 規定値:なし */
@@ -448,7 +457,7 @@ export interface COL {
 /**
  * ソートマークの定義
  */
-export interface ORDER_MARK {
+export interface TYM_ORDER {
   /** ソートマーク位置 */
   column: number;
   /** ソート方向, {'asc','desc',empty}, 規定値:empty */
