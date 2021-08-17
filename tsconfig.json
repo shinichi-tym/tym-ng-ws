@@ -21,6 +21,10 @@
       "dom"
     ],
     "paths": {
+      "tym-directive": [
+        "dist/tym-directive/tym-directive",
+        "dist/tym-directive"
+      ],
       "tym-table": [
         "dist/tym-table/tym-table",
         "dist/tym-table"

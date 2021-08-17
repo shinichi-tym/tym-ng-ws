@@ -21,7 +21,9 @@
 <br/>
 
 ## 表示イメージ (Display image)
+
 - `tym-table`
+
 ![表示サンプル](/tym-table-demo.png)
 
 ### ライセンス (License)

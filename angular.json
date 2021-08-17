@@ -136,6 +136,37 @@
           }
         }
       }
+    },
+    "tym-directive": {
+      "projectType": "library",
+      "root": "projects/tym-directive",
+      "sourceRoot": "projects/tym-directive/src",
+      "prefix": "ngx",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "project": "projects/tym-directive/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/tym-directive/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/tym-directive/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/tym-directive/src/test.ts",
+            "tsConfig": "projects/tym-directive/tsconfig.spec.json",
+            "karmaConfig": "projects/tym-directive/karma.conf.js"
+          }
+        }
+      }
     }
   },
   "defaultProject": "tym-ng-ws"

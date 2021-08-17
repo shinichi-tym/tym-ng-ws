@@ -29,11 +29,12 @@ export class ResizeDirective implements OnInit {
    * @memberof ResizeDirective
    */
   public ngOnInit() {
-    const resizeable = this.elementRef.nativeElement;
+    const thisElm: HTMLElement = this.elementRef.nativeElement;
+    const parentElm: HTMLElement = thisElm.parentElement || thisElm;
     const observer = new MutationObserver(() => {
-      resizeable.parentNode.style.width = resizeable.style.width;
-      resizeable.parentNode.style.height = resizeable.style.height;
+      parentElm.style.width = thisElm.style.width;
+      // parentElm.style.height = thisElm.style.height;
     });
-    observer.observe(resizeable, { attributes: true, attributeFilter: ["style"] });
+    observer.observe(thisElm, { attributes: true, attributeFilter: ["style"] });
   }
 }

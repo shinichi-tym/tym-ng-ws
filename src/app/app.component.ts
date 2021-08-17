@@ -333,4 +333,10 @@ export class AppComponent {
     let data = ev.dataTransfer?.getData("application/json");
     this.DropZone = rownum + "\r\n" + data;
   }
+
+  @Output() resizeCallback(thisElm: HTMLElement, parentElm: HTMLElement) {
+    parentElm.style.border = "solid 1px red";
+    parentElm.style.width = thisElm.clientWidth * 1.5 + "px";
+    parentElm.style.height = thisElm.clientHeight * 1.5 + "px";
+  }
 }
