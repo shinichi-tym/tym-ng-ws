@@ -15,7 +15,7 @@
       (contextmenu)="onContext($event,r);" [dragdrop]="[_rows_chkd[r],r,_dd_def]">
       <th (click)="onCheckChange(!(_rows_chkd[r]),r)" ng><input type="checkbox"
         [(ngModel)]="_rows_chkd[r]" (ngModelChange)="onCheckChange($event,r)" /></th>
-      <td *ngFor="let col of row; index as c"
+      <td *ngFor="let col of row; index as c" (click)="onClick($event,r,c)"
         [style.text-align]="_head_data[c].align" title="{{col}}">{{col}}</td>
       <td></td>
     </tr>

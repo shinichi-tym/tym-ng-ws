@@ -8,10 +8,9 @@
 import {
   Component,
   Input,
-  HostBinding,
-  ChangeDetectorRef,
   Output,
-  NgModule
+  HostBinding,
+  ChangeDetectorRef
 } from '@angular/core';
 
 @Component({
@@ -116,6 +115,15 @@ export class TymTableComponent {
   private _doContext = (event: MouseEvent, num: number, row: any): boolean => true;
 
   /**
+   * コンテキスト開始時に実行する
+   * @param event コンテキストイベント
+   * @param num1 行番号
+   * @param num2 列番号
+   * @param row 行データ
+   */
+  private _doClick = (event: MouseEvent, num1: number, num2: number, row: any): void => { };
+
+   /**
    * 親コンポーネントから受け取るデータ
    *
    * @type {TYM_FUNCS}
@@ -136,6 +144,9 @@ export class TymTableComponent {
     }
     if (afnc?.doContext) {
       this._doContext = afnc.doContext;
+    }
+    if (afnc?.doClick) {
+      this._doClick = afnc.doClick;
     }
   }
 
@@ -331,7 +342,7 @@ export class TymTableComponent {
    * コンストラクター
    */
   constructor(
-    protected changeDetectorRef: ChangeDetectorRef) { }
+    private changeDetectorRef: ChangeDetectorRef) { }
 
   //-------------------------------------------------------------------
 
@@ -376,8 +387,21 @@ export class TymTableComponent {
    * @param ev コンテキストイベント
    * @param row 行番号
    */
-   onContext(ev: MouseEvent, row: number): boolean {
+  onContext(ev: MouseEvent, row: number): boolean {
     return this._doContext(ev, row, this._getRow(this._data, row));
+  }
+
+  /**
+   * コンテキスト開始時に実行する
+   * @param ev コンテキストイベント
+   * @param row 行番号
+   * @param col 列番号
+   */
+  onClick(ev: MouseEvent, row: number, col: number): void {
+    const coldef = this._cols[col] as TYM_COL;
+    if (coldef.clickable) {
+      this._doClick(ev, row, col, this._getRow(this._data, row));
+    }
   }
 
   //-------------------------------------------------------------------
@@ -509,7 +533,7 @@ export interface TYM_FUNCS {
   /** コンテキストアクションの関数を定義, 規定値: { } */
   doContext?: (event: MouseEvent, num: number, row: any) => boolean;
   /** クリックアクションの関数を定義, 規定値: { } */
-  doClick?: (event: MouseEvent, num: number, row: any) => void;
+  doClick?: (event: MouseEvent, num1: number, num2: number, row: any) => void;
 }
 
 /**
@@ -550,6 +574,8 @@ export interface TYM_COL {
   align?: string;
   /** ソート対象, 規定値:なし(false) */
   sortable?: boolean;
+  /** クリックアクション対象, 規定値:なし(false) */
+  clickable?: boolean;
 }
 
 /**

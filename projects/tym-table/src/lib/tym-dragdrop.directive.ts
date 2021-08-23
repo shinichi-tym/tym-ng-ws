@@ -33,15 +33,14 @@ export class DragDropDirective implements OnInit {
   }
 
   /**
-  * コンストラクタ
-  *
-  * @param {ElementRef} elementRef このディレクティブがセットされたDOMへの参照
-  * @memberof DragDropDirective
-  */
+   * コンストラクタ
+   *
+   * @param {ElementRef} elementRef このディレクティブがセットされたDOMへの参照
+   * @memberof DragDropDirective
+   */
   constructor(
     private elementRef: ElementRef
-  ) {
-  }
+  ) { }
 
   /**
    * 初期処理

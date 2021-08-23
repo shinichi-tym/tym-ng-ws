@@ -209,8 +209,8 @@ export interface TYM_COL {
   align?: string;
   /** ソート対象, 規定値:なし(false) */
   sortable?: boolean;
-  /** クリックアクション */
-  action?:(event: DragEvent, num: number, row: any) => void;
+  /** クリックアクション対象, 規定値:なし(false) */
+  clickable?: boolean;
 }
 ```
 - [TYM_ORDER]

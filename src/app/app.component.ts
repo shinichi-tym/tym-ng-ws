@@ -30,6 +30,9 @@ export class AppComponent {
       this.data = (this.data as number[][]).sort(function (a, b) { return (a[col] - b[col]) * f; });
       console.log(this.data);
       this.tymTable?.drowData(); // データ更新だけのため直接再描画を実行
+    },
+    doClick: (event: MouseEvent, num: number, row: any) => {
+      alert(num);
     }
   }
   @Output() dddef: TYM_DDDEF = {
@@ -74,7 +77,7 @@ export class AppComponent {
     }
   }
   @Output() cols: TYM_COL[] | any = [
-    { title: "単価", width: "10em", align: "right", sortable: true },
+    { title: "単価", width: "10em", align: "right", sortable: true, clickable: true },
     { title: "販売数", width: "8em", align: "right", sortable: true },
     { title: "売上", width: "10em", align: "right", sortable: true },
     { title: "注意事項", width: "10em", align: "left", sortable: false }
