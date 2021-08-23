@@ -33,7 +33,6 @@ export class ResizeDirective implements OnInit {
     const parentElm: HTMLElement = thisElm.parentElement || thisElm;
     const observer = new MutationObserver(() => {
       parentElm.style.width = thisElm.style.width;
-      // parentElm.style.height = thisElm.style.height;
     });
     observer.observe(thisElm, { attributes: true, attributeFilter: ["style"] });
   }

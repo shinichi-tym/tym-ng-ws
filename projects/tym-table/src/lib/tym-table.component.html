@@ -12,7 +12,7 @@
   </thead>
   <tbody>
     <tr *ngFor="let row of _rows_data; index as r" [ngClass]="{'selected':_rows_chkd[r]}"
-      [draggable]="_rows_chkd[r]" (dragstart)="onDragStart($event,r)">
+      (contextmenu)="onContext($event,r);" [dragdrop]="[_rows_chkd[r],r,_dd_def]">
       <th (click)="onCheckChange(!(_rows_chkd[r]),r)" ng><input type="checkbox"
         [(ngModel)]="_rows_chkd[r]" (ngModelChange)="onCheckChange($event,r)" /></th>
       <td *ngFor="let col of row; index as c"

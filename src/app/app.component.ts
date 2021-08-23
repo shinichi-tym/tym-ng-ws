@@ -1,6 +1,6 @@
 import { Component, Output, ViewChild } from '@angular/core';
 import {
-  TYM_CUSTOM, TYM_FUNCS, TYM_COL, TYM_ORDER, TymTableComponent
+  TYM_CUSTOM, TYM_FUNCS, TYM_DDDEF, TYM_COL, TYM_ORDER, TymTableComponent
 } from "tym-table";
 
 @Component({
@@ -13,9 +13,12 @@ export class AppComponent {
   private save_col_num: number = 4;
   private save_row_num: number = 4;
 
+  private drag_row_num: number = -1;
   @ViewChild("tymTable")
   private tymTable?: TymTableComponent;
   /////////////////////////////////////////////////////////////////////
+  dragType: string = 'none';
+  dropType: string = 'none';
   @Output() custom: TYM_CUSTOM = {}
   @Output() afnc: TYM_FUNCS = {
     doOrder: (order: string, col: number) => {
@@ -27,6 +30,47 @@ export class AppComponent {
       this.data = (this.data as number[][]).sort(function (a, b) { return (a[col] - b[col]) * f; });
       console.log(this.data);
       this.tymTable?.drowData(); // データ更新だけのため直接再描画を実行
+    }
+  }
+  @Output() dddef: TYM_DDDEF = {
+    dragType: this.dragType as any,
+    dropType: this.dropType as any,
+    doDragStart: (event: DragEvent, num: number, row: any) => {
+      this.drag_row_num = num;
+      (event.currentTarget as HTMLElement).style.opacity = '.2';
+      event.dataTransfer!.dropEffect = this.dddef.dragType as any;
+      const nums = this.tymTable!.getSelections();
+      let rows = [];
+      for (let index = 0; index < nums.length; index++) {
+        const element = nums[index];
+        rows.push(this.data[element]);
+      }
+      event.dataTransfer?.setData('text/plain', nums.toString());
+      event.dataTransfer?.setData('application/json', JSON.stringify(rows));
+    },
+    doDragEnd: (event: DragEvent, num: number, row: any) => {
+      (event.currentTarget as HTMLElement).style.opacity = '';
+      console.log(event,num);
+    },
+    doDragEnter: (event: DragEvent, num: number, row: any) => {
+      console.log(event,num);
+      if (this.drag_row_num == num) {
+        event.dataTransfer!.dropEffect = 'none';
+        return;
+      }
+      event.preventDefault();
+      event.dataTransfer!.dropEffect = this.dddef.dropType as any;
+    },
+    doDragOver: (event: DragEvent, num: number, row: any) => {
+      event.preventDefault();
+      if (this.drag_row_num == num) {
+        event.dataTransfer!.dropEffect = 'none';
+        return;
+      }
+      event.dataTransfer!.dropEffect = 'copy';
+    },
+    doDrop: (event: DragEvent, num: number, row: any) => {
+      console.log(event,num);
     }
   }
   @Output() cols: TYM_COL[] | any = [
@@ -125,18 +169,6 @@ export class AppComponent {
 
   /** size 3x3 width */
   fnc3x3(): void {
-    this.afnc = {
-      doOrder: (order: string, col: number) => {
-        this.odrmk = {
-          order: (order == 'asc') ? 'desc' : 'asc',
-          column: col
-        }
-        let f = (order == 'asc') ? -1 : 1;
-        this.data = (this.data as number[][]).sort(function (a, b) { return (a[col] - b[col]) * f; });
-        console.log(this.data);
-        this.tymTable?.drowData(); // データ更新だけのため直接再描画を実行
-      }
-    }
     this.cols = [
       { title: "単価", width: "10em", align: "right", sortable: true },
       { title: "販売数", width: "8em", align: "right", sortable: true },
@@ -317,8 +349,18 @@ export class AppComponent {
         default:
           break;
       }
-      this.custom = custom;
     }
+    this.custom = custom;
+    let dddef: TYM_DDDEF = {
+      dragType: this.dragType as any,
+      dropType: this.dropType as any,
+      doDragStart: this.dddef.doDragStart,
+      doDragEnd: this.dddef.doDragEnd,
+      doDragEnter: this.dddef.doDragEnter,
+      doDragOver: this.dddef.doDragOver,
+      doDrop: this.dddef.doDrop
+    }
+    this.dddef = dddef;
     console.log("setCustom");
   }
 

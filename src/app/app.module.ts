@@ -1,4 +1,5 @@
 import { NgModule } from '@angular/core';
+import { FormsModule }   from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppComponent } from './app.component';
@@ -10,7 +11,7 @@ import { TymDirectiveModule } from "tym-directive";
     AppComponent
   ],
   imports: [
-    BrowserModule, TymTableModule, TymDirectiveModule
+    BrowserModule, FormsModule, TymTableModule, TymDirectiveModule
   ],
   providers: [],
   bootstrap: [AppComponent]

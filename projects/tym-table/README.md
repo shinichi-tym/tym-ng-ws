@@ -67,15 +67,15 @@ import { TymTableModule } from "tym-table";
 let cols: string[] = [ "単価", "販売数", "売上" ]
 or
 let cols: COL[] = [
-    { title: "単価" },
-    { title: "販売数" },
-    { title: "売上" }
+  { title: "単価" },
+  { title: "販売数" },
+  { title: "売上" }
 ]
 
 let data = [
-    [ 980, 627, 614460 ],
-    [ 1980, 1219, 2413620 ],
-    [ 2980, 116, 345680 ]
+  [ 980, 627, 614460 ],
+  [ 1980, 1219, 2413620 ],
+  [ 2980, 116, 345680 ]
 ]; 
 ``` 
 
@@ -116,10 +116,12 @@ let data = [
     [cols]="cols"
     [data]="data"
     [odrmk]="odrmk"
+    [dddef]="dddef"
 ><ngx-tym-table>
 ```
 - [TYM_CUSTOM]
 ``` typescript
+/* テーブルカスタマイズの定義 */
 export interface TYM_CUSTOM {
                               // innerid: default
   fontFamily?: string;        // --fo-fa: Consolas, monaco, monospace
@@ -139,7 +141,7 @@ export interface TYM_CUSTOM {
 ```
 - [TYM_FUNCS]
 ``` typescript
-/* テーブルの定義 */
+/* 関数の定義 */
 export interface TYM_FUNCS {
   /** data から表示行数を取得するための関数を定義, 規定値: data.length */
   getRowSize?: (data: any) => number;
@@ -149,10 +151,10 @@ export interface TYM_FUNCS {
   getVal?: (row: any, num: number) => string;
   /** ソート対象ヘッダークリック時の関数を定義 */
   doOrder?: (order: string, col: number) => void;
-  /** ドラッグ開始時の関数を定義 */
-  doDragStart?: (event: DragEvent, num: number, row: any) => void;
-  /** コンテキスト開始時の関数を定義, row: any */
-  doContext?: (event: MouseEvent, num: number, row: any) => void;
+  /** コンテキストアクションの関数を定義, 規定値: { } */
+  doContext?: (event: MouseEvent, num: number, row: any) => boolean;
+  /** クリックアクションの関数を定義, 規定値: { } */
+  doClick?: (event: MouseEvent, num: number, row: any) => void;
 }
 /* 規定値 */
 doOrder(order: string, num: number) {
@@ -160,11 +162,40 @@ doOrder(order: string, num: number) {
     column: num,
     order: (order == 'asc') ? 'desc' : 'asc' } as TYM_ORDER;
 }
+```
+- [TYM_DDDEF]
+``` typescript
+/* ドラッグアンドドロップの定義 */
+export interface TYM_DDDEF {
+  /** ドラッグタイプ, 規定値: none */
+  dragType?: DRAG_TYPE;
+  /** ドラッグタイプ, 規定値: none */
+  dropType?: DROP_TYPE;
+  /** ドラッグ開始時の関数を定義 */
+  doDragStart?: (event: DragEvent, num: number, row: any) => void;
+  /** ドラッグ終了時の関数を定義, 規定値: { } */
+  doDragEnd?: (event: DragEvent, num: number, row: any) => void;
+  /** ドロップターゲットに入った時の関数を定義 */
+  doDragEnter?: (event: DragEvent, num: number, row: any) => void;
+  /** ドロップターゲットの上にある時の関数を定義 */
+  doDragOver?: (event: DragEvent, num: number, row: any) => void;
+  /** ドロップターゲットにドロップされた時の関数を定義, 規定値: { } */
+  doDrop?: (event: DragEvent, num: number, row: any) => void;
+  /** @private @access private */
+  _getRow?: (num: number) => any;
+}
+/* 規定値 */
 doDragStart(event: DragEvent, num: number, row: any) {
+  event.dataTransfer!.dropEffect = (this.dddef.dragType || 'none') as any;
   event.dataTransfer?.setData('text/plain', num.toString());
   event.dataTransfer?.setData('application/json', JSON.stringify(row));
 }
-doContext(event: MouseEvent, num: number, row: any) { }
+doDragEnter(event: DragEvent, num: number, row: any) {
+  event.dataTransfer!.dropEffect = 'none';
+}
+doDragOver(event: DragEvent, num: number, row: any) {
+  event.dataTransfer!.dropEffect = 'none';
+}
 ```
 - [TYM_COL]
 ``` typescript
@@ -178,6 +209,8 @@ export interface TYM_COL {
   align?: string;
   /** ソート対象, 規定値:なし(false) */
   sortable?: boolean;
+  /** クリックアクション */
+  action?:(event: DragEvent, num: number, row: any) => void;
 }
 ```
 - [TYM_ORDER]
@@ -205,8 +238,8 @@ export interface TYM_ORDER {
 
 ``` typescript
 custom = {
-    bodySeldColor: "#ffeeee",
-    bodyHovrColor: "#eeffee"
+  bodySeldColor: "#ffeeee",
+  bodyHovrColor: "#eeffee"
 }; 
 ```
 
@@ -261,12 +294,12 @@ custom = {
 
 ### ドラッグアンドドロップ `(Drag And Drop)`
 
-- 行選択すると，行をドロップできます。
+- `dddef` を適切に設定し行選択すると，行をドロップできます。
 - ドロップデータは `data` に設定された行のデータです。
 - タイプは `application/json` で設定します。
 ```typescript
 doDrop(event: DragEvent) {
-  let json = event.dataTransfer?.getData("application/json");
+  const json = event.dataTransfer?.getData("application/json");
   let obj = JSON.parse(json)
   ...
 }

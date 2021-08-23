@@ -1,4 +1,11 @@
 <style>
+  form {
+    font-family: Consolas, monaco, monospace;
+    font-size: 12px;
+  }
+  form>input {
+    font-size: 12px;
+  }
   #tymTable {
     width: 650px;
     height: 250px;
@@ -35,25 +42,33 @@
   table td:nth-child(1) {
     text-align: right;
   }
+  table td:nth-child(3) {
+    text-align: right;
+  }
   table td input {
-    width: 23em;
+    width: 20em;
     font-family: Consolas, monaco, monospace;
+  }
+  table td:nth-child(4) input {
+    width: 15em;
   }
 </style>
 <h1>tym-table</h1>
-<hr>
+<hr><!-- ---------------------------------------------------------- -->
+<form>
 <input type="button" value="size 0x0" (click)="fnc0x0()">
 <input type="button" value="size 1x1" (click)="fnc1x1()">
-<input type="button" value="size 1x1w100" (click)="fnc1x1w100()">
+<input type="button" value="size 1x1w" (click)="fnc1x1w100()">
 <input type="button" value="size 3x3" (click)="fnc3x3()">
 <input type="button" value="size 5x5" (click)="fnc5x5()">
 <input type="button" value="10x20" (click)="fnc10x20()">
 <input type="button" value="20x20" (click)="fnc20x20()">
 <input type="button" value="100x20" (click)="fnc100x20()">
 <input type="button" value="20x100" (click)="fnc20x100()">&nbsp;
-<input type="button" value="data update" (click)="update()">
+<input type="button" value="update" (click)="update()">
 <input type="button" value="sample" (click)="sample()">
-<input type="button" value="set custom" (click)="setCustom()">
+<input type="button" value="custom" (click)="setCustom()">
+</form>
 
 <form><table>
   <tr>
@@ -86,7 +101,11 @@
   </tr>
 </table></form>
 
-<hr>
+<form>
+  drag type:<input id="dragType" name="dragType" type="text" [(ngModel)]="dragType">, 
+  drop type:<input id="dropType" name="dropType" type="text" [(ngModel)]="dropType">
+</form>
+<hr><!-- ---------------------------------------------------------- -->
 
 <div id="tymTable">
   <ngx-tym-table #tymTable
@@ -95,8 +114,13 @@
     [cols]="cols"
     [data]="data"
     [odrmk]="odrmk"
+    [dddef]="dddef"
   ></ngx-tym-table>
 </div>
+
+<pre id="target"
+  (dragover)="dragover($event)"
+  (drop)="drop($event)">{{DropZone}}</pre>
 
 <div id="tymTable2">
   <ngx-tym-table
@@ -106,12 +130,8 @@
     [custom]="custom2" [cols]="cols2" [data]="data2" [odrmk]="odrmk2"></ngx-tym-table>
 </div>
 
-<pre id="target"
-  (dragover)="dragover($event)"
-  (drop)="drop($event)">{{DropZone}}</pre>
-
 <h1>tym-directive</h1>
-<hr>
+<hr><!-- ---------------------------------------------------------- -->
 <div class="tymResize">
   <textarea placeholder="textarea" cols="10" rows="3" tym-resize></textarea>
 </div>

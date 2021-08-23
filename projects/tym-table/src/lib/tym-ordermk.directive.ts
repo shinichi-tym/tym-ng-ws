@@ -12,12 +12,30 @@ import { Directive, Input, ElementRef, OnInit } from '@angular/core';
 })
 export class OrdermkDirective implements OnInit {
 
+  /**
+   * 昇順マーク描画データ
+   */
   private asc_point = "1 9, 9 9, 5 1";
+  /**
+   * 降順マーク描画データ
+   */
   private desc_point = "1 1, 9 1, 5 9";
+  /**
+   * 対象外マーク描画データ
+   */
   private none_point = "1 4, 9 6, 5 9, 1 6, 9 4, 5 1";
 
+  /**
+   * 昇順・降順マークタイプ {'asc','desc',other}
+   */
   private _ordermk: string = '';
 
+  /**
+   * 親コンポーネントから受け取るデータ
+   *
+   * @type {string} 昇順・降順マークタイプ {'asc','desc',other}
+   * @memberof OrdermkDirective
+   */
   @Input() public set ordermk(ordermk: string) {
     this._ordermk = ordermk;
     this._mkPolygon(ordermk);
@@ -43,6 +61,10 @@ export class OrdermkDirective implements OnInit {
     this._mkPolygon(this._ordermk);
   }
 
+  /**
+   * svg polygon タグを生成
+   * @param ordermk 昇順・降順マークタイプ {'asc','desc',other}
+   */
   private _mkPolygon(ordermk: string) {
     const svgElm = this.elementRef.nativeElement as HTMLElement;
     let point = this.none_point;

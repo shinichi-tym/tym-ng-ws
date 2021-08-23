@@ -10,6 +10,7 @@ import { FormsModule } from '@angular/forms';
 import { TymTableComponent } from './tym-table.component';
 import { ResizeDirective } from './tym-resize.directive';
 import { OrdermkDirective } from './tym-ordermk.directive';
+import { DragDropDirective } from './tym-dragdrop.directive';
 import { CommonModule } from '@angular/common';  
 import { BrowserModule } from '@angular/platform-browser';
 
@@ -17,7 +18,8 @@ import { BrowserModule } from '@angular/platform-browser';
   declarations: [
     TymTableComponent,
     ResizeDirective,
-    OrdermkDirective
+    OrdermkDirective,
+    DragDropDirective
   ],
   imports: [
     CommonModule, BrowserModule, FormsModule
