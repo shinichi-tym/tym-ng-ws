@@ -15,7 +15,8 @@
   --bd-co: #000000;
   --bd-sa: 1px 1px 3px 0 #cccccc inset;
   --bd-pa: .4em;
-  --bd-wd: calc(var(--bd-pa) + var(--bd-pa) + 1.7em);
+  --bd-hi: calc(var(--bd-pa) + var(--bd-pa) + 1.7em);
+  --bd-wd: calc(var(--bd-pa) + var(--bd-pa) + 2.7em);
   --ev-co: #eeeeee;
   --od-co: #ffffff;
   --se-co: #ffeeee;
@@ -35,6 +36,7 @@ table {
       user-select: none;
 
       th {
+        position: -webkit-sticky;
         position: sticky;
         top: 0;
         z-index: 1;
@@ -50,7 +52,8 @@ table {
           z-index: 2;
           left: 0;
           resize: none;
-          width: var(--bd-wd);
+          cursor: pointer;
+          width: var(--bd-hi);
           border-left: 1px solid var(--bo-co);
         }
 
@@ -71,6 +74,7 @@ table {
 
         svg {
           position: absolute;
+          cursor: pointer;
           top: 2px;
           right: 0;
           width: 11px;
@@ -94,10 +98,12 @@ table {
         padding: var(--bd-pa) var(--bd-pa);
 
         &:first-child {
+          position: -webkit-sticky;
           position: sticky;
           left: 0;
           border-left: 1px solid var(--bo-co);
           padding: 0;
+          cursor: pointer;
         }
 
         &:last-child {
@@ -131,7 +137,7 @@ table {
 
   th,
   td {
-    height: var(--bd-wd);
+    height: var(--bd-hi);
     min-width: var(--bd-wd);
     overflow: hidden;
     text-overflow: ellipsis;
@@ -143,5 +149,10 @@ table {
     width: 1.2em;
     height: 1.2em;
     font-size: inherit;
+    cursor: pointer;
+  }
+
+  .clickable {
+    cursor: pointer;
   }
 }

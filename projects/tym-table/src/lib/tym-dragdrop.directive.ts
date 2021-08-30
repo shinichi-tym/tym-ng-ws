@@ -59,10 +59,12 @@ export class DragDropDirective implements OnInit {
   private _setDragElement = (thisElm: HTMLElement): void => {
     const draggable = TYMDRAG_DEF.indexOf(this._dd_def.dragType || 'none') >= 1;
     thisElm.draggable = this._drag_tgt && draggable;
-    if (draggable) {
+    if (thisElm.draggable) {
       thisElm.addEventListener('dragstart', this._dragStart);
       thisElm.addEventListener('dragend', this._dragEnd);
+      thisElm.classList.add('clickable');
     } else {
+      thisElm.classList.remove('clickable');
       thisElm.removeEventListener('dragend', this._dragEnd);
       thisElm.removeEventListener('dragstart', this._dragStart);
     }

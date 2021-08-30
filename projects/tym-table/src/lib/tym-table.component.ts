@@ -222,7 +222,7 @@ export class TymTableComponent {
    * @param row 行データ
    */
   private _doDragStart = (event: DragEvent, num: number, row: any): void => {
-    event.dataTransfer!.dropEffect = this._dd_def.dragType as any;
+    event.dataTransfer!.effectAllowed = this._dd_def.dragType as any;
     event.dataTransfer?.setData('text/plain', num.toString());
     event.dataTransfer?.setData('application/json', JSON.stringify(row));
   }
@@ -288,14 +288,16 @@ export class TymTableComponent {
       this._doDrop = dddef.doDrop;
     }
     /** TYM_DDDEF */
-    this._dd_def.dragType = dddef.dragType || 'none';
-    this._dd_def.dropType = dddef.dropType || 'none';
-    this._dd_def.doDragStart = this._doDragStart;
-    this._dd_def.doDragEnd = this._doDragEnd;
-    this._dd_def.doDragEnter = this._doDragEnter;
-    this._dd_def.doDragOver = this._doDragOver;
-    this._dd_def.doDrop = this._doDrop;
-    this._dd_def._getRow = (row) => this._getRow(this._data, row);
+    this._dd_def = {
+      dragType: dddef.dragType || 'none',
+      dropType: dddef.dropType || 'none',
+      doDragStart: this._doDragStart,
+      doDragEnd: this._doDragEnd,
+      doDragEnter: this._doDragEnter,
+      doDragOver: this._doDragOver,
+      doDrop: this._doDrop,
+      _getRow: (row) => this._getRow(this._data, row)
+    }
   }
 
   //-------------------------------------------------------------------
@@ -540,9 +542,9 @@ export interface TYM_FUNCS {
  * ドラッグアンドドロップの定義
  */
 export interface TYM_DDDEF {
-  /** ドラッグタイプ, 規定値: none */
+  /** ドラッグタイプ(effectAllowed), 規定値: none */
   dragType?: DRAG_TYPE;
-  /** ドラッグタイプ, 規定値: none */
+  /** ドロップ効果(dropEffect), 規定値: none */
   dropType?: DROP_TYPE;
   /** ドラッグ開始時の関数を定義 */
   doDragStart?: (event: DragEvent, num: number, row: any) => void;
@@ -557,10 +559,10 @@ export interface TYM_DDDEF {
   /** @private @access private */
   _getRow?: (num: number) => any;
 }
-export type DRAG_TYPE = 'none' | 'copy' | 'link' | 'move';
-export type DROP_TYPE = 
+export type DRAG_TYPE = 
   'none' | 'copy' | 'copyLink' | 'copyMove' | 'link' | 'linkMove' |
   'move' | 'all' | 'uninitialized';
+export type DROP_TYPE = 'none' | 'copy' | 'link' | 'move';
 
 /**
  * テーブルカラムの定義

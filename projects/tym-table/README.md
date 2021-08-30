@@ -167,9 +167,9 @@ doOrder(order: string, num: number) {
 ``` typescript
 /* ドラッグアンドドロップの定義 */
 export interface TYM_DDDEF {
-  /** ドラッグタイプ, 規定値: none */
+  /** ドラッグタイプ(effectAllowed), 規定値: none */
   dragType?: DRAG_TYPE;
-  /** ドラッグタイプ, 規定値: none */
+  /** ドロップ効果(dropEffect), 規定値: none */
   dropType?: DROP_TYPE;
   /** ドラッグ開始時の関数を定義 */
   doDragStart?: (event: DragEvent, num: number, row: any) => void;

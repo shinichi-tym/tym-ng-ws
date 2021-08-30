@@ -53,10 +53,10 @@ export class AppComponent {
     },
     doDragEnd: (event: DragEvent, num: number, row: any) => {
       (event.currentTarget as HTMLElement).style.opacity = '';
+      this.drag_row_num = -1;
       console.log(event,num);
     },
     doDragEnter: (event: DragEvent, num: number, row: any) => {
-      console.log(event,num);
       if (this.drag_row_num == num) {
         event.dataTransfer!.dropEffect = 'none';
         return;
@@ -70,7 +70,8 @@ export class AppComponent {
         event.dataTransfer!.dropEffect = 'none';
         return;
       }
-      event.dataTransfer!.dropEffect = 'copy';
+      event.preventDefault();
+      event.dataTransfer!.dropEffect = this.dddef.dropType as any;
     },
     doDrop: (event: DragEvent, num: number, row: any) => {
       console.log(event,num);

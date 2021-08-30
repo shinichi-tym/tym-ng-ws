@@ -11,6 +11,7 @@ import { TymTableComponent } from './tym-table.component';
 import { ResizeDirective } from './tym-resize.directive';
 import { OrdermkDirective } from './tym-ordermk.directive';
 import { DragDropDirective } from './tym-dragdrop.directive';
+import { CellmkDirective } from "./tym-cellmk.directive";
 import { CommonModule } from '@angular/common';  
 import { BrowserModule } from '@angular/platform-browser';
 
@@ -19,7 +20,8 @@ import { BrowserModule } from '@angular/platform-browser';
     TymTableComponent,
     ResizeDirective,
     OrdermkDirective,
-    DragDropDirective
+    DragDropDirective,
+    CellmkDirective
   ],
   imports: [
     CommonModule, BrowserModule, FormsModule
