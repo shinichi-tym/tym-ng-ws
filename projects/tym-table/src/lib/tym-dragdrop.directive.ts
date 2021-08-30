@@ -6,7 +6,7 @@
  */
 
 import { Directive, Input, ElementRef, OnInit } from '@angular/core';
-import { TYM_DDDEF } from "./tym-table.component";
+import { TYM_DDDEF } from "./tym-table.interface";
 
 @Directive({
   selector: '[dragdrop]'
