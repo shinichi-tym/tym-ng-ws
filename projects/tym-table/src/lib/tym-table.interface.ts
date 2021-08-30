@@ -47,9 +47,9 @@ export interface TYM_FUNCS {
  */
 export interface TYM_DDDEF {
   /** ドラッグタイプ(effectAllowed), 規定値: none */
-  dragType?: DRAG_TYPE;
+  dragType?: TYM_DRAG_TYPE;
   /** ドロップ効果(dropEffect), 規定値: none */
-  dropType?: DROP_TYPE;
+  dropType?: TYM_DROP_TYPE;
   /** ドラッグ開始時の関数を定義 */
   doDragStart?: (event: DragEvent, num: number, row: any) => void;
   /** ドラッグ終了時の関数を定義, 規定値: { } */
@@ -63,10 +63,10 @@ export interface TYM_DDDEF {
   /** @private @access private */
   _getRow?: (num: number) => any;
 }
-export type DRAG_TYPE = 
+export type TYM_DRAG_TYPE = 
   'none' | 'copy' | 'copyLink' | 'copyMove' | 'link' | 'linkMove' |
   'move' | 'all' | 'uninitialized';
-export type DROP_TYPE = 'none' | 'copy' | 'link' | 'move';
+export type TYM_DROP_TYPE = 'none' | 'copy' | 'link' | 'move';
 
 /**
  * テーブルカラムの定義

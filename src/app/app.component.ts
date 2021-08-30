@@ -41,7 +41,7 @@ export class AppComponent {
     doDragStart: (event: DragEvent, num: number, row: any) => {
       this.drag_row_num = num;
       (event.currentTarget as HTMLElement).style.opacity = '.2';
-      event.dataTransfer!.dropEffect = this.dddef.dragType as any;
+      event.dataTransfer!.effectAllowed = this.dddef.dragType as any;
       const nums = this.tymTable!.getSelections();
       let rows = [];
       for (let index = 0; index < nums.length; index++) {

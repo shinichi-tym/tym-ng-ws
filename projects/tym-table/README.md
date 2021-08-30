@@ -168,9 +168,9 @@ doOrder(order: string, num: number) {
 /* ドラッグアンドドロップの定義 */
 export interface TYM_DDDEF {
   /** ドラッグタイプ(effectAllowed), 規定値: none */
-  dragType?: DRAG_TYPE;
+  dragType?: TYM_DRAG_TYPE;
   /** ドロップ効果(dropEffect), 規定値: none */
-  dropType?: DROP_TYPE;
+  dropType?: TYM_DROP_TYPE;
   /** ドラッグ開始時の関数を定義 */
   doDragStart?: (event: DragEvent, num: number, row: any) => void;
   /** ドラッグ終了時の関数を定義, 規定値: { } */

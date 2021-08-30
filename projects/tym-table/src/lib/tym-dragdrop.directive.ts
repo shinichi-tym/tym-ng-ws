@@ -132,7 +132,7 @@ export class DragDropDirective implements OnInit {
     this._dd_def.doDrop!(event, this._drag_row, rowdata);
   }
 }
-const TYMDRAG_DEF: string[] = ['none', 'copy', 'link', 'move'];
-const TYMDROP_DEF: string[] = [
+const TYMDRAG_DEF: string[] = [
   'none', 'copy', 'copyLink', 'copyMove', 'link', 'linkMove', 'move', 'all', 'uninitialized'
 ];
+const TYMDROP_DEF: string[] = ['none', 'copy', 'link', 'move'];
