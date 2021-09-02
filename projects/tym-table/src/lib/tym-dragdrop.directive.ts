@@ -5,7 +5,7 @@
  * see https://opensource.org/licenses/MIT
  */
 
-import { Directive, Input, ElementRef, OnInit } from '@angular/core';
+import { Directive, Input, Output, ElementRef, OnInit ,EventEmitter} from '@angular/core';
 import { TYM_DDDEF } from "./tym-table.interface";
 
 @Directive({
@@ -16,9 +16,10 @@ export class DragDropDirective implements OnInit {
   /**
    * 操作の種類 {none,copy,link,move}
    */
-  private _drag_tgt: boolean = false;
-  private _drag_row: number = -1;
+  private _drag_elm: boolean = false;
+  private _this_row: number = -1;
   private _dd_def: TYM_DDDEF = {};
+  private static _drag_row: number = -1;
 
   /**
    * 親コンポーネントから受け取るデータ
@@ -27,10 +28,15 @@ export class DragDropDirective implements OnInit {
    * @memberof DragDropDirective
    */
   @Input() set dragdrop(dragdrop: any[]) {
-    [this._drag_tgt, this._drag_row, this._dd_def] = dragdrop;
+    [this._drag_elm, this._this_row, this._dd_def] = dragdrop;
     this._setDragElement(this.elementRef.nativeElement);
     this._setDropElement(this.elementRef.nativeElement);
   }
+
+  /**
+   * 親コンポーネントへ再描画を依頼する
+   */
+  @Output() ddDrowEvent = new EventEmitter();
 
   /**
    * コンストラクタ
@@ -58,7 +64,7 @@ export class DragDropDirective implements OnInit {
    */
   private _setDragElement = (thisElm: HTMLElement): void => {
     const draggable = TYMDRAG_DEF.indexOf(this._dd_def.dragType || 'none') >= 1;
-    thisElm.draggable = this._drag_tgt && draggable;
+    thisElm.draggable = this._drag_elm && draggable;
     if (thisElm.draggable) {
       thisElm.addEventListener('dragstart', this._dragStart);
       thisElm.addEventListener('dragend', this._dragEnd);
@@ -92,8 +98,10 @@ export class DragDropDirective implements OnInit {
    * @param event DragEvent
    */
   private _dragStart = (event: DragEvent): void => {
-    const rowdata = this._dd_def._getRow!(this._drag_row);
-    this._dd_def.doDragStart!(event, this._drag_row, rowdata);
+    DragDropDirective._drag_row = this._this_row;
+    this.elementRef.nativeElement.clasthis._this_rowsList.add('moving');
+    const rowdata = this._dd_def._getRow!(this._this_row);
+    this._dd_def.doDragStart!(event, this._this_row, rowdata);
   }
 
   /**
@@ -101,8 +109,10 @@ export class DragDropDirective implements OnInit {
    * @param event DragEvent
    */
   private _dragEnd = (event: DragEvent): void => {
-    const rowdata = this._dd_def._getRow!(this._drag_row);
-    this._dd_def.doDragEnd!(event, this._drag_row, rowdata);
+    const rowdata = this._dd_def._getRow!(this._this_row);
+    this._dd_def.doDragEnd!(event, this._this_row, rowdata);
+    this.ddDrowEvent.emit();
+    DragDropDirective._drag_row = -1;
   }
 
   /**
@@ -110,8 +120,25 @@ export class DragDropDirective implements OnInit {
    * @param event DragEvent
    */
   private _dragEnter = (event: DragEvent): void => {
-    const rowdata = this._dd_def._getRow!(this._drag_row);
-    this._dd_def.doDragEnter!(event, this._drag_row, rowdata);
+    const [rowIndex, trElm] = this._getRowIndex(event.target as HTMLElement);
+    if (DragDropDirective._drag_row == rowIndex) return;
+    if (trElm.classList.contains('moving')) return;
+
+    let elm: HTMLElement;
+    for (elm = event.target as HTMLElement; elm.tagName != "TBODY"; elm = elm.parentElement!) { }
+    const tbodyElm = elm as HTMLTableSectionElement;
+
+    let newChild: number, refChild: number;
+    if (rowIndex > DragDropDirective._drag_row) {
+      [newChild, refChild] = [rowIndex, DragDropDirective._drag_row]
+    } else {
+      [newChild, refChild] = [DragDropDirective._drag_row, rowIndex]
+    }
+    tbodyElm.insertBefore(tbodyElm.childNodes[newChild], tbodyElm.childNodes[refChild]);
+    DragDropDirective._drag_row = rowIndex;
+
+    const rowdata = this._dd_def._getRow!(rowIndex);
+    this._dd_def.doDragEnter!(event, rowIndex, rowdata);
   }
 
   /**
@@ -119,8 +146,9 @@ export class DragDropDirective implements OnInit {
    * @param event DragEvent
    */
   private _dragOver = (event: DragEvent): void => {
-    const rowdata = this._dd_def._getRow!(this._drag_row);
-    this._dd_def.doDragOver!(event, this._drag_row, rowdata);
+    const [rowIndex, trElm] = this._getRowIndex(event.target as HTMLElement);
+    const rowdata = this._dd_def._getRow!(rowIndex);
+    this._dd_def.doDragOver!(event, rowIndex, rowdata);
   }
 
   /**
@@ -128,8 +156,20 @@ export class DragDropDirective implements OnInit {
    * @param event DragEvent
    */
   private _drop = (event: DragEvent): void => {
-    const rowdata = this._dd_def._getRow!(this._drag_row);
-    this._dd_def.doDrop!(event, this._drag_row, rowdata);
+    const [rowIndex, trElm] = this._getRowIndex(event.target as HTMLElement);
+    const rowdata = this._dd_def._getRow!(rowIndex);
+    this._dd_def.doDrop!(event, rowIndex, rowdata);
+  }
+
+  /**
+   * native rowIndexを取得する
+   * @param elm 
+   * @returns [rowIndex, tr element]
+   */
+  private _getRowIndex(elm: HTMLElement): [number, HTMLTableRowElement] {
+    for (; elm.tagName != "TR"; elm = elm.parentElement!) { }
+    let trElm = elm as HTMLTableRowElement;
+    return [trElm.rowIndex - 1, trElm];
   }
 }
 const TYMDRAG_DEF: string[] = [

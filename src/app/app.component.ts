@@ -17,8 +17,8 @@ export class AppComponent {
   @ViewChild("tymTable")
   private tymTable?: TymTableComponent;
   /////////////////////////////////////////////////////////////////////
-  dragType: string = 'none';
-  dropType: string = 'none';
+  dragType: string = 'copy';
+  dropType: string = 'copy';
   @Output() custom: TYM_CUSTOM = {}
   @Output() afnc: TYM_FUNCS = {
     doOrder: (order: string, col: number) => {
@@ -31,8 +31,12 @@ export class AppComponent {
       console.log(this.data);
       this.tymTable?.drowData(); // データ更新だけのため直接再描画を実行
     },
+    doContext: (event: MouseEvent, num: number, row: any) => {
+      alert("context menu\r\n" + num + " : " + JSON.stringify(this.data[num]));
+      return false;
+    },
     doClick: (event: MouseEvent, num: number, row: any) => {
-      alert(num);
+      alert("click\r\n" + num + " : " + JSON.stringify(this.data[num]));
     }
   }
   @Output() dddef: TYM_DDDEF = {
@@ -54,7 +58,6 @@ export class AppComponent {
     doDragEnd: (event: DragEvent, num: number, row: any) => {
       (event.currentTarget as HTMLElement).style.opacity = '';
       this.drag_row_num = -1;
-      console.log(event,num);
     },
     doDragEnter: (event: DragEvent, num: number, row: any) => {
       if (this.drag_row_num == num) {
@@ -74,7 +77,10 @@ export class AppComponent {
       event.dataTransfer!.dropEffect = this.dddef.dropType as any;
     },
     doDrop: (event: DragEvent, num: number, row: any) => {
-      console.log(event,num);
+      const data: string[][] = this.data;
+      [data[this.drag_row_num], data[num]] = [data[num], data[this.drag_row_num]];
+      this.tymTable?.drowData();
+      this.tymTable?.setSelections([num]);
     }
   }
   @Output() cols: TYM_COL[] | any = [
@@ -366,6 +372,12 @@ export class AppComponent {
     }
     this.dddef = dddef;
     console.log("setCustom");
+  }
+
+  anyTest() {
+    this.tymTable?.setSelections([1,2]);
+    // this.tymTable?.setSelections([0,1,2,3]);
+    // this.tymTable?.clearSelection();
   }
 
   dragover(ev: any) {
