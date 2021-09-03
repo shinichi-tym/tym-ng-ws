@@ -99,7 +99,7 @@ export class DragDropDirective implements OnInit {
    */
   private _dragStart = (event: DragEvent): void => {
     DragDropDirective._drag_row = this._this_row;
-    this.elementRef.nativeElement.clasthis._this_rowsList.add('moving');
+    (this.elementRef.nativeElement as HTMLElement).classList.add('moving');
     const rowdata = this._dd_def._getRow!(this._this_row);
     this._dd_def.doDragStart!(event, this._this_row, rowdata);
   }
