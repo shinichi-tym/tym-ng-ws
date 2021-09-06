@@ -1,0 +1,73 @@
+/*!
+ * tym-directive.js
+ * Copyright (c) 2021 shinichi tayama
+ * Released under the MIT license.
+ * see https://opensource.org/licenses/MIT
+ */
+
+tym-table-view>table {
+  border-collapse: separate;
+  border-spacing: 0;
+  table-layout: fixed;
+
+  thead {
+    tr {
+      user-select: none;
+
+      th {
+        position: -webkit-sticky;
+        position: sticky;
+        top: 0;
+        z-index: 1;
+        resize: horizontal;
+        border-style: solid;
+        border-width: 1px 1px 1px 0;
+        background-color: #888;
+
+        &:first-child {
+          border-left: 1px solid;
+        }
+
+        &:last-child {
+          width: auto;
+          resize: none;
+          opacity: .5;
+        }
+      }
+    }
+  }
+
+  tbody {
+    tr {
+      opacity: .8;
+
+      >* {
+        border-style: solid;
+        border-width: 0 1px 1px 0;
+
+        &:first-child {
+          border-left: 1px solid;
+        }
+
+        &:last-child {
+          width: auto;
+          resize: none;
+          opacity: .5;
+        }
+      }
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+  }
+
+  th,
+  td {
+    min-width: 4em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    box-sizing: border-box;
+  }
+}

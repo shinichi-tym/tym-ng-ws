@@ -1,4 +1,4 @@
-import { Component, Output, ViewChild } from '@angular/core';
+import { Component, Output, ViewEncapsulation, ViewChild } from '@angular/core';
 import {
   TYM_CUSTOM, TYM_FUNCS, TYM_DDDEF, TYM_COL, TYM_ORDER, TymTableComponent
 } from "tym-table";
@@ -6,7 +6,8 @@ import {
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  styleUrls: ['./app.component.scss'],
+  encapsulation: ViewEncapsulation.None
 })
 export class AppComponent {
   title = 'tym-ng-ws';
@@ -90,10 +91,10 @@ export class AppComponent {
     { title: "注意事項", width: "10em", align: "left", sortable: false }
   ];
   @Output() data: any[][] | any = [
-    [980, 627, 614460, ],
-    [1980, 1219, 2413620, ],
+    [980, 627, 614460, ""],
+    [1980, 1219, 2413620, ""],
     [2980, 116, 345680, "※備考参照:ここには注意事項が表示されます"],
-    [3980, 616, 2451680, ]
+    [3980, 616, 2451680, ""]
   ];
   @Output() odrmk: TYM_ORDER | any = {
     order: 'asc',

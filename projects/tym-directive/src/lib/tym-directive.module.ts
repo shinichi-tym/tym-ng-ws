@@ -9,16 +9,18 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';  
 import { BrowserModule } from '@angular/platform-browser';
 import { TymResizeDirective } from './tym-resize.directive';
+import { TymTableViewComponent } from './tym-table-view.component';
 
 @NgModule({
   declarations: [
-    TymResizeDirective
+    TymResizeDirective,
+    TymTableViewComponent
   ],
   imports: [
     CommonModule, BrowserModule
   ],
   exports: [
-    TymResizeDirective
+    TymResizeDirective, TymTableViewComponent
   ]
 })
 export class TymDirectiveModule { }

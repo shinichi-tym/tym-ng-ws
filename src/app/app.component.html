@@ -21,6 +21,20 @@
     overflow: auto;
     position: relative;
   }
+  #tymTable3 {
+    width: 650px;
+    height: 150px;
+    left: 50px;
+    overflow: auto;
+    position: relative;
+  }
+  #tymTable4 {
+    width: 650px;
+    height: 120px;
+    left: 50px;
+    overflow: auto;
+    position: relative;
+  }
   #target {
     width: 600px;
     height: 100px;
@@ -35,21 +49,21 @@
     display: inline-block;
     position: relative;
   }
-  table {
+  #cust {
     font-family: Consolas, monaco, monospace;
     font-size: 12px;
   }
-  table td:nth-child(1) {
+  #cust td:nth-child(1) {
     text-align: right;
   }
-  table td:nth-child(3) {
+  #cust td:nth-child(3) {
     text-align: right;
   }
-  table td input {
+  #cust td input {
     width: 20em;
     font-family: Consolas, monaco, monospace;
   }
-  table td:nth-child(4) input {
+  #cust td:nth-child(4) input {
     width: 15em;
   }
 </style>
@@ -70,7 +84,7 @@
 <input type="button" value="custom" (click)="setCustom()">
 </form>
 
-<form><table>
+<form><table id="cust">
   <tr>
     <td>fontFamily</td><td><input type="text" value="Consolas, monaco, monospace"></td>
     <td>bodyColor</td><td><input type="text" value="#000000"></td>
@@ -134,6 +148,7 @@
 
 <h1>tym-directive</h1>
 <hr><!-- ---------------------------------------------------------- -->
+<h2>tym-resize</h2>
 <div class="tymResize">
   <textarea placeholder="textarea" cols="10" rows="3" tym-resize></textarea>
 </div>
@@ -144,6 +159,43 @@
 &nbsp;
 <div class="tymResize">
   <textarea placeholder="textarea" cols="10" rows="3" tymResize="both" [tymResizeCallback]="resizeCallback"></textarea>
+</div>
+
+<br>
+
+<hr><!-- ---------------------------------------------------------- -->
+<h2>tym-table-view</h2>
+<style>
+#tymTable4 tym-table-view>table {
+  font-family: Consolas, monaco, monospace;
+  font-size: 14px;
+}
+#tymTable4 tym-table-view>table tbody tr:nth-child(even)>* {
+  background-color: #eee;
+}
+#tymTable4 tym-table-view>table tbody tr:nth-child(odd)>* {
+  background-color: #fff;
+}
+#tymTable4 tym-table-view>table thead tr th {
+  width: 6em;
+}
+#tymTable4 tym-table-view>table tbody tr td {
+  text-align: right;
+}
+</style>
+<h3>none style</h3>
+<div id="tymTable3">
+  <tym-table-view
+    [cols]="data[0]"
+    [data]="data"
+  ></tym-table-view>
+</div>
+<h3>add style</h3>
+<div id="tymTable4">
+  <tym-table-view
+    [cols]="data[0]"
+    [data]="data"
+  ></tym-table-view>
 </div>
 <br>
 <br>

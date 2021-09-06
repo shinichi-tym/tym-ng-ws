@@ -1,0 +1,4 @@
+<table>
+<thead><tr><th *ngFor="let col of _cols" [title]="col">{{col}}</th><th></th></tr></thead>
+<tbody><tr *ngFor="let row of _data"><td *ngFor="let col of row" [title]="col">{{col}}</td><td></td></tr></tbody>
+</table>
