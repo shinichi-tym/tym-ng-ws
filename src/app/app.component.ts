@@ -104,7 +104,7 @@ export class AppComponent {
   @Output() custom1: TYM_CUSTOM = {
     fontSize: "10px",
     headerBoxShadow: "0px 1px 1px rgba(255,255,255,0.3) inset",
-    headerBackground: "linear-gradient(#829ebc,#225588)"
+    headerBackground: "#829ebc linear-gradient(#829ebc,#225588)"
   }
   @Output() cols1: TYM_COL[] = [
     { title: "単価", width: "10em", align: "right", sortable: true },
@@ -294,7 +294,7 @@ export class AppComponent {
       : {
         fontSize: "14px", bodyBoxPadding: ".2rem",
         headerBoxShadow: "0px 1px 1px rgba(255,255,255,0.3) inset",
-        headerBackground: "linear-gradient(#829ebc,#225588)"
+        headerBackground: "#829ebc linear-gradient(#829ebc,#225588)"
       }
   }
   setCustom(): void {

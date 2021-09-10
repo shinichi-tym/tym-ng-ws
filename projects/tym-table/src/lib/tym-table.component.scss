@@ -60,7 +60,7 @@ table {
         &:last-child {
           width: auto;
           resize: none;
-          opacity: .5;
+          background-blend-mode: screen;
         }
 
         div {

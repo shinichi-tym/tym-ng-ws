@@ -35,6 +35,18 @@
     overflow: auto;
     position: relative;
   }
+  #tymSplitter {
+    width: 650px;
+    height: 130px;
+    left: 50px;
+    overflow: hidden;
+    position: relative;
+    box-sizing: border-box;
+    border: solid 1px #ccc;
+    border-radius: 4px;
+    padding: 4px;
+    resize: both;
+  }
   #target {
     width: 600px;
     height: 100px;
@@ -162,24 +174,34 @@
 </div>
 
 <br>
+<br>
 
 <hr><!-- ---------------------------------------------------------- -->
 <h2>tym-table-view</h2>
 <style>
-#tymTable4 tym-table-view>table {
+#tymTable4 tym-table-view>table,
+#tymTable5 tym-table-view>table {
   font-family: Consolas, monaco, monospace;
   font-size: 14px;
 }
-#tymTable4 tym-table-view>table tbody tr:nth-child(even)>* {
+#tymTable4 tym-table-view>table tbody tr:nth-child(even)>*,
+#tymTable5 tym-table-view>table tbody tr:nth-child(even)>* {
   background-color: #eee;
 }
-#tymTable4 tym-table-view>table tbody tr:nth-child(odd)>* {
+#tymTable4 tym-table-view>table tbody tr:nth-child(odd)>*,
+#tymTable5 tym-table-view>table tbody tr:nth-child(odd)>* {
   background-color: #fff;
 }
-#tymTable4 tym-table-view>table thead tr th {
+#tymTable4 tym-table-view>table thead tr th,
+#tymTable5 tym-table-view>table thead tr th {
   width: 6em;
 }
-#tymTable4 tym-table-view>table tbody tr td {
+#tymTable4 tym-table-view>table thead tr th:last-child,
+#tymTable5 tym-table-view>table thead tr th:last-child {
+  width: unset;
+}
+#tymTable4 tym-table-view>table tbody tr td,
+#tymTable5 tym-table-view>table tbody tr td {
   text-align: right;
 }
 </style>
@@ -198,6 +220,23 @@
   ></tym-table-view>
 </div>
 <br>
+
+<h1>tym-directive</h1>
+<hr><!-- ---------------------------------------------------------- -->
+<h2>tym-splitter</h2>
+
+<div id="tymSplitter">
+  <div style="width:200px; border:solid 1px #aaa; height:100%; padding:8px;">
+    left
+  </div>
+  <div tym-splitter></div>
+  <div style="border:solid 1px #aaa; height:100%; padding:8px;">
+    <div id="tymTable5" style="height:100%; overflow: auto;">
+      <tym-table-view [cols]="data[0]" [data]="data"></tym-table-view>
+    </div>
+  </div>
+</div>
+
 <br>
 <br>
 <br>
