@@ -14,6 +14,7 @@ export class TymTableViewComponent implements AfterViewInit {
   @Input() public set data(data: string[][]) {
     this._data = data;
   }
+  @Input() lastsp: boolean = true;
 
   static cols: string[] = [];
   static data: string[][] = [];
@@ -46,7 +47,11 @@ export class TymTableViewComponent implements AfterViewInit {
           : realStyle.width;
       }
     });
-    (tableElm.firstChild!.firstChild!.lastChild as HTMLElement).style.width = '';
-    tableElm.style.width = '100%';
+    if (this.lastsp) {
+      ((tableElm.firstChild!.firstChild! as HTMLElement).lastElementChild as HTMLElement).style.width = '';
+      tableElm.style.width = '100%';
+    } else {
+      tableElm.style.width = 'fit-content';
+    }
   }
 }

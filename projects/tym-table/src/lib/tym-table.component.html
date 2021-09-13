@@ -1,23 +1,23 @@
-<table>
+<table [style.width]="lastsp?'100%':'fit-content'">
   <thead>
     <tr>
-      <th (click)="onAllCheckChange(!_allCheck)"><input type="checkbox"
+      <th *ngIf="chkbox" class="chkbox" (click)="onAllCheckChange(!_allCheck)"><input type="checkbox"
         [(ngModel)]="_allCheck" (ngModelChange)="onAllCheckChange($event)"></th>
       <th *ngFor="let head of _head_data; index as c" [title]="head.title" 
         [class]="_head_odrs[c]" [style.width]="head.width"><div resize><span (click)="onOrder(c)" 
         [class]="this._head_data[c].sortable?'clickable':''">{{head.title}}</span></div><svg
         *ngIf="head.sortable" (click)="onOrder(c)" [ordermk]="_head_odrs[c]"></svg></th>
-      <th></th>
+      <th *ngIf="lastsp" class="lastsp"></th>
     </tr>
   </thead>
   <tbody>
     <tr *ngFor="let row of _rows_data; index as r" [ngClass]="{'selected':_rows_chkd[r]}"
       (contextmenu)="onContext($event,r)" [dragdrop]="[_rows_chkd[r],r,_dd_def]" (ddDrowEvent)="_ddDrow()">
-      <th (click)="onCheckChange(!(_rows_chkd[r]),r)"><input type="checkbox"
+      <th *ngIf="chkbox" class="chkbox" (click)="onCheckChange(!(_rows_chkd[r]),r)"><input type="checkbox"
         [(ngModel)]="_rows_chkd[r]" (ngModelChange)="onCheckChange($event,r)"></th>
       <td *ngFor="let col of row; index as c" (click)="onClick($event,r,c)"
         [cellmk]="[col,_head_data[c]]"></td>
-      <td></td>
+      <td *ngIf="lastsp" class="lastsp"></td>
     </tr>
   </tbody>
 </table>

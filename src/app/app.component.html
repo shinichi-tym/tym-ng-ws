@@ -6,6 +6,9 @@
   form>input {
     font-size: 12px;
   }
+  form>input[type="text"] {
+    width: 6em;
+  }
   #tymTable {
     width: 650px;
     height: 250px;
@@ -130,6 +133,8 @@
 <form>
   drag type:<input id="dragType" name="dragType" type="text" [(ngModel)]="dragType">, 
   drop type:<input id="dropType" name="dropType" type="text" [(ngModel)]="dropType">,
+  <input type="button" value="chkbox" (click)="chkbox1()">
+  <input type="button" value="lastsp" (click)="lastsp1()">
   <input type="button" value="any test" (click)="anyTest()">
 </form>
 
@@ -143,6 +148,8 @@
     [data]="data"
     [odrmk]="odrmk"
     [dddef]="dddef"
+    [chkbox]="chkbox"
+    [lastsp]="lastsp"
   ></ngx-tym-table>
 </div>
 
@@ -205,18 +212,26 @@
   text-align: right;
 }
 </style>
-<h3>none style</h3>
+<h3>no style</h3>
 <div id="tymTable3">
   <tym-table-view
-    [cols]="data[0]"
-    [data]="data"
+    [cols]="cols3"
+    [data]="data3"
   ></tym-table-view>
 </div>
 <h3>add style</h3>
 <div id="tymTable4">
   <tym-table-view
-    [cols]="data[0]"
-    [data]="data"
+    [cols]="cols3"
+    [data]="data3"
+  ></tym-table-view>
+</div>
+<h3>no last space</h3>
+<div id="tymTable4">
+  <tym-table-view
+    [cols]="cols3"
+    [data]="data3"
+    [lastsp]="false"
   ></tym-table-view>
 </div>
 <br>
@@ -232,7 +247,7 @@
   <div tym-splitter></div>
   <div style="border:solid 1px #aaa; height:100%; padding:8px;">
     <div id="tymTable5" style="height:100%; overflow: auto;">
-      <tym-table-view [cols]="data[0]" [data]="data"></tym-table-view>
+      <tym-table-view [cols]="cols3" [data]="data3"></tym-table-view>
     </div>
   </div>
 </div>

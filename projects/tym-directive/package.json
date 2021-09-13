@@ -1,8 +1,8 @@
 {
   "name": "tym-directive",
-  "version": "0.7.2",
+  "version": "0.7.3",
   "description": "'tym' directive collections.",
-  "keywords": ["angular", "directive", "resize"],
+  "keywords": ["angular", "directive", "resize", "table", "grid", "splitter"],
   "repository": {
     "type": "git",
     "url": "https://github.com/shinichi-tym/tym-ng-ws.git"

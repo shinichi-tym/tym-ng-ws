@@ -31,7 +31,6 @@ export class TymSplitterDirective implements OnInit {
    * @memberof TymResizeDirective
    */
   public ngOnInit() {
-    console.log('TymSplitterDirective');
     const thisElm: HTMLElement = this.elementRef.nativeElement;
     const parentElm: HTMLElement = thisElm.parentElement as any;
     const parentStyle = window.getComputedStyle(parentElm);
@@ -46,15 +45,15 @@ export class TymSplitterDirective implements OnInit {
 
     const splitterSize = 8;
     const splitterRadius = 2;
-    const splitterBGColor = this.tymSplitter[0];
-    const splitterBDColor = this.tymSplitter[1];
+    const splitterBackground = this.tymSplitter[0];
+    const splitterBorderColor = this.tymSplitter[1];
 
     thisElm.style.width = `${splitterSize + 2}px`;
     thisElm.style.height = height;
     thisElm.style.position = 'absolute';
     thisElm.style.left = `calc(${prevStyle.width} + ${parentStyle.paddingLeft})`;
-    thisElm.style.backgroundColor = splitterBGColor;
-    thisElm.style.border = `solid 1px ${splitterBDColor}`;
+    thisElm.style.background = splitterBackground;
+    thisElm.style.border = `solid 1px ${splitterBorderColor}`;
     thisElm.style.borderRadius = `${splitterRadius}px`;
     thisElm.style.margin = '0 1px';
 

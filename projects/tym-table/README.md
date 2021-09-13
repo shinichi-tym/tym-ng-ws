@@ -8,6 +8,9 @@
 
 ![表示サンプル](/tym-table-demo.png)
 
+
+![表示サンプル](/tym-table-demo2.png)
+
 ## インストール `(Installation)`
 <br>
 
@@ -89,6 +92,8 @@ let data = [
 
 - [基本機能](#Basicfunction) (Basic function)
 - [カラーカスタマイズ](#ColorCustomization) (Color Customization)
+- [チェックボックス非表示](#NoCheckBox) (No CheckBox)
+- [スペースカラム非表示](#NoLastSpace) (No Last Space)
 - [カラムサイズ変更](#ColumnSizeChange) (ColumnSize Change)
 - [行選択](#RowSelection) (Row Selection)
 - [ソートイベント](#SortEvent) (Sort Event)
@@ -117,9 +122,11 @@ let data = [
     [data]="data"
     [odrmk]="odrmk"
     [dddef]="dddef"
+    [chkbox]="chkbox"
+    [latstp]="latstp"
 ><ngx-tym-table>
 ```
-- [TYM_CUSTOM]
+- `custom: TYM_CUSTOM`
 ``` typescript
 /* テーブルカスタマイズの定義 */
 export interface TYM_CUSTOM {
@@ -139,7 +146,7 @@ export interface TYM_CUSTOM {
   bodyHovrColor?: string;     // --ho-co: #eeffee;
 }
 ```
-- [TYM_FUNCS]
+- `afnc: TYM_FUNCS`
 ``` typescript
 /* 関数の定義 */
 export interface TYM_FUNCS {
@@ -163,7 +170,36 @@ doOrder(order: string, num: number) {
     order: (order == 'asc') ? 'desc' : 'asc' } as TYM_ORDER;
 }
 ```
-- [TYM_DDDEF]
+- `cols: TYM_COL[]`
+``` typescript
+/* テーブルカラムの定義 */
+export interface TYM_COL {
+  /** タイトル */
+  title: string;
+  /** 桁幅, 例:8em, 規定値:なし */
+  width?: string;
+  /** 揃え, 例:right, 規定値:なし(left) */
+  align?: string;
+  /** ソート対象, 規定値:なし(false) */
+  sortable?: boolean;
+  /** クリックアクション対象, 規定値:なし(false) */
+  clickable?: boolean;
+}
+```
+
+- `data: string[][] | any`
+
+- `odrmk: TYM_ORDER`
+``` typescript
+/* テーブルカラムの定義 */
+export interface TYM_ORDER {
+  /** ソートマーク位置 */
+  column: number;
+  /** ソート方向, {'asc','desc',empty}, 規定値:empty */
+  order: string;
+}
+```
+- `dddef: TYM_DDDEF`
 ``` typescript
 /* ドラッグアンドドロップの定義 */
 export interface TYM_DDDEF {
@@ -191,38 +227,16 @@ doDragStart(event: DragEvent, num: number, row: any) {
   event.dataTransfer?.setData('application/json', JSON.stringify(row));
 }
 doDragEnter(event: DragEvent, num: number, row: any) {
-  event.dataTransfer!.dropEffect = 'none';
+  event.dataTransfer!.dropEffect = (this.dddef.dropType || 'none') as any;
 }
 doDragOver(event: DragEvent, num: number, row: any) {
-  event.dataTransfer!.dropEffect = 'none';
+  event.dataTransfer!.dropEffect = (this.dddef.dropType || 'none') as any;
 }
 ```
-- [TYM_COL]
-``` typescript
-/* テーブルカラムの定義 */
-export interface TYM_COL {
-  /** タイトル */
-  title: string;
-  /** 桁幅, 例:8em, 規定値:なし */
-  width?: string;
-  /** 揃え, 例:right, 規定値:なし(left) */
-  align?: string;
-  /** ソート対象, 規定値:なし(false) */
-  sortable?: boolean;
-  /** クリックアクション対象, 規定値:なし(false) */
-  clickable?: boolean;
-}
-```
-- [TYM_ORDER]
-``` typescript
-/* テーブルカラムの定義 */
-export interface TYM_ORDER {
-  /** ソートマーク位置 */
-  column: number;
-  /** ソート方向, {'asc','desc',empty}, 規定値:empty */
-  order: string;
-}
-```
+
+- `chkbox: boolean`
+
+- `lastsp: boolean`
 
 <br/>
 
@@ -241,6 +255,38 @@ custom = {
   bodySeldColor: "#ffeeee",
   bodyHovrColor: "#eeffee"
 }; 
+```
+
+<br/>
+
+---
+
+<br/>
+
+<a id="NoCheckBox"></a>
+
+### チェックボックス非表示 `(No CheckBox)`
+
+- `chkbox` に `false` を設定するとチェックボックスカラムを非表示にできます。
+
+``` typescript
+chkbox = false;
+```
+
+<br/>
+
+---
+
+<br/>
+
+<a id="NoLastSpace"></a>
+
+### スペースカラム非表示 `(No Last Space)`
+
+- `lastsp` に `false` を設定するとスペースカラムを非表示にできます。
+
+``` typescript
+lastsp = false;
 ```
 
 <br/>
@@ -269,6 +315,8 @@ custom = {
 - 行頭のチェックボックスによって選択行になります。
 - 選択された行は，`custom.bodySeldColor` の色に変化します。
 - 選択された行は，ドラッグアンドドロップの対象になります。
+- `chkbox` が `false` の場合は行選択できません。  
+ただし，`setSelection` 関数では行選択できます。
 
 <br/>
 
@@ -295,15 +343,7 @@ custom = {
 ### ドラッグアンドドロップ `(Drag And Drop)`
 
 - `dddef` を適切に設定し行選択すると，行をドロップできます。
-- ドロップデータは `data` に設定された行のデータです。
-- タイプは `application/json` で設定します。
-```typescript
-doDrop(event: DragEvent) {
-  const json = event.dataTransfer?.getData("application/json");
-  let obj = JSON.parse(json)
-  ...
-}
-```
+- `dddef` に設定した各関数を利用して必要な処理を実装してください。
 
 <br/>
 
@@ -330,7 +370,7 @@ doDrop(event: DragEvent) {
 
 <br/>
 
-#### getSelections : 選択行を返却する関数
+#### getSelection : 選択行を返却する関数
 
 - 選択された状態になっている行番号(複数)を返却する。
 
@@ -352,7 +392,7 @@ doDrop(event: DragEvent) {
 - [戻値]
   - なし
 
-### setSelections : 指定した行番号(複数)を選択状態にする
+### setSelection : 指定した行番号(複数)を選択状態にする
 
 - [引数]
   - rownums: number[]

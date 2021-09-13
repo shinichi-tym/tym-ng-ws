@@ -25,13 +25,7 @@ tym-table-view>table {
         background-color: #888;
 
         &:first-child {
-          border-left: 1px solid;
-        }
-
-        &:last-child {
-          width: auto;
-          resize: none;
-          opacity: .5;
+          border-left-width: 1px;
         }
       }
     }
@@ -46,13 +40,7 @@ tym-table-view>table {
         border-width: 0 1px 1px 0;
 
         &:first-child {
-          border-left: 1px solid;
-        }
-
-        &:last-child {
-          width: auto;
-          resize: none;
-          opacity: .5;
+          border-left-width: 1px;
         }
       }
 
@@ -69,5 +57,11 @@ tym-table-view>table {
     text-overflow: ellipsis;
     white-space: nowrap;
     box-sizing: border-box;
+  }
+
+  .lastsp {
+    width: auto;
+    resize: none;
+    opacity: .5;
   }
 }

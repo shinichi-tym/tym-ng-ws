@@ -252,7 +252,7 @@ export class TymTableComponent {
    * @param row 行データ
    */
   private _doDragEnter = (event: DragEvent, num: number, row: any): void => {
-    event.dataTransfer!.effectAllowed = 'none';
+    event.dataTransfer!.effectAllowed = this._dd_def.dropType as any;
   }
 
   /**
@@ -262,7 +262,7 @@ export class TymTableComponent {
    * @param row 行データ
    */
   private _doDragOver = (event: DragEvent, num: number, row: any): void => {
-    event.dataTransfer!.effectAllowed = 'none';
+    event.dataTransfer!.effectAllowed = this._dd_def.dropType as any;
   }
 
   /**
@@ -349,6 +349,11 @@ export class TymTableComponent {
 
   //-------------------------------------------------------------------
 
+  @Input() chkbox: boolean = true;
+  @Input() lastsp: boolean = true;
+
+  //-------------------------------------------------------------------
+
   /**
    * コンストラクター
    */
@@ -397,7 +402,7 @@ export class TymTableComponent {
    * @param row 行番号
    */
   onContext(ev: MouseEvent, row: number): boolean {
-    this.setSelections([row]);
+    this.setSelection([row]);
     return this._doContext(ev, row, this._getRow(this._data, row));
   }
 
@@ -444,7 +449,7 @@ export class TymTableComponent {
    * 
    * @returns rownums: number[]
    */
-  getSelections(): number[] {
+  getSelection(): number[] {
     let ret: number[] = [];
     for (let index = 0; index < this._rows_chkd.length; index++) {
       if (this._rows_chkd[index]) {
@@ -468,7 +473,7 @@ export class TymTableComponent {
    * 
    * @param rownums 選択状態に行番号の配列
    */
-  setSelections(rownums: number[]): void {
+  setSelection(rownums: number[]): void {
     rownums.forEach((val) => this._rows_chkd[val] = true);
     if (this._rows_chkd.every(checked => checked == true)) {
       this._allCheck = true;

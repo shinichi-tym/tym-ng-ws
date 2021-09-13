@@ -29,7 +29,6 @@ table {
   border-collapse: separate;
   border-spacing: 0;
   table-layout: fixed;
-  width: 100%;
 
   thead {
     tr {
@@ -49,18 +48,7 @@ table {
         padding: 0;
 
         &:first-child {
-          z-index: 2;
-          left: 0;
-          resize: none;
-          cursor: pointer;
-          width: var(--bd-hi);
-          border-left: 1px solid var(--bo-co);
-        }
-
-        &:last-child {
-          width: auto;
-          resize: none;
-          background-blend-mode: screen;
+          border-left-width: 1px;
         }
 
         div {
@@ -83,6 +71,20 @@ table {
           stroke-linejoin: round;
         }
       }
+
+      th.chkbox {
+        z-index: 2;
+        left: 0;
+        resize: none;
+        cursor: pointer;
+        width: var(--bd-hi);
+      }
+
+      th.lastsp {
+        width: auto;
+        resize: none;
+        background-blend-mode: screen;
+      }
     }
   }
 
@@ -98,19 +100,22 @@ table {
         padding: var(--bd-pa) var(--bd-pa);
 
         &:first-child {
-          position: -webkit-sticky;
-          position: sticky;
-          left: 0;
-          border-left: 1px solid var(--bo-co);
-          padding: 0;
-          cursor: pointer;
+          border-left-width: 1px;
         }
+      }
 
-        &:last-child {
-          width: auto;
-          resize: none;
-          opacity: .5;
-        }
+      th.chkbox {
+        position: -webkit-sticky;
+        position: sticky;
+        left: 0;
+        padding: 0;
+        cursor: pointer;
+      }
+
+      td.lastsp {
+        width: auto;
+        resize: none;
+        opacity: .5;
       }
 
       &:nth-child(even)>* {

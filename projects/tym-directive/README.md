@@ -48,10 +48,13 @@ import { TymDirectiveModule } from "tym-directive";
 - 使い方:
 
 ``` html
-<div tym-resize [tymResizeCallback]="callback">
+<div tymResize="horizontal" [tymResizeCallback]="callback">
   :
 </div>
 ```
+<pre>
+tymResize="{ <u>horizontal</u> | vertical | both }"
+</pre>
 
 - 表示イメージ
 
@@ -88,18 +91,21 @@ import { TymDirectiveModule } from "tym-directive";
 <tym-table-view
   [cols]="cols"
   [data]="data"
+  [lastsp]="lastsp"
 ></tym-table-view>
 ```
 
 - 表示するためのデータを用意します。
 
 ``` typescript
-let cols: string[] = [ "単価", "販売数", "売上" ]
+let cols: string[] = [ "単価", "販売数", "売上", "注意事項" ];
 let data = [
-  [ 980, 627, 614460 ],
-  [ 1980, 1219, 2413620 ],
-  [ 2980, 116, 345680 ]
-]; 
+  [ 980, 627, 614460, "" ],
+  [ 1980, 1219, 2413620, "" ],
+  [ 2980, 116, 345680, "※備考参照:ここには注意事項が表示されます" ],
+  [ 3980, 616, 2451680, "" ]
+];
+let lastsp: boolean = true;
 ``` 
 
 - 必要に応じてスタイルシートを用意します。
@@ -157,6 +163,11 @@ tym-table-view>table tbody tr td {
     </div>
   </div>
 </div>
+```
+
+```
+[tymSplitter]="[<background>,'<border-color>']"
+ex. [tymSplitter]="['#eee', '#aaa']"
 ```
 
 - 表示イメージ

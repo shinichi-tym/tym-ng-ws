@@ -47,7 +47,7 @@ export class AppComponent {
       this.drag_row_num = num;
       (event.currentTarget as HTMLElement).style.opacity = '.2';
       event.dataTransfer!.effectAllowed = this.dddef.dragType as any;
-      const nums = this.tymTable!.getSelections();
+      const nums = this.tymTable!.getSelection();
       let rows = [];
       for (let index = 0; index < nums.length; index++) {
         const element = nums[index];
@@ -81,7 +81,7 @@ export class AppComponent {
       const data: string[][] = this.data;
       [data[this.drag_row_num], data[num]] = [data[num], data[this.drag_row_num]];
       this.tymTable?.drowData();
-      this.tymTable?.setSelections([num]);
+      this.tymTable?.setSelection([num]);
     }
   }
   @Output() cols: TYM_COL[] | any = [
@@ -100,6 +100,8 @@ export class AppComponent {
     order: 'asc',
     column: 0
   };
+  @Output() chkbox: boolean = true;
+  @Output() lastsp: boolean = true;
   /////////////////////////////////////////////////////////////////////
   @Output() custom1: TYM_CUSTOM = {
     fontSize: "10px",
@@ -142,6 +144,15 @@ export class AppComponent {
     order: 'asc',
     column: 0
   };
+  /////////////////////////////////////////////////////////////////////
+  @Output() cols3: string[] = ["単価", "販売数", "売上", "注意事項"];
+  @Output() data3: any[][] | any = [
+    [980, 627, 614460, ""],
+    [1980, 1219, 2413620, ""],
+    [2980, 116, 345680, "※備考参照:ここには注意事項が表示されます"],
+    [3980, 616, 2451680, ""]
+  ];
+  /////////////////////////////////////////////////////////////////////
 
   /** size 0x0 */
   fnc0x0(): void {
@@ -281,7 +292,7 @@ export class AppComponent {
   sample(): void {
     let org = false;
     if (this.custom.headerBackground) {
-      if (this.custom.headerBackground[0] != "#") {
+      if (this.custom.headerBackground.startsWith("#829ebc")) {
         org = true;
       }
     }
@@ -375,9 +386,17 @@ export class AppComponent {
     console.log("setCustom");
   }
 
+  chkbox1() {
+    this.chkbox = !this.chkbox;
+  }
+
+  lastsp1() {
+    this.lastsp = !this.lastsp;
+  }
+  
   anyTest() {
-    this.tymTable?.setSelections([1,2]);
-    // this.tymTable?.setSelections([0,1,2,3]);
+    this.tymTable?.setSelection([1,2]);
+    // this.tymTable?.setSelection([0,1,2,3]);
     // this.tymTable?.clearSelection();
   }
 
