@@ -18,6 +18,7 @@ npm install tym-directive
 1. [エレメントのリサイズ処理](#TymResize)
 1. [簡易テーブル表示](#TymTableView)
 1. [スプリッター](#TymSplitter)
+1. [簡易イベント通知](#TymComm)
 1. please wait...
 
 <br> 
@@ -167,12 +168,69 @@ tym-table-view>table tbody tr td {
 
 ```
 [tymSplitter]="[<background>,'<border-color>']"
-ex. [tymSplitter]="['#eee', '#aaa']"
+ex. <tym-table-view [tymSplitter]="['#eee', '#aaa']" ...
 ```
 
 - 表示イメージ
 
 ![表示イメージ](/tym-splitter-demo.png)
+
+<br>
+
+---
+
+<br>
+
+<a id="TymComm"></a>
+
+## 簡易イベント通知 `(tym-comm)`
+<br>
+
+イベントIDとイベント関数を登録し，イベントがポストされると，同じイベントIDを持つイベント関数がすべて実行されます。
+
+- 使い方1:
+
+``` typescript
+TymComm.add('id1', (id: string, data: any, elm: any) => console.log('ABC: ' + data));
+TymComm.add('id1', (id: string, data: any, elm: any) => console.log('XYZ: ' + data));
+↓
+TymComm.post('id1', 'POST DATA!');
+↓
+>> ABC: POST DATA!
+>> XYZ: POST DATA!
+```
+
+- 使い方2:
+
+``` typescript
+@Output() TymCommPost = TymComm.post;
+doChange(event: any) {
+  console.log('CustomEvent: ' + (event as CustomEvent).detail);
+}
+```
+
+``` html
+<span (click)="TymCommPost('id2', 'POST DATA!')">CLICK!</span>
+<span tymCommId="id2" (change)="doChange($event)"></span>
+↓(CLICK!)
+>> CustomEvent: POST DATA!
+```
+
+- 使い方3:
+
+``` typescript
+@Output() TymCommPost = TymComm.post;
+@Output() commListener: TYM_COMM_LISTENER = (id: string, data: any, elm: HTMLElement) => {
+  elm.innerText = id + ":" + data;
+}
+```
+
+``` html
+<span (click)="TymCommPost('id3', 'POST DATA!')">CLICK!</span>
+<span tymCommId="id3" [tymCommListener]="commListener"></span>
+↓(CLICK!)
+<span tymCommId="id3" [tymCommListener]="commListener">id2:POST DATA!</span>
+```
 
 <br>
 

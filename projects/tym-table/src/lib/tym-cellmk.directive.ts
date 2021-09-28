@@ -51,8 +51,8 @@ export class CellmkDirective implements OnInit {
       + `<rect x="10" y="0" width="22" height="22" fill="#88f" stroke="blue"/>`
       + `<polyline points="5,6 1,30 23,27" fill="none" stroke="blue" stroke-width="2"/>`;
     const tdElm = this.elementRef.nativeElement as HTMLElement;
-    tdElm.title = this._txt||'';
-    tdElm.style.textAlign = this._col.align || '';
+    tdElm.title = this._txt ?? '';
+    tdElm.style.textAlign = this._col.align ?? '';
     if (this._col.clickable) {
       tdElm.style.cursor = 'pointer';
       tdElm.style.paddingRight = '1em';

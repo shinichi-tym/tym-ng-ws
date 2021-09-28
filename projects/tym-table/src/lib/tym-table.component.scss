@@ -8,19 +8,19 @@
 :host {
   --fo-fa: Consolas, monaco, monospace;
   --fo-sz: 1rem;
-  --bo-co: #888888;
-  --hd-bg: #888888 linear-gradient(#888888, #666666);
-  --hd-co: #ffffff;
-  --hd-sa: 1px 1px 3px 0 #cccccc inset;
-  --bd-co: #000000;
-  --bd-sa: 1px 1px 3px 0 #cccccc inset;
+  --bo-co: #888;
+  --hd-bg: #888 linear-gradient(#888, #666);
+  --hd-co: #fff;
+  --hd-sa: 1px 1px 3px 0 #ccc inset;
+  --bd-co: #000;
+  --bd-sa: 1px 1px 3px 0 #ccc inset;
   --bd-pa: .4em;
   --bd-hi: calc(var(--bd-pa) + var(--bd-pa) + 1.7em);
   --bd-wd: calc(var(--bd-pa) + var(--bd-pa) + 2.7em);
-  --ev-co: #eeeeee;
-  --od-co: #ffffff;
-  --se-co: #ffeeee;
-  --ho-co: #eeffee;
+  --ev-co: #eee;
+  --od-co: #fff;
+  --se-co: #fee;
+  --ho-co: #efe;
 }
 
 table {
@@ -39,7 +39,6 @@ table {
         position: sticky;
         top: 0;
         z-index: 1;
-        resize: none;
         color: var(--hd-co);
         border: solid var(--bo-co);
         border-width: 1px 1px 1px 0;
@@ -75,15 +74,20 @@ table {
       th.chkbox {
         z-index: 2;
         left: 0;
-        resize: none;
         cursor: pointer;
         width: var(--bd-hi);
       }
 
       th.lastsp {
         width: auto;
-        resize: none;
-        background-blend-mode: screen;
+        background: #fff;
+        border: none;
+        div {
+          height: 100%;
+          resize: none;
+          opacity: .5;
+          background: var(--hd-bg);
+        }
       }
     }
   }
@@ -136,6 +140,14 @@ table {
         >* {
           background-color: var(--ho-co);
         }
+      }
+
+      &.dragging {
+        opacity: .2;
+      }
+
+      &.working {
+        height: var(--bd-hi);
       }
     }
   }

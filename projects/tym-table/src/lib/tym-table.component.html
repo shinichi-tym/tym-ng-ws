@@ -7,7 +7,7 @@
         [class]="_head_odrs[c]" [style.width]="head.width"><div resize><span (click)="onOrder(c)" 
         [class]="this._head_data[c].sortable?'clickable':''">{{head.title}}</span></div><svg
         *ngIf="head.sortable" (click)="onOrder(c)" [ordermk]="_head_odrs[c]"></svg></th>
-      <th *ngIf="lastsp" class="lastsp"></th>
+      <th *ngIf="lastsp" class="lastsp"><div></div></th>
     </tr>
   </thead>
   <tbody>

@@ -24,6 +24,14 @@
     overflow: auto;
     position: relative;
   }
+  .tymTablex {
+    overflow: auto;
+    margin: 1em;
+    position: relative;
+  }
+  .tymTablex td {
+    padding: .5em;
+  }
   #tymTable3 {
     width: 650px;
     height: 150px;
@@ -165,6 +173,94 @@
     [custom]="custom2" [cols]="cols2" [data]="data2" [odrmk]="odrmk2"></ngx-tym-table>
 </div>
 
+effectAllowed:[none,copy,move,copyMove], dropEffect:[none,copy,move]
+<table class="tymTablex">
+  <tr>
+    <td>
+      [none,none]
+      <ngx-tym-table
+      [custom]="custom1" [cols]="cols1" [data]="data1" [odrmk]="odrmk1"
+      [dddef]="{dragType:'none',dropType:'none'}"></ngx-tym-table>
+      </td>
+    <td>
+      [none,copy]
+      <ngx-tym-table
+      [custom]="custom1" [cols]="cols1" [data]="data1" [odrmk]="odrmk1"
+      [dddef]="{dragType:'none',dropType:'copy'}"></ngx-tym-table>
+      </td>
+  </tr>
+  <tr>
+    <td>
+      [none,move]
+      <ngx-tym-table
+      [custom]="custom1" [cols]="cols1" [data]="data1" [odrmk]="odrmk1"
+      [dddef]="{dragType:'none',dropType:'move'}"></ngx-tym-table>
+      </td>
+    <td>
+      [copy,none]
+      <ngx-tym-table
+      [custom]="custom1" [cols]="cols1" [data]="data1" [odrmk]="odrmk1"
+      [dddef]="{dragType:'copy',dropType:'none'}"></ngx-tym-table>
+      </td>
+  </tr>
+  <tr>
+    <td>
+      [copy,copy]
+      <ngx-tym-table
+      [custom]="custom1" [cols]="cols1" [data]="data1" [odrmk]="odrmk1"
+      [dddef]="{dragType:'copy',dropType:'copy'}"></ngx-tym-table>
+      </td>
+    <td>
+      [copy,move]
+      <ngx-tym-table
+      [custom]="custom1" [cols]="cols1" [data]="data1" [odrmk]="odrmk1"
+      [dddef]="{dragType:'copy',dropType:'move'}"></ngx-tym-table>
+      </td>
+  </tr>
+  <tr>
+    <td>
+      [move,none]
+      <ngx-tym-table
+      [custom]="custom1" [cols]="cols1" [data]="data1" [odrmk]="odrmk1"
+      [dddef]="{dragType:'move',dropType:'none'}"></ngx-tym-table>
+      </td>
+    <td>
+      [move,copy]
+      <ngx-tym-table
+      [custom]="custom1" [cols]="cols1" [data]="data1" [odrmk]="odrmk1"
+      [dddef]="{dragType:'move',dropType:'copy'}"></ngx-tym-table>
+      </td>
+  </tr>
+  <tr>
+    <td>
+      [move,move]
+      <ngx-tym-table
+      [custom]="custom1" [cols]="cols1" [data]="data1" [odrmk]="odrmk1"
+      [dddef]="{dragType:'move',dropType:'move'}"></ngx-tym-table>
+      </td>
+    <td>
+      [copyMove,none]
+      <ngx-tym-table
+      [custom]="custom1" [cols]="cols1" [data]="data1" [odrmk]="odrmk1"
+      [dddef]="{dragType:'copyMove',dropType:'none'}"></ngx-tym-table>
+      </td>
+  </tr>
+  <tr>
+    <td>
+      [copyMove,copy]
+      <ngx-tym-table
+      [custom]="custom1" [cols]="cols1" [data]="data1" [odrmk]="odrmk1"
+      [dddef]="{dragType:'copyMove',dropType:'copy'}"></ngx-tym-table>
+      </td>
+    <td>
+      [copyMove,move]
+      <ngx-tym-table
+      [custom]="custom1" [cols]="cols1" [data]="data1" [odrmk]="odrmk1"
+      [dddef]="{dragType:'copyMove',dropType:'move'}"></ngx-tym-table>
+      </td>
+  </tr>
+</table>
+
 <h1>tym-directive</h1>
 <hr><!-- ---------------------------------------------------------- -->
 <h2>tym-resize</h2>
@@ -236,7 +332,6 @@
 </div>
 <br>
 
-<h1>tym-directive</h1>
 <hr><!-- ---------------------------------------------------------- -->
 <h2>tym-splitter</h2>
 
@@ -252,7 +347,36 @@
   </div>
 </div>
 
+<hr><!-- ---------------------------------------------------------- -->
+<h2>tym-comm</h2>
+<input type="text" #postid><input type="text" #postdata>
+<span (click)="TymCommPost(postid.value,postdata.value)">CLICK!</span>
+<style>table>tr>*{width:5em;border:solid 1px #ccc;}</style>
+<table>
+  <tr>
+    <td #td1 tymCommId="1">1:{{td1.dataset.data}}</td>
+    <td tymCommId="2" [tymCommListener]="commListener">2:</td>
+    <td tymCommId="3" [tymCommListener]="commListener">3:</td>
+    <td tymCommId="4" [tymCommListener]="commListener">4:</td>
+  </tr>
+  <tr>
+    <td tymCommId="2" [tymCommListener]="commListener">2:</td>
+    <td tymCommId="3" [tymCommListener]="commListener">3:</td>
+    <td tymCommId="4" [tymCommListener]="commListener">4:</td>
+    <td tymCommId="5" [tymCommListener]="commListener">5:</td>
+  </tr>
+  <tr>
+    <td tymCommId="4" [tymCommListener]="commListener">4:</td>
+    <td tymCommId="3" [tymCommListener]="commListener">3:</td>
+    <td tymCommId="2" [tymCommListener]="commListener">2:</td>
+    <td tymCommId="1" [tymCommListener]="commListener">1:</td>
+  </tr>
+</table>
 <br>
+<span (click)="TymCommPost('id2', 'POST DATA!')">CLICK!</span>
+<span tymCommId="id2" (change)="doChange($event)"></span>
+<span (click)="TymCommPost('id3', 'POST DATA!')">CLICK!</span>
+<span tymCommId="id3" [tymCommListener]="commListener"></span>
 <br>
 <br>
 <br>

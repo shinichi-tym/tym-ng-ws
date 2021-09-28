@@ -2,6 +2,7 @@ import { Component, Output, ViewEncapsulation, ViewChild } from '@angular/core';
 import {
   TYM_CUSTOM, TYM_FUNCS, TYM_DDDEF, TYM_COL, TYM_ORDER, TymTableComponent
 } from "tym-table";
+import { TymComm, TYM_COMM_LISTENER } from 'tym-directive';
 
 @Component({
   selector: 'app-root',
@@ -18,8 +19,8 @@ export class AppComponent {
   @ViewChild("tymTable")
   private tymTable?: TymTableComponent;
   /////////////////////////////////////////////////////////////////////
-  dragType: string = 'copy';
-  dropType: string = 'copy';
+  dragType: string = 'move';
+  dropType: string = 'move';
   @Output() custom: TYM_CUSTOM = {}
   @Output() afnc: TYM_FUNCS = {
     doOrder: (order: string, col: number) => {
@@ -29,7 +30,6 @@ export class AppComponent {
       }
       let f = (order == 'asc') ? -1 : 1;
       this.data = (this.data as number[][]).sort(function (a, b) { return (a[col] - b[col]) * f; });
-      console.log(this.data);
       this.tymTable?.drowData(); // データ更新だけのため直接再描画を実行
     },
     doContext: (event: MouseEvent, num: number, row: any) => {
@@ -43,43 +43,9 @@ export class AppComponent {
   @Output() dddef: TYM_DDDEF = {
     dragType: this.dragType as any,
     dropType: this.dropType as any,
-    doDragStart: (event: DragEvent, num: number, row: any) => {
-      this.drag_row_num = num;
-      (event.currentTarget as HTMLElement).style.opacity = '.2';
-      event.dataTransfer!.effectAllowed = this.dddef.dragType as any;
-      const nums = this.tymTable!.getSelection();
-      let rows = [];
-      for (let index = 0; index < nums.length; index++) {
-        const element = nums[index];
-        rows.push(this.data[element]);
-      }
-      event.dataTransfer?.setData('text/plain', nums.toString());
-      event.dataTransfer?.setData('application/json', JSON.stringify(rows));
-    },
-    doDragEnd: (event: DragEvent, num: number, row: any) => {
-      (event.currentTarget as HTMLElement).style.opacity = '';
-      this.drag_row_num = -1;
-    },
-    doDragEnter: (event: DragEvent, num: number, row: any) => {
-      if (this.drag_row_num == num) {
-        event.dataTransfer!.dropEffect = 'none';
-        return;
-      }
-      event.preventDefault();
-      event.dataTransfer!.dropEffect = this.dddef.dropType as any;
-    },
-    doDragOver: (event: DragEvent, num: number, row: any) => {
-      event.preventDefault();
-      if (this.drag_row_num == num) {
-        event.dataTransfer!.dropEffect = 'none';
-        return;
-      }
-      event.preventDefault();
-      event.dataTransfer!.dropEffect = this.dddef.dropType as any;
-    },
     doDrop: (event: DragEvent, num: number, row: any) => {
-      const data: string[][] = this.data;
-      [data[this.drag_row_num], data[num]] = [data[num], data[this.drag_row_num]];
+      const fromnum = Number(event.dataTransfer?.getData('text/plain'));
+      this.data.splice(num, 0, this.data.splice(fromnum, 1)[0]);
       this.tymTable?.drowData();
       this.tymTable?.setSelection([num]);
     }
@@ -153,7 +119,20 @@ export class AppComponent {
     [3980, 616, 2451680, ""]
   ];
   /////////////////////////////////////////////////////////////////////
-
+  @Output() commListener: TYM_COMM_LISTENER = (id: string, data: any, elm: HTMLElement) => {
+    elm.innerText = id + ":" + data;
+  }
+  @Output() TymCommPost = TymComm.post;
+  @Output() Log = console.log;
+  /////////////////////////////////////////////////////////////////////
+  constructor() {
+    TymComm.add('id1', (id: string, data: any, elm: any) => console.log('ABC: ' + data));
+    TymComm.add('id1', (id: string, data: any, elm: any) => console.log('XYZ: ' + data));
+  }
+  doChange(event: any) {
+    console.log('CustomEvent: ' + (event as CustomEvent).detail);
+  }
+  /////////////////////////////////////////////////////////////////////
   /** size 0x0 */
   fnc0x0(): void {
     this.cols = [];
@@ -396,6 +375,7 @@ export class AppComponent {
   
   anyTest() {
     this.tymTable?.setSelection([1,2]);
+    TymComm.post('id1', 'POST DATA!');
     // this.tymTable?.setSelection([0,1,2,3]);
     // this.tymTable?.clearSelection();
   }

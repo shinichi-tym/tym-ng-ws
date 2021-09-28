@@ -49,7 +49,7 @@ export class TymResizeDirective implements OnInit {
    */
   public ngOnInit() {
     const thisElm: HTMLElement = this.elementRef.nativeElement;
-    const parentElm: HTMLElement = thisElm.parentElement || thisElm;
+    const parentElm: HTMLElement = thisElm.parentElement ?? thisElm;
     thisElm.style.resize = this.tymResize;
     const observer = new MutationObserver(() => this.tymResizeCallback(thisElm, parentElm));
     observer.observe(thisElm, { attributes: true, attributeFilter: ["style"] });

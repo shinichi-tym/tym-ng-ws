@@ -62,6 +62,8 @@ export interface TYM_DDDEF {
   doDrop?: (event: DragEvent, num: number, row: any) => void;
   /** @private @access private */
   _getRow?: (num: number) => any;
+  /** @private @access private */
+  _getComData?: () => any;
 }
 export type TYM_DRAG_TYPE = 
   'none' | 'copy' | 'copyLink' | 'copyMove' | 'link' | 'linkMove' |

@@ -59,19 +59,19 @@ export class TymTableComponent {
    */
   @Input() set custom(custom: TYM_CUSTOM) {
     if (custom) {
-      this.fontFamily = custom.fontFamily || '';
-      this.fontSize = custom.fontSize || '';
-      this.borderColor = custom.borderColor || '';
-      this.headerBackground = custom.headerBackground || '';
-      this.headerColor = custom.headerColor || '';
-      this.headerBoxShadow = custom.headerBoxShadow || '';
-      this.bodyColor = custom.bodyColor || '';
-      this.bodyBoxShadow = custom.bodyBoxShadow || '';
-      this.bodyBoxPadding = custom.bodyBoxPadding || '';
-      this.bodyEvenColor = custom.bodyEvenColor || '';
-      this.bodyOddColor = custom.bodyOddColor || '';
-      this.bodySeldColor = custom.bodySeldColor || '';
-      this.bodyHovrColor = custom.bodyHovrColor || '';
+      this.fontFamily = custom.fontFamily ?? '';
+      this.fontSize = custom.fontSize ?? '';
+      this.borderColor = custom.borderColor ?? '';
+      this.headerBackground = custom.headerBackground ?? '';
+      this.headerColor = custom.headerColor ?? '';
+      this.headerBoxShadow = custom.headerBoxShadow ?? '';
+      this.bodyColor = custom.bodyColor ?? '';
+      this.bodyBoxShadow = custom.bodyBoxShadow ?? '';
+      this.bodyBoxPadding = custom.bodyBoxPadding ?? '';
+      this.bodyEvenColor = custom.bodyEvenColor ?? '';
+      this.bodyOddColor = custom.bodyOddColor ?? '';
+      this.bodySeldColor = custom.bodySeldColor ?? '';
+      this.bodyHovrColor = custom.bodyHovrColor ?? '';
     }
   }
 
@@ -231,9 +231,9 @@ export class TymTableComponent {
    * @param row 行データ
    */
   private _doDragStart = (event: DragEvent, num: number, row: any): void => {
-    event.dataTransfer!.effectAllowed = this._dd_def.dragType as any;
     event.dataTransfer?.setData('text/plain', num.toString());
     event.dataTransfer?.setData('application/json', JSON.stringify(row));
+    event.dataTransfer!.effectAllowed = this._dd_def.dragType as any;
   }
 
   /**
@@ -246,14 +246,31 @@ export class TymTableComponent {
   }
 
   /**
+   * ドロップターゲットに入った時 および ドロップターゲット上にある時に実行する
+   * @param event ドラッグイベント
+   * @param num 行番号
+   * @param row 行データ
+   */
+  private _doDragEnterOrOver = (event: DragEvent, num: number, row: any): void => {
+    event.preventDefault();
+    if (this._dd_def.dropType != event.dataTransfer?.effectAllowed) {
+      if (event.dataTransfer?.effectAllowed == 'copyMove') {
+        event.dataTransfer!.dropEffect = this._dd_def.dropType as any;
+      } else {
+        event.dataTransfer!.dropEffect = 'none';
+      }
+    } else {
+      event.dataTransfer!.dropEffect = this._dd_def.dropType as any;
+    }
+  }
+
+  /**
    * ドロップターゲットに入った時に実行する
    * @param event ドラッグイベント
    * @param num 行番号
    * @param row 行データ
    */
-  private _doDragEnter = (event: DragEvent, num: number, row: any): void => {
-    event.dataTransfer!.effectAllowed = this._dd_def.dropType as any;
-  }
+  private _doDragEnter = this._doDragEnterOrOver;
 
   /**
    * ドロップターゲットの上にある時に実行する
@@ -261,9 +278,7 @@ export class TymTableComponent {
    * @param num 行番号
    * @param row 行データ
    */
-  private _doDragOver = (event: DragEvent, num: number, row: any): void => {
-    event.dataTransfer!.effectAllowed = this._dd_def.dropType as any;
-  }
+  private _doDragOver = this._doDragEnterOrOver;
 
   /**
    * ドロップターゲットにドロップされた時に実行する
@@ -273,6 +288,11 @@ export class TymTableComponent {
    */
   private _doDrop = (event: DragEvent, num: number, row: any): void => {
   }
+
+  /**
+   * DragDropDirectiveクラス用共有データ
+   */
+  private _dd_com_data = {}
 
   /**
    * 親コンポーネントから受け取るデータ
@@ -298,14 +318,15 @@ export class TymTableComponent {
     }
     /** TYM_DDDEF */
     this._dd_def = {
-      dragType: dddef.dragType || 'none',
-      dropType: dddef.dropType || 'none',
+      dragType: dddef.dragType ?? 'none',
+      dropType: dddef.dropType ?? 'none',
       doDragStart: this._doDragStart,
       doDragEnd: this._doDragEnd,
       doDragEnter: this._doDragEnter,
       doDragOver: this._doDragOver,
       doDrop: this._doDrop,
-      _getRow: (row) => this._getRow(this._data, row)
+      _getRow: (row) => this._getRow(this._data, row),
+      _getComData: () => this._dd_com_data
     }
   }
 

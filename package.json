@@ -1,11 +1,14 @@
 {
   "name": "tym-ng-ws",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
+    "ws": "ng serve                --watch --configuration development",
+    "w1": "ng build tym-table      --watch --configuration development",
+    "w2": "ng build tym-directive  --watch --configuration development",
     "test": "ng test"
   },
   "private": true,

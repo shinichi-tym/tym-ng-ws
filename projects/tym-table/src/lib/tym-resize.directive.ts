@@ -30,7 +30,7 @@ export class ResizeDirective implements OnInit {
    */
   public ngOnInit() {
     const thisElm: HTMLElement = this.elementRef.nativeElement;
-    const parentElm: HTMLElement = thisElm.parentElement || thisElm;
+    const parentElm: HTMLElement = thisElm.parentElement ?? thisElm;
     const observer = new MutationObserver(() => {
       parentElm.style.width = thisElm.style.width;
     });

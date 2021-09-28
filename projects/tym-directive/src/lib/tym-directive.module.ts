@@ -6,23 +6,29 @@
  */
 
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';  
+import { CommonModule } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
+import { TymCommDirective } from './tym-comm.directive';
 import { TymResizeDirective } from './tym-resize.directive';
 import { TymTableViewComponent } from './tym-table-view.component';
 import { TymSplitterDirective } from './tym-splitter.directive';
 
 @NgModule({
   declarations: [
+    TymCommDirective,
     TymResizeDirective,
     TymTableViewComponent,
     TymSplitterDirective
   ],
   imports: [
-    CommonModule, BrowserModule
+    CommonModule,
+    BrowserModule
   ],
   exports: [
-    TymResizeDirective, TymTableViewComponent, TymSplitterDirective
+    TymCommDirective,
+    TymResizeDirective,
+    TymTableViewComponent,
+    TymSplitterDirective
   ]
 })
 export class TymDirectiveModule { }

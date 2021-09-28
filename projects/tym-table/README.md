@@ -219,19 +219,29 @@ export interface TYM_DDDEF {
   doDrop?: (event: DragEvent, num: number, row: any) => void;
   /** @private @access private */
   _getRow?: (num: number) => any;
+  /** @private @access private */
+  _getComData?: () => any;
 }
 /* 規定値 */
 doDragStart(event: DragEvent, num: number, row: any) {
-  event.dataTransfer!.dropEffect = (this.dddef.dragType || 'none') as any;
   event.dataTransfer?.setData('text/plain', num.toString());
   event.dataTransfer?.setData('application/json', JSON.stringify(row));
+  event.dataTransfer!.dropEffect = (this.dddef.dragType ?? 'none') as any;
 }
-doDragEnter(event: DragEvent, num: number, row: any) {
-  event.dataTransfer!.dropEffect = (this.dddef.dropType || 'none') as any;
+dragEnterOrOver(event: DragEvent, num: number, row: any) {
+  event.preventDefault();
+  if (this._dd_def.dropType != event.dataTransfer?.effectAllowed) {
+    if (event.dataTransfer?.effectAllowed == 'copyMove') {
+      event.dataTransfer!.dropEffect = this._dd_def.dropType as any;
+    } else {
+      event.dataTransfer!.dropEffect = 'none';
+    }
+  } else {
+    event.dataTransfer!.dropEffect = this._dd_def.dropType as any;
+  }
 }
-doDragOver(event: DragEvent, num: number, row: any) {
-  event.dataTransfer!.dropEffect = (this.dddef.dropType || 'none') as any;
-}
+doDragEnter = dragEnterOrOver;
+doDragOver = dragEnterOrOver;
 ```
 
 - `chkbox: boolean`
@@ -344,6 +354,7 @@ lastsp = false;
 
 - `dddef` を適切に設定し行選択すると，行をドロップできます。
 - `dddef` に設定した各関数を利用して必要な処理を実装してください。
+- `dddef` の `dragType,dragType` は，`'none','copy','move','copyMove'` だけをサポートします。
 
 <br/>
 

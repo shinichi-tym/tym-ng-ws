@@ -17,6 +17,7 @@ export class TymSplitterDirective implements OnInit {
    * コンストラクタ
    *
    * @param {ElementRef} elementRef このディレクティブがセットされたDOMへの参照
+   * @param {Renderer2} render DOMを操作用
    * @memberof TymSplitterDirective
    */
   constructor(
@@ -76,6 +77,7 @@ export class TymSplitterDirective implements OnInit {
     nextElm.style.marginLeft = `calc(${prevStyle.width} + ${splitterSize + 4}px`;
     nextElm.style.left = '0';
     nextElm.style.right = '0';
+    nextElm.style.position = 'relative';
 
     const childObserver = new MutationObserver(() => {
       const psw = `calc(${childStyle.width} - ${splitterSize}px)`;
