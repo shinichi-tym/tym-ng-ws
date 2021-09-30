@@ -1,97 +1,7 @@
-<style>
-  form {
-    font-family: Consolas, monaco, monospace;
-    font-size: 12px;
-  }
-  form>input {
-    font-size: 12px;
-  }
-  form>input[type="text"] {
-    width: 6em;
-  }
-  #tymTable {
-    width: 650px;
-    height: 250px;
-    left: 50px;
-    overflow: auto;
-    position: relative;
-    resize: both;
-  }
-  #tymTable2 {
-    width: 650px;
-    height: 250px;
-    left: 50px;
-    overflow: auto;
-    position: relative;
-  }
-  .tymTablex {
-    overflow: auto;
-    margin: 1em;
-    position: relative;
-  }
-  .tymTablex td {
-    padding: .5em;
-  }
-  #tymTable3 {
-    width: 650px;
-    height: 150px;
-    left: 50px;
-    overflow: auto;
-    position: relative;
-  }
-  #tymTable4 {
-    width: 650px;
-    height: 120px;
-    left: 50px;
-    overflow: auto;
-    position: relative;
-  }
-  #tymSplitter {
-    width: 650px;
-    height: 130px;
-    left: 50px;
-    overflow: hidden;
-    position: relative;
-    box-sizing: border-box;
-    border: solid 1px #ccc;
-    border-radius: 4px;
-    padding: 4px;
-    resize: both;
-  }
-  #target {
-    width: 600px;
-    height: 100px;
-    overflow: auto;
-    position: relative;
-    resize: both;
-    left:50px;
-    border: solid 1px #888;
-  }
-  .tymResize {
-    left: 50px;
-    display: inline-block;
-    position: relative;
-  }
-  #cust {
-    font-family: Consolas, monaco, monospace;
-    font-size: 12px;
-  }
-  #cust td:nth-child(1) {
-    text-align: right;
-  }
-  #cust td:nth-child(3) {
-    text-align: right;
-  }
-  #cust td input {
-    width: 20em;
-    font-family: Consolas, monaco, monospace;
-  }
-  #cust td:nth-child(4) input {
-    width: 15em;
-  }
-</style>
 <h1>tym-table</h1>
+
 <hr><!-- ---------------------------------------------------------- -->
+
 <form>
 <input type="button" value="size 0x0" (click)="fnc0x0()">
 <input type="button" value="size 1x1" (click)="fnc1x1()">
@@ -262,8 +172,10 @@ effectAllowed:[none,copy,move,copyMove], dropEffect:[none,copy,move]
 </table>
 
 <h1>tym-directive</h1>
+
 <hr><!-- ---------------------------------------------------------- -->
 <h2>tym-resize</h2>
+
 <div class="tymResize">
   <textarea placeholder="textarea" cols="10" rows="3" tym-resize></textarea>
 </div>
@@ -281,33 +193,7 @@ effectAllowed:[none,copy,move,copyMove], dropEffect:[none,copy,move]
 
 <hr><!-- ---------------------------------------------------------- -->
 <h2>tym-table-view</h2>
-<style>
-#tymTable4 tym-table-view>table,
-#tymTable5 tym-table-view>table {
-  font-family: Consolas, monaco, monospace;
-  font-size: 14px;
-}
-#tymTable4 tym-table-view>table tbody tr:nth-child(even)>*,
-#tymTable5 tym-table-view>table tbody tr:nth-child(even)>* {
-  background-color: #eee;
-}
-#tymTable4 tym-table-view>table tbody tr:nth-child(odd)>*,
-#tymTable5 tym-table-view>table tbody tr:nth-child(odd)>* {
-  background-color: #fff;
-}
-#tymTable4 tym-table-view>table thead tr th,
-#tymTable5 tym-table-view>table thead tr th {
-  width: 6em;
-}
-#tymTable4 tym-table-view>table thead tr th:last-child,
-#tymTable5 tym-table-view>table thead tr th:last-child {
-  width: unset;
-}
-#tymTable4 tym-table-view>table tbody tr td,
-#tymTable5 tym-table-view>table tbody tr td {
-  text-align: right;
-}
-</style>
+
 <h3>no style</h3>
 <div id="tymTable3">
   <tym-table-view
@@ -316,17 +202,25 @@ effectAllowed:[none,copy,move,copyMove], dropEffect:[none,copy,move]
   ></tym-table-view>
 </div>
 <h3>add style</h3>
-<div id="tymTable4">
+<div class="tymTable4">
   <tym-table-view
     [cols]="cols3"
     [data]="data3"
   ></tym-table-view>
 </div>
 <h3>no last space</h3>
-<div id="tymTable4">
+<div class="tymTable4">
   <tym-table-view
     [cols]="cols3"
     [data]="data3"
+    [lastsp]="false"
+  ></tym-table-view>
+</div>
+<h3>no data</h3>
+<div>
+  <tym-table-view
+    [cols]="cols4"
+    [data]="data4"
     [lastsp]="false"
   ></tym-table-view>
 </div>
@@ -341,7 +235,7 @@ effectAllowed:[none,copy,move,copyMove], dropEffect:[none,copy,move]
   </div>
   <div tym-splitter></div>
   <div style="border:solid 1px #aaa; height:100%; padding:8px;">
-    <div id="tymTable5" style="height:100%; overflow: auto;">
+    <div class="tymTable5" style="height:100%; overflow: auto;">
       <tym-table-view [cols]="cols3" [data]="data3"></tym-table-view>
     </div>
   </div>
@@ -349,12 +243,13 @@ effectAllowed:[none,copy,move,copyMove], dropEffect:[none,copy,move]
 
 <hr><!-- ---------------------------------------------------------- -->
 <h2>tym-comm</h2>
+
 <input type="text" #postid><input type="text" #postdata>
 <span (click)="TymCommPost(postid.value,postdata.value)">CLICK!</span>
-<style>table>tr>*{width:5em;border:solid 1px #ccc;}</style>
-<table>
+
+<table id="tymComm">
   <tr>
-    <td #td1 tymCommId="1">1:{{td1.dataset.data}}</td>
+    <td tymCommId="1" [tymCommListener]="commListener">1:</td>
     <td tymCommId="2" [tymCommListener]="commListener">2:</td>
     <td tymCommId="3" [tymCommListener]="commListener">3:</td>
     <td tymCommId="4" [tymCommListener]="commListener">4:</td>
@@ -369,14 +264,15 @@ effectAllowed:[none,copy,move,copyMove], dropEffect:[none,copy,move]
     <td tymCommId="4" [tymCommListener]="commListener">4:</td>
     <td tymCommId="3" [tymCommListener]="commListener">3:</td>
     <td tymCommId="2" [tymCommListener]="commListener">2:</td>
-    <td tymCommId="1" [tymCommListener]="commListener">1:</td>
+    <td [tymCommListener]="commListener">(no-id)</td>
   </tr>
 </table>
 <br>
-<span (click)="TymCommPost('id2', 'POST DATA!')">CLICK!</span>
-<span tymCommId="id2" (change)="doChange($event)"></span>
-<span (click)="TymCommPost('id3', 'POST DATA!')">CLICK!</span>
+<span (click)="TymCommPost('id2', 'POST DATA!')">CLICK=>output console</span>
+<span tymCommId="id2" (change)="doChange($event)"></span><br>
+<span (click)="TymCommPost('id3', 'POST DATA!')">CLICK=></span>
 <span tymCommId="id3" [tymCommListener]="commListener"></span>
+
 <br>
 <br>
 <br>

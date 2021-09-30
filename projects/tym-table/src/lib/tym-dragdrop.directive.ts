@@ -103,7 +103,6 @@ export class DragDropDirective implements OnInit {
       this._dd_com.wk_tr_elm.addEventListener('dragover', this._dragOver);
       this._dd_com.wk_tr_elm.addEventListener('drop', this._drop);
       this._dd_com.wk_tr_destory = () => {
-        console.log('wk_tr_destory',this._dd_com.wk_tr_elm)
         const _wk_elm = this._dd_com.wk_tr_elm;
         _wk_elm?.parentElement?.removeChild(_wk_elm);
         this.ddDrowEvent.emit();

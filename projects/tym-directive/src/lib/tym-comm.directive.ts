@@ -5,68 +5,79 @@
  * see https://opensource.org/licenses/MIT
  */
 
-import { Directive, ElementRef, Input } from '@angular/core';
+import { Directive, ElementRef, Input, OnInit } from '@angular/core';
+import { Injectable } from '@angular/core';
 
 @Directive({
   selector: '[tymCommId],[tymCommListener]'
 })
-export class TymCommDirective {
+export class TymCommDirective implements OnInit {
 
-  private _id: string = '';
+  @Input() tymCommId: string = '';
 
-  @Input() set tymCommId(id: string) {
-    this._id = id;
-    TymComm.listener.add(
-      { id: id, elm: this.elementRef.nativeElement });
-  }
+  @Input() tymCommListener: TYM_COMM_LISTENER | undefined = undefined;
 
-  @Input() set tymCommListener(listener: TYM_COMM_LISTENER) {
-    let exist = false;
-    TymComm.listener.forEach((v) => {
-      if (v.elm === this.elementRef.nativeElement) {
-        exist = true;
-        v.lsn = listener;
-      }
-    });
-    if (!exist) {
-      TymComm.listener.add(
-        { id: this._id, lsn: listener, elm: this.elementRef.nativeElement });
-    }
-  }
+  constructor(private elementRef: ElementRef) { }
 
-  constructor(
-    private elementRef: ElementRef
-  ) {
+  ngOnInit() {
+    TymComm.addListenerSet(
+      { id: this.tymCommId, lsn: this.tymCommListener, elm: this.elementRef.nativeElement });
   }
 }
 
+@Injectable({
+  providedIn: 'root',
+})
 export class TymComm {
 
-  static listener: Set<{ id: string, lsn?: Function, elm?: HTMLElement }> = new Set();
+  private static _listener_set: Set<TYM_COMM_LISTENER_SET> = new Set();
 
-  static post(id: string, data: any) {
-    TymComm.listener.forEach((v) => {
+  public static post(id: string, data: any) {
+    TymComm._listener_set.forEach((v) => {
       if (id == v.id) {
         if (v.elm) {
-          v.elm.dispatchEvent(new CustomEvent('change', { detail: data }));
+          try {
+            v.elm.dispatchEvent(new CustomEvent('change', { detail: data }));
+          } catch (error) {
+            v.elm = undefined;
+          }
         }
         if (v.lsn) {
           setTimeout(function (_id: string, _data: any, _elm: HTMLElement) {
-            v.lsn!(_id, _data, _elm)
+            try {
+              v.lsn!(_id, _data, _elm)
+            } catch (error) {
+              v.lsn = undefined;
+            }
           }, 0, v.id, data, v.elm);
         }
       }
+      if (!v.elm && !v.lsn) {
+        TymComm._listener_set.delete(v);
+      }
     })
   }
+  public post = TymComm.post;
 
-  static add(id: string, lsn: Function) {
-    TymComm.listener.add({ id: id, lsn: lsn });
+  public static add(id: string, lsn: Function) {
+    TymComm._listener_set.add({ id: id, lsn: lsn });
+  }
+  public add = TymComm.add;
+
+  public static addListenerSet(listener: TYM_COMM_LISTENER_SET) {
+    TymComm._listener_set.add(listener);
   }
 
-  static addListener(listener: { id: string, lsn?: Function, elm?: HTMLElement }) {
-    TymComm.listener.add(listener);
+  public static delElmLisrnerSet(id: string, lsn: Function) {
+    TymComm._listener_set.forEach((v) => {
+      if (v.id == id && v.lsn == lsn) {
+        TymComm._listener_set.delete(v);
+      }
+    });
   }
+  public delElmLisrnerSet = TymComm.delElmLisrnerSet;
 
 }
 
 export type TYM_COMM_LISTENER = (id: string, data: any, elm: HTMLElement) => void;
+export type TYM_COMM_LISTENER_SET = { id: string, lsn?: Function, elm?: HTMLElement }

@@ -8,19 +8,11 @@ import { Component, ViewEncapsulation, AfterViewInit, Input, ElementRef } from '
 })
 export class TymTableViewComponent implements AfterViewInit {
 
-  @Input() public set cols(cols: string[]) {
-    this._cols = cols;
-  }
-  @Input() public set data(data: string[][]) {
-    this._data = data;
-  }
+  @Input() cols: string[] = [];
+
+  @Input() data: string[][] = [];
+
   @Input() lastsp: boolean = true;
-
-  static cols: string[] = [];
-  static data: string[][] = [];
-
-  _cols: string[] = [];
-  _data: string[][] = [];
 
   /**
    * コンストラクタ
@@ -28,19 +20,15 @@ export class TymTableViewComponent implements AfterViewInit {
    * @param {ElementRef} elementRef このディレクティブがセットされたDOMへの参照
    * @memberof TymResizeDirective
    */
-  constructor(
-    private elementRef: ElementRef
-  ) {
-    this._cols = TymTableViewComponent.cols;
-    this._data = TymTableViewComponent.data;
-  }
+  constructor(private elementRef: ElementRef) { }
 
   ngAfterViewInit(): void {
     const thisElm: HTMLElement = this.elementRef.nativeElement;
     const tableElm: HTMLTableElement = thisElm.firstElementChild as any;
-    tableElm.firstChild!.firstChild!.childNodes.forEach(node => {
+    const tableTr: HTMLTableRowElement = tableElm.firstChild!.firstChild as HTMLTableRowElement;
+    tableTr.childNodes.forEach(node => {
       const elm = node as HTMLElement;
-      if (elm.tagName == 'TH') {
+      if (elm.tagName == 'TH') { // #comment 除去
         const realStyle = window.getComputedStyle(elm);
         elm.style.width = (elm.clientWidth > 200)
           ? '200px'
@@ -48,7 +36,7 @@ export class TymTableViewComponent implements AfterViewInit {
       }
     });
     if (this.lastsp) {
-      ((tableElm.firstChild!.firstChild! as HTMLElement).lastElementChild as HTMLElement).style.width = '';
+      (tableTr.lastElementChild as HTMLElement).style.width = '';
       tableElm.style.width = '100%';
     } else {
       tableElm.style.width = 'fit-content';

@@ -51,7 +51,7 @@ export class AppComponent {
     }
   }
   @Output() cols: TYM_COL[] | any = [
-    { title: "単価", width: "10em", align: "right", sortable: true, clickable: true },
+    { title: "単価", width: "8em", align: "right", sortable: true, clickable: true },
     { title: "販売数", width: "8em", align: "right", sortable: true },
     { title: "売上", width: "10em", align: "right", sortable: true },
     { title: "注意事項", width: "10em", align: "left", sortable: false }
@@ -75,7 +75,7 @@ export class AppComponent {
     headerBackground: "#829ebc linear-gradient(#829ebc,#225588)"
   }
   @Output() cols1: TYM_COL[] = [
-    { title: "単価", width: "10em", align: "right", sortable: true },
+    { title: "単価", width: "8em", align: "right", sortable: true },
     { title: "販売数", width: "8em", align: "right", sortable: true },
     { title: "売上", width: "12em", align: "right", sortable: true }
   ];
@@ -97,7 +97,7 @@ export class AppComponent {
     bodyColor: "000"
   }
   @Output() cols2: TYM_COL[] = [
-    { title: "単価", width: "10em", align: "right", sortable: true },
+    { title: "単価", width: "8em", align: "right", sortable: true },
     { title: "販売数", width: "8em", align: "right", sortable: true },
     { title: "売上", width: "12em", align: "right", sortable: true }
   ];
@@ -118,6 +118,8 @@ export class AppComponent {
     [2980, 116, 345680, "※備考参照:ここには注意事項が表示されます"],
     [3980, 616, 2451680, ""]
   ];
+  @Output() cols4: string[] = [];
+  @Output() data4: any[][] | any = [];
   /////////////////////////////////////////////////////////////////////
   @Output() commListener: TYM_COMM_LISTENER = (id: string, data: any, elm: HTMLElement) => {
     elm.innerText = id + ":" + data;

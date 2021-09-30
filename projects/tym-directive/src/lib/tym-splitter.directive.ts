@@ -38,46 +38,50 @@ export class TymSplitterDirective implements OnInit {
     const nextElm: HTMLElement = thisElm.nextElementSibling as any;
     const prevElm: HTMLElement = thisElm.previousElementSibling as any;
     const prevStyle = window.getComputedStyle(prevElm);
-    const height = `calc(${parentElm.clientHeight}px - ${parentStyle.paddingTop} - ${parentStyle.paddingBottom} )`
+    const height = `calc(${parentElm.clientHeight}px - ${parentStyle.paddingTop} - ${parentStyle.paddingBottom} )`;
 
-    thisElm.style.boxSizing = 'border-box';
-    prevElm.style.boxSizing = 'border-box';
-    nextElm.style.boxSizing = 'border-box';
+    const thisElmStyle = thisElm.style;
+    const prevElmStyle = prevElm.style;
+    const nextElmStyle = nextElm.style;
+
+    thisElmStyle.boxSizing = prevElmStyle.boxSizing = nextElmStyle.boxSizing = 'border-box';
 
     const splitterSize = 8;
     const splitterRadius = 2;
     const splitterBackground = this.tymSplitter[0];
     const splitterBorderColor = this.tymSplitter[1];
 
-    thisElm.style.width = `${splitterSize + 2}px`;
-    thisElm.style.height = height;
-    thisElm.style.position = 'absolute';
-    thisElm.style.left = `calc(${prevStyle.width} + ${parentStyle.paddingLeft})`;
-    thisElm.style.background = splitterBackground;
-    thisElm.style.border = `solid 1px ${splitterBorderColor}`;
-    thisElm.style.borderRadius = `${splitterRadius}px`;
-    thisElm.style.margin = '0 1px';
+    thisElmStyle.width = `${splitterSize + 2}px`;
+    thisElmStyle.height = height;
+    thisElmStyle.position = 'absolute';
+    thisElmStyle.left = `calc(${prevStyle.width} + ${parentStyle.paddingLeft})`;
+    thisElmStyle.background = splitterBackground;
+    thisElmStyle.border = `solid 1px ${splitterBorderColor}`;
+    thisElmStyle.borderRadius = `${splitterRadius}px`;
+    thisElmStyle.margin = '0 1px';
 
-    const childElm: HTMLElement = this.renderer.createElement('div');
-    this.renderer.setStyle(childElm, 'width', `calc(${prevStyle.width} + ${splitterSize}px)`);
-    this.renderer.setStyle(childElm, 'resize', 'horizontal');
-    this.renderer.setStyle(childElm, 'overflow', 'hidden');
-    this.renderer.setStyle(childElm, 'position', 'absolute');
-    this.renderer.setStyle(childElm, 'height', `${parentElm.clientHeight * .5}px`);
-    this.renderer.setStyle(childElm, 'left', `-${prevStyle.width}`);
-    this.renderer.setStyle(childElm, 'clip-path', `inset(0 0 0 calc(${prevStyle.width} + 1px))`);
-    this.renderer.appendChild(thisElm, childElm);
+    const renderer = this.renderer;
+    const childElm: HTMLElement = renderer.createElement('div');
+    renderer.setStyle(childElm, 'width', `calc(${prevStyle.width} + ${splitterSize}px)`);
+    renderer.setStyle(childElm, 'resize', 'horizontal');
+    renderer.setStyle(childElm, 'overflow', 'hidden');
+    renderer.setStyle(childElm, 'position', 'absolute');
+    renderer.setStyle(childElm, 'height', `${parentElm.clientHeight * .5}px`);
+    renderer.setStyle(childElm, 'left', `-${prevStyle.width}`);
+    renderer.setStyle(childElm, 'clip-path', `inset(0 0 0 calc(${prevStyle.width} + 1px))`);
+    renderer.appendChild(thisElm, childElm);
+    const childElmStyle = childElm.style;
     const childStyle = window.getComputedStyle(childElm);
 
-    prevElm.style.width = prevStyle.width;
-    prevElm.style.height = height;
-    prevElm.style.position = 'absolute';
+    prevElmStyle.width = prevStyle.width;
+    prevElmStyle.height = height;
+    prevElmStyle.position = 'absolute';
 
-    nextElm.style.height = height;
-    nextElm.style.marginLeft = `calc(${prevStyle.width} + ${splitterSize + 4}px`;
-    nextElm.style.left = '0';
-    nextElm.style.right = '0';
-    nextElm.style.position = 'relative';
+    nextElmStyle.height = height;
+    nextElmStyle.marginLeft = `calc(${prevStyle.width} + ${splitterSize + 4}px`;
+    nextElmStyle.left = '0';
+    nextElmStyle.right = '0';
+    nextElmStyle.position = 'relative';
 
     const childObserver = new MutationObserver(() => {
       const psw = `calc(${childStyle.width} - ${splitterSize}px)`;
@@ -85,20 +89,20 @@ export class TymSplitterDirective implements OnInit {
       const csl = `calc(-${childStyle.width} + ${splitterSize}px)`;
       const csc = `inset(0 0 0 calc(${prevStyle.width} + 1px))`;
       const nsm = `calc(${childStyle.width} + 4px`;
-      prevElm.style.width = psw;
-      thisElm.style.left = tsl;
-      childElm.style.left = csl;
-      childElm.style.clipPath = csc;
-      nextElm.style.marginLeft = nsm;
+      prevElmStyle.width = psw;
+      thisElmStyle.left = tsl;
+      childElmStyle.left = csl;
+      childElmStyle.clipPath = csc;
+      nextElmStyle.marginLeft = nsm;
     });
     childObserver.observe(childElm, { attributes: true, attributeFilter: ["style"] });
 
     const parentObserver = new MutationObserver(() => {
       const height = `calc(${parentElm.clientHeight}px - ${parentStyle.paddingTop} - ${parentStyle.paddingBottom} )`
-      prevElm.style.height = height;
-      thisElm.style.height = height;
-      childElm.style.height = `${parentElm.clientHeight * .5}px`;
-      nextElm.style.height = height;
+      prevElmStyle.height = height;
+      thisElmStyle.height = height;
+      childElmStyle.height = `${parentElm.clientHeight * .5}px`;
+      nextElmStyle.height = height;
     });
     parentObserver.observe(parentElm, { attributes: true, attributeFilter: ["style"] });
   }

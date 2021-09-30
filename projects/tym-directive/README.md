@@ -110,6 +110,7 @@ let lastsp: boolean = true;
 ``` 
 
 - 必要に応じてスタイルシートを用意します。
+- 注意：スタイルシートはグローバルに設定する必要があります。
 
 ``` style.css
 tym-table-view>table {
@@ -229,7 +230,7 @@ doChange(event: any) {
 <span (click)="TymCommPost('id3', 'POST DATA!')">CLICK!</span>
 <span tymCommId="id3" [tymCommListener]="commListener"></span>
 ↓(CLICK!)
-<span tymCommId="id3" [tymCommListener]="commListener">id2:POST DATA!</span>
+<span tymCommId="id3" [tymCommListener]="commListener">id3:POST DATA!</span>
 ```
 
 <br>
