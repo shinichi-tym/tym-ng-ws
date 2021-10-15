@@ -13,6 +13,7 @@
 ## 目次 (Table of contents)
 1. [tym-table](/projects/tym-table/README.md)
 1. [tym-directive](/projects/tym-directive/README.md)
+1. [tym-modals](/projects/tym-modals/README.md)
 1. please wait...
 
 <br/>
@@ -23,13 +24,17 @@
 
 ![表示サンプル](/tym-table-demo.png)
 
-- `directive`
+- `tym-directive`
 
 ![表示サンプル](/tym-resize-demo.png)
 
 ![表示サンプル](/tym-table-view-demo.png)
 
 ![表示サンプル](/tym-splitter-demo.png)
+
+- `tym-modals`
+
+![表示サンプル](/tym-dialog-demo.png)
 
 ### ライセンス (License)
 The components in tym-ng-ws are released under the MIT license. [Read license](//github.com/shinichi-tym/tym-ng-ws/blob/main/LICENSE).
