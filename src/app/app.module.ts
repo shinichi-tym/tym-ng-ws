@@ -5,13 +5,15 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppComponent } from './app.component';
 import { TymTableModule } from "tym-table";
 import { TymDirectiveModule } from "tym-directive";
+import { TymModalModule } from "tym-modals";
 
 @NgModule({
   declarations: [
     AppComponent
   ],
   imports: [
-    BrowserModule, FormsModule, TymTableModule, TymDirectiveModule
+    BrowserModule, FormsModule,
+    TymTableModule, TymDirectiveModule, TymModalModule
   ],
   providers: [],
   bootstrap: [AppComponent]

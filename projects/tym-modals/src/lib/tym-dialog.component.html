@@ -1,0 +1,9 @@
+<header *ngIf="vals.ttl.length>0">
+  <p [innerText]="vals.ttl"></p>
+</header>
+<main>
+  <p *ngFor="let msg of vals.msgs" [innerHTML]="msg"></p>
+</main>
+<footer *ngIf="vals.btns.length>0">
+  <input type="button" *ngFor="let btn of vals.btns" [value]="btn.val" (click)="btn.act()">
+</footer>

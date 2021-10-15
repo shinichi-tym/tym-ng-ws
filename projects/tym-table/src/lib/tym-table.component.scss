@@ -149,6 +149,14 @@ table {
       &.working {
         height: var(--bd-hi);
       }
+
+      td.clickact {
+        cursor: pointer;
+        padding-right: 1em;
+        position: relative;
+        text-decoration: underline blue dashed 1px;
+      }
+   
     }
   }
 

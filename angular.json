@@ -167,6 +167,37 @@
           }
         }
       }
+    },
+    "tym-modals": {
+      "projectType": "library",
+      "root": "projects/tym-modals",
+      "sourceRoot": "projects/tym-modals/src",
+      "prefix": "ngx",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "project": "projects/tym-modals/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/tym-modals/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/tym-modals/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/tym-modals/src/test.ts",
+            "tsConfig": "projects/tym-modals/tsconfig.spec.json",
+            "karmaConfig": "projects/tym-modals/karma.conf.js"
+          }
+        }
+      }
     }
   },
   "defaultProject": "tym-ng-ws"

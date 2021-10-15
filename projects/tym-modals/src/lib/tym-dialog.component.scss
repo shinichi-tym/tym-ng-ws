@@ -1,0 +1,70 @@
+/*!
+ * tym-modals.js
+ * Copyright (c) 2021 shinichi tayama
+ * Released under the MIT license.
+ * see https://opensource.org/licenses/MIT
+ */
+
+:host {
+  --bodr: solid 1px #ccc;
+  font-size: 1rem;
+  width: min-content;
+  height: min-content;
+  max-width: calc(100vw * .8);
+  min-width: 20em;
+  max-height: calc(100vh * .8);
+  margin: auto;
+  position: fixed;
+  color: #000;
+  background-color: #fff;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 13;
+  box-sizing: border-box;
+  border: var(--bodr);
+  border-radius: 4px;
+}
+header {
+  font-weight: bold;
+  font-size: 1.2em;
+  border-bottom: var(--bodr);
+  margin: .2em;
+  p {
+    margin: 0;
+    padding: .2em;
+  }
+}
+footer {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-top: var(--bodr);
+  white-space: nowrap;
+  text-align: right;
+  margin: .2em;
+  padding: .5em .2em .2em .2em;
+  input {
+    min-width: 7em;
+    height: 2.1em;
+    margin-left: .8em;
+    background-color: #2af;
+    color: #fff;
+    cursor: pointer;
+    transition: 0.3s;
+    border: none;
+    font-size: .8em;
+    &:hover {
+      background-color: #06e;
+    }
+    &:active {
+      background-color: #04e;
+    }
+  }
+}
+main {
+  p {
+    margin: .5em 1em;
+  }
+}

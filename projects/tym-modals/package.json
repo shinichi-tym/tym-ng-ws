@@ -1,8 +1,8 @@
 {
-  "name": "tym-table",
-  "version": "0.7.9",
-  "description": "'tym-table' is a simple table component.",
-  "keywords": ["angular", "table", "grid", "spreadsheet", "drag and drop"],
+  "name": "tym-modals",
+  "version": "0.7.1",
+  "description": "'tym-modals' is a simple modal component.",
+  "keywords": ["angular", "modal", "contextmenu"],
   "repository": {
     "type": "git",
     "url": "https://github.com/shinichi-tym/tym-ng-ws.git"

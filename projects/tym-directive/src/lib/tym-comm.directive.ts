@@ -36,10 +36,14 @@ export class TymComm {
     TymComm._listener_set.forEach((v) => {
       if (id == v.id) {
         if (v.elm) {
-          try {
-            v.elm.dispatchEvent(new CustomEvent('change', { detail: data }));
-          } catch (error) {
-            v.elm = undefined;
+          if (v.elm?.isConnected) {
+            try {
+              v.elm.dispatchEvent(new CustomEvent('change', { detail: data }));
+            } catch (error) {
+              v.elm = v.lsn = undefined;
+            }
+          } else {
+            v.elm = v.lsn = undefined;
           }
         }
         if (v.lsn) {
@@ -50,6 +54,10 @@ export class TymComm {
               v.lsn = undefined;
             }
           }, 0, v.id, data, v.elm);
+        }
+      } else {
+        if (!v.elm?.isConnected) {
+          v.elm = v.lsn = undefined;
         }
       }
       if (!v.elm && !v.lsn) {

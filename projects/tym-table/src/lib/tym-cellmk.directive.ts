@@ -51,17 +51,15 @@ export class CellmkDirective implements OnInit {
       + `<rect x="10" y="0" width="22" height="22" fill="#88f" stroke="blue"/>`
       + `<polyline points="5,6 1,30 23,27" fill="none" stroke="blue" stroke-width="2"/>`;
     const tdElm = this.elementRef.nativeElement as HTMLElement;
-    tdElm.title = this._txt ?? '';
+    const tdElmtxt = this._txt ?? '';
+    tdElm.title = tdElmtxt;
     tdElm.style.textAlign = this._col.align ?? '';
     if (this._col.clickable) {
-      tdElm.style.cursor = 'pointer';
-      tdElm.style.paddingRight = '1em';
-      tdElm.style.position = 'relative';
-      tdElm.style.textDecoration = 'underline blue dashed 1px';
-      tdElm.innerHTML = `${tdElm.title}`
+      tdElm.classList.add('clickact');
+      tdElm.innerHTML = `${tdElmtxt}`
         + `<svg style="${svgStyle}" viewBox="0 0 32 32">${svgPopup}</svg>`
     } else {
-      let tnode = document.createTextNode(tdElm.title);
+      let tnode = document.createTextNode(tdElmtxt);
       tdElm.appendChild(tnode);
     }
   }

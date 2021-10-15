@@ -5,7 +5,7 @@
  * see https://opensource.org/licenses/MIT
  */
 
-import { Directive, OnInit, Input, ElementRef, Renderer2, HostBinding } from '@angular/core';
+import { Directive, OnInit, Input, ElementRef, Renderer2 } from '@angular/core';
 
 @Directive({
   selector: '[tymSplitter],[tym-splitter]'
@@ -13,6 +13,7 @@ import { Directive, OnInit, Input, ElementRef, Renderer2, HostBinding } from '@a
 export class TymSplitterDirective implements OnInit {
 
   @Input() tymSplitter: string[] = ['#eee', '#aaa'];
+
   /**
    * コンストラクタ
    *
@@ -29,7 +30,7 @@ export class TymSplitterDirective implements OnInit {
   /**
    * 初期処理
    *
-   * @memberof TymResizeDirective
+   * @memberof TymSplitterDirective
    */
   public ngOnInit() {
     const thisElm: HTMLElement = this.elementRef.nativeElement;

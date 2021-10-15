@@ -168,7 +168,7 @@ tym-table-view>table tbody tr td {
 ```
 
 ```
-[tymSplitter]="[<background>,'<border-color>']"
+[tymSplitter]="['<background>','<border-color>']"
 ex. <tym-table-view [tymSplitter]="['#eee', '#aaa']" ...
 ```
 
@@ -231,6 +231,15 @@ doChange(event: any) {
 <span tymCommId="id3" [tymCommListener]="commListener"></span>
 ↓(CLICK!)
 <span tymCommId="id3" [tymCommListener]="commListener">id3:POST DATA!</span>
+```
+
+- 使い方4:
+
+``` typescript
+TymComm.addListenerSet(listener: TYM_COMM_LISTENER_SET)
+TymComm.add(id: string, lsn: Function)
+TymComm.delElmLisrnerSet(id: string, lsn: Function)
+TymComm.post(id: string, data: any)
 ```
 
 <br>

@@ -1,0 +1,16 @@
+/*!
+ * tym-modals.js
+ * Copyright (c) 2021 shinichi tayama
+ * Released under the MIT license.
+ * see https://opensource.org/licenses/MIT
+ */
+
+.bg {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 12;
+  background: rgba(0, 0, 0, .1);
+}

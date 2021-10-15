@@ -1,8 +1,11 @@
 import { Component, Output, ViewEncapsulation, ViewChild } from '@angular/core';
+import { SafeHtml, DomSanitizer } from "@angular/platform-browser";
 import {
   TYM_CUSTOM, TYM_FUNCS, TYM_DDDEF, TYM_COL, TYM_ORDER, TymTableComponent
 } from "tym-table";
 import { TymComm, TYM_COMM_LISTENER } from 'tym-directive';
+import { TymModalService } from "tym-modals";
+import { TymDialogComponent } from "tym-modals";
 
 @Component({
   selector: 'app-root',
@@ -126,10 +129,21 @@ export class AppComponent {
   }
   @Output() TymCommPost = TymComm.post;
   @Output() Log = console.log;
+  @Output() commdel = true;
   /////////////////////////////////////////////////////////////////////
-  constructor() {
+  constructor(
+    private modal: TymModalService,
+    private sanitizer: DomSanitizer) {
     TymComm.add('id1', (id: string, data: any, elm: any) => console.log('ABC: ' + data));
     TymComm.add('id1', (id: string, data: any, elm: any) => console.log('XYZ: ' + data));
+    TymDialogComponent.BUTTONS = [
+      ['ok', 'OK'], ['cancel', 'キャンセル']
+    ];
+  }
+  trustHtmls(vals: any[]): SafeHtml[] {
+    let safeHtml: SafeHtml[] = [];
+    vals.forEach((v) => safeHtml.push(this.sanitizer.bypassSecurityTrustHtml(v)));
+    return safeHtml;
   }
   doChange(event: any) {
     console.log('CustomEvent: ' + (event as CustomEvent).detail);
@@ -382,16 +396,45 @@ export class AppComponent {
     // this.tymTable?.clearSelection();
   }
 
-  dragover(ev: any) {
-    ev.preventDefault();
-    ev.dataTransfer.dropEffect = "copy";
+  open() {
+    const ok_button = { 'ok': () => this.modal.close() }
+    const cancel_button = { 'cancel': () => this.modal.close() }
+    const safeHtml: SafeHtml[] = this.trustHtmls([
+      `〇〇〇を<b style="color:red">△◇△◇△◇</b>します。`,
+      `SAMPLE`
+    ]);
+    const provider = TymDialogComponent.provider(
+      '〇△◇の確認',
+      safeHtml as string[],
+      ok_button, cancel_button
+    );
+    this.modal.open(TymDialogComponent, provider);
   }
-  DropZone: string = "Drop Zone"
-  drop(ev: DragEvent) {
-    ev.preventDefault();
-    let rownum = ev.dataTransfer?.getData("text/plain");
-    let data = ev.dataTransfer?.getData("application/json");
-    this.DropZone = rownum + "\r\n" + data;
+
+  open1() {
+    const ok_button = { 'ok': () => this.modal.close() }
+    const cancel_button = { 'cancel': () => this.modal.close() }
+    const provider = TymDialogComponent.provider(
+      'メッセージのタイトル',
+      ['メッセージ１', 'メッセージ２'],
+      ok_button, cancel_button
+    );
+    this.modal.open(TymDialogComponent, provider);
+  }
+
+  open2() {
+    const safeHtml: SafeHtml[] = this.trustHtmls(
+      ['<b>太字</b>', '<span style="color:red">赤字</span>']);
+    const provider = TymDialogComponent.provider(
+      '',
+      safeHtml as string[]
+    );
+    let component_ref = this.modal.open(TymDialogComponent, provider, false);
+    // 生成したコンポーネントにアクセスできます。
+    let component = (component_ref?.instance as TymDialogComponent);
+    // コンポーネントを非表示(破棄)にします。
+    // this.modal.close(); または component_ref.destroy();
+    console.log(component_ref, component);
   }
 
   @Output() resizeCallback(thisElm: HTMLElement, parentElm: HTMLElement) {
