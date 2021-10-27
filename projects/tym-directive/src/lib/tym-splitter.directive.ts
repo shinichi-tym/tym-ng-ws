@@ -18,7 +18,7 @@ export class TymSplitterDirective implements OnInit {
    * コンストラクタ
    *
    * @param {ElementRef} elementRef このディレクティブがセットされたDOMへの参照
-   * @param {Renderer2} render DOMを操作用
+   * @param {Renderer2} renderer DOMを操作用
    * @memberof TymSplitterDirective
    */
   constructor(

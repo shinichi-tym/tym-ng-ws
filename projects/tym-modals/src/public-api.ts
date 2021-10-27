@@ -7,3 +7,4 @@ export * from './lib/tym-modal.component';
 export * from './lib/tym-modal.module';
 
 export * from './lib/tym-dialog.component';
+export * from './lib/tym-menu.component';

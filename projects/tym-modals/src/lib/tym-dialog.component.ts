@@ -5,7 +5,8 @@
  * see https://opensource.org/licenses/MIT
  */
 
-import { Component, Inject, InjectionToken, StaticProvider } from '@angular/core';
+import { Inject, InjectionToken, StaticProvider } from '@angular/core';
+import { Component } from '@angular/core';
 
 export interface ButtonDef { [x: string]: Function }
 
@@ -19,7 +20,7 @@ export class TymDialogComponent {
   /**
    * ダイアログ用トークン
    */
-  private static TYM_DIALOG_TEXT = new InjectionToken<any>('TymDialog');
+  private static TYM_DIALOG_TOKEN = new InjectionToken<any>('TymDialog');
 
   /**
   * 画面用値
@@ -36,7 +37,7 @@ export class TymDialogComponent {
    * @param vals_ StaticProviderのuseValue値
    */
   constructor(
-    @Inject(TymDialogComponent.TYM_DIALOG_TEXT) vals_: any
+    @Inject(TymDialogComponent.TYM_DIALOG_TOKEN) vals_: any
   ) {
     this.vals = vals_;
   }
@@ -54,11 +55,6 @@ export class TymDialogComponent {
     ...button_defs: ButtonDef[]
   ): StaticProvider {
 
-    let vals: any = {};
-
-    vals.ttl = title;
-    vals.msgs = messages;
-
     let buttons: any[] = [];
     button_defs.forEach((bd) => {
       const id = Object.keys(bd)[0];
@@ -67,11 +63,14 @@ export class TymDialogComponent {
         buttons.push({ val: bv[1], act: bd[id] });
       }
     });
-    vals.btns = buttons;
 
     return {
-      provide: TymDialogComponent.TYM_DIALOG_TEXT,
-      useValue: vals
+      provide: TymDialogComponent.TYM_DIALOG_TOKEN,
+      useValue: {
+        title: title,
+        messages: messages,
+        btns: buttons
+      }
     }
   }
 }

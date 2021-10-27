@@ -9,18 +9,21 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { TymModalComponent } from './tym-modal.component';
 import { TymDialogComponent } from './tym-dialog.component';
+import { TymMenuComponent } from "./tym-menu.component";
 
 @NgModule({
   declarations: [
     TymModalComponent,
-    TymDialogComponent
+    TymDialogComponent,
+    TymMenuComponent
   ],
   imports: [
     BrowserModule
   ],
   exports: [
     TymModalComponent,
-    TymDialogComponent
+    TymDialogComponent,
+    TymMenuComponent
   ]
 })
 export class TymModalModule { }

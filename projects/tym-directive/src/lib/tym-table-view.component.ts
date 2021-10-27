@@ -24,12 +24,15 @@ export class TymTableViewComponent implements AfterViewInit {
   /**
    * コンストラクタ
    *
-   * @param {ElementRef} elementRef このディレクティブがセットされたDOMへの参照
+   * @param {ElementRef} elementRef このコンポーネントがセットされたDOMへの参照
    * @memberof TymResizeDirective
    */
   constructor(private elementRef: ElementRef) { }
 
-  ngAfterViewInit(): void {
+  /**
+   * ビューを初期化した後の処理
+   */
+  ngAfterViewInit() {
     const thisElm: HTMLElement = this.elementRef.nativeElement;
     const tableElm: HTMLTableElement = thisElm.firstElementChild as any;
     const tableTr: HTMLTableRowElement = tableElm.firstChild!.firstChild as HTMLTableRowElement;

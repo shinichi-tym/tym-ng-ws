@@ -5,7 +5,7 @@ import {
 } from "tym-table";
 import { TymComm, TYM_COMM_LISTENER } from 'tym-directive';
 import { TymModalService } from "tym-modals";
-import { TymDialogComponent } from "tym-modals";
+import { TymDialogComponent, TymMenuComponent, MenuItems } from "tym-modals";
 
 @Component({
   selector: 'app-root',
@@ -415,11 +415,38 @@ export class AppComponent {
     const ok_button = { 'ok': () => this.modal.close() }
     const cancel_button = { 'cancel': () => this.modal.close() }
     const provider = TymDialogComponent.provider(
-      'メッセージのタイトル',
-      ['メッセージ１', 'メッセージ２'],
+      'メッセージのタイトル .. 長い長い長い長い',
+      ['メッセージ１', 'メッセージ２', 'メッセージ３', 'メッセージ４'],
       ok_button, cancel_button
     );
-    this.modal.open(TymDialogComponent, provider);
+    let component_ref = this.modal.open(TymDialogComponent, provider, false);
+    setTimeout(() => {
+      const provider = TymDialogComponent.provider(
+        'メッセージのタイトル',
+        ['メッセージ１', 'メッセージ２'],
+        ok_button, cancel_button
+      );
+      this.modal.open(TymDialogComponent, provider, false);
+    }, 5000);
+    setTimeout(() => { component_ref?.destroy() }, 8000);
+
+    // // 表示内容をプロバイダーとして定義します。
+    // const provider1 = TymDialogComponent.provider(
+    //   'メッセージのタイトル .. 長い長い長い長い',
+    //   ['メッセージ１', 'メッセージ２', 'メッセージ３', 'メッセージ４'],
+    //   ok_button, cancel_button
+    // );
+    // this.modal.open(TymDialogComponent, provider1);
+
+    // // 表示内容をプロバイダーとして定義します。
+    // const provider2 = TymDialogComponent.provider(
+    //   'メッセージのタイトル',
+    //   ['メッセージ１', 'メッセージ２'],
+    //   ok_button, cancel_button
+    // );
+    // // 簡易メッセージダイアログを表示します。
+    // this.modal.open(TymDialogComponent, provider2);
+
   }
 
   open2() {
@@ -434,7 +461,41 @@ export class AppComponent {
     let component = (component_ref?.instance as TymDialogComponent);
     // コンポーネントを非表示(破棄)にします。
     // this.modal.close(); または component_ref.destroy();
-    console.log(component_ref, component);
+    setTimeout(() => {
+      component.vals.messages=["メッセージ"];
+    }, 5000);
+  }
+
+  open3(event: MouseEvent): boolean { //PointerEvent,MouseEvent
+    event.stopPropagation();
+    const menu: MenuItems = [
+      [['file', true],
+        ['copy', true], ['remove', false]],
+      [['folder', false],
+        ['copy', true], ['remove', false]],
+    ];
+
+    TymMenuComponent.MENU_DEFS = {
+      'file': {
+        '':'ファイル',
+        'copy': 'コピー',
+        'remove': '削除',
+      },
+      'folder': {
+        '':'フォルダー',
+        'copy': 'コピー',
+        'remove': '削除',
+      },
+    };
+    const provider = TymMenuComponent.provider(
+      menu,
+      (gid: string, id: string) => {
+        console.log(gid, id);
+      },
+      event.clientX, event.clientY
+    );
+    this.modal.open(TymMenuComponent, provider, false);
+    return false;
   }
 
   @Output() resizeCallback(thisElm: HTMLElement, parentElm: HTMLElement) {

@@ -21,7 +21,6 @@
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 13;
   box-sizing: border-box;
   border: var(--bodr);
   border-radius: 4px;
@@ -30,6 +29,7 @@ header {
   font-weight: bold;
   font-size: 1.2em;
   border-bottom: var(--bodr);
+  white-space: nowrap;
   margin: .2em;
   p {
     margin: 0;
@@ -45,7 +45,7 @@ footer {
   text-align: right;
   margin: .2em;
   padding: .5em .2em .2em .2em;
-  input {
+  button {
     min-width: 7em;
     height: 2.1em;
     margin-left: .8em;

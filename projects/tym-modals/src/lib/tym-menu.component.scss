@@ -1,0 +1,66 @@
+/*!
+ * tym-modals.js
+ * Copyright (c) 2021 shinichi tayama
+ * Released under the MIT license.
+ * see https://opensource.org/licenses/MIT
+ */
+
+:host {
+  font-size: 1rem;
+  font-family: system-ui;
+}
+
+ul {
+  user-select: none;
+  padding: 1px;
+  margin: 0;
+  position: relative;
+  background-color: #fff;
+  border: solid 1px #ddd;
+  display: inline-block;
+  box-shadow: 3px 3px 3px #ddd;
+  border-radius: 2px;
+  min-width: 8em;
+  li {
+    color: #000;
+    background: #fff;
+    line-height: 1.5;
+    padding: .2em 2em .2em .4em;
+    list-style-type: none;
+    font-size: .8em;
+    max-width: 20em;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    &.cls {
+      background:calc(100% - .5em) center #fff no-repeat url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='.8em' height='.8em' viewBox='0 0 9 9'><path d='M4 0 L8 4 L4 8' stroke='%23ff0000' fill='transparent'/></svg>");
+    }
+    &.opn {
+      background:calc(100% - .5em) center #fff no-repeat url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='.8em' height='.8em' viewBox='0 0 9 9'><path d='M0 4 L4 8 L8 4' stroke='%23ff0000' fill='transparent'/></svg>");
+    }
+    &.nod {
+      display: none;
+    }
+    &.idt::before {
+      content: '- ';
+      padding-left: .2em;
+    }
+    &:hover {
+      background-color: #eee;
+      cursor: pointer;
+    }
+    &.dis {
+      background-color: #fff;
+      color: #aaa;
+      cursor: initial;
+    }
+    &.hr {
+      background: #ddd !important;
+      padding-top: 1px;
+      padding-bottom: 0;
+      margin: .5em 0;
+      border: none;
+      cursor: initial;
+    }
+  }
+}

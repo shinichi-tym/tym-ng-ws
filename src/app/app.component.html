@@ -279,7 +279,8 @@ effectAllowed:[none,copy,move,copyMove], dropEffect:[none,copy,move]
 <npx-tym-modals></npx-tym-modals>
 <input type="button" value="open" (click)="open()">
 <input type="button" value="open1" (click)="open1()">
-<input type="button" value="open2" (click)="open2()">
+<input type="button" value="open2" (click)="open2()" (contextmenu)="open3($event)">
+<!-- <div style="border: solid 1px red;" (contextmenu)="open3($event)">[contextmenu]</div> -->
 
 <br>
 <br>
