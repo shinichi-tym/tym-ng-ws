@@ -35,9 +35,19 @@ export class TymMenuComponent implements AfterViewInit {
   private static TYM_MENU_TOKEN = new InjectionToken<any>('TymMenu');
 
   /**
-  * 画面用値
-  */
+   * 画面用値
+   */
   public vals: any;
+
+  /**
+   * 選択されたボタンのID
+   */
+  public groupId: string = '';
+
+  /**
+   * 選択されたボタンのID
+   */
+  public itemId: string = '';
 
   /**
    * this native element
@@ -92,26 +102,29 @@ export class TymMenuComponent implements AfterViewInit {
    * ビューを初期化した後の処理
    */
   ngAfterViewInit() {
-    const ulElm = this.thisElm.firstElementChild as HTMLUListElement;
-    const divElm = this.thisElm.parentElement as HTMLDivElement;
-    const [ulElmStyle, vals] = [ulElm.style, this.vals];
-    [ulElmStyle.top, ulElmStyle.left] = [`${vals.screenY}px`, `${vals.screenX}px`];
+    const thisElm = this.thisElm;
+    const divElm = thisElm.parentElement as HTMLDivElement; // 全画面
+    const [thisElmStyle, vals] = [thisElm.style, this.vals];
+    [thisElmStyle.top, thisElmStyle.left] = [`${vals.screenY}px`, `${vals.screenX}px`];
 
     const resize = () => {
-      const ulRect = ulElm.getBoundingClientRect();
+      const thisRect = thisElm.getBoundingClientRect();
       const divRect = divElm.getBoundingClientRect();
-      if ((ulRect.top + ulRect.height) > divRect.height) {
-        ulElmStyle.top = `${divRect.height - ulRect.height}px`;
+      const [div_h, div_w] = [divRect.height, divRect.width];
+      const [this_h, this_w] = [thisRect.height, thisRect.width];
+      const [this_t, this_l] = [thisRect.top, thisRect.left];
+      if ((this_t + this_h) > div_h) {
+        thisElmStyle.top = `${div_h - this_h}px`;
       }
-      if ((ulRect.left + ulRect.width) > divRect.width) {
-        ulElmStyle.left = `${ulRect.left - ulRect.width}px`;
+      if ((this_l + this_w) > div_w) {
+        thisElmStyle.left = `${this_l - this_w}px`;
       }
     }
 
     // コンテキストメニューが画面外に見切れた場合に移動させる
     setTimeout(resize, 0);
     new MutationObserver(resize)
-      .observe(ulElm, { subtree: true, attributes: true, attributeFilter: ["class"] });
+      .observe(thisElm, { subtree: true, attributes: true, attributeFilter: ["class"] });
   }
 
   /**
@@ -126,6 +139,7 @@ export class TymMenuComponent implements AfterViewInit {
    * menuAction
    */
   public ma(item: any) {
+    [this.groupId, this.itemId] = [item.gid, item.id];
     if (item.act) {
       // item click action
       if (item.fg) {

@@ -18,7 +18,6 @@ export class AppComponent {
   private save_col_num: number = 4;
   private save_row_num: number = 4;
 
-  private drag_row_num: number = -1;
   @ViewChild("tymTable")
   private tymTable?: TymTableComponent;
   /////////////////////////////////////////////////////////////////////
@@ -36,7 +35,8 @@ export class AppComponent {
       this.tymTable?.drowData(); // データ更新だけのため直接再描画を実行
     },
     doContext: (event: MouseEvent, num: number, row: any) => {
-      alert("context menu\r\n" + num + " : " + JSON.stringify(this.data[num]));
+      this.open3(event);
+      // alert("context menu\r\n" + num + " : " + JSON.stringify(this.data[num]));
       return false;
     },
     doClick: (event: MouseEvent, num: number, row: any) => {
@@ -397,8 +397,12 @@ export class AppComponent {
   }
 
   open() {
-    const ok_button = { 'ok': () => this.modal.close() }
-    const cancel_button = { 'cancel': () => this.modal.close() }
+    // const ok_button = { 'ok': () => this.modal.close() }
+    // const cancel_button = { 'cancel': () => this.modal.close() }
+    const buttons = {
+      ok: () => this.modal.close(),
+      cancel: () => this.modal.close()
+    }
     const safeHtml: SafeHtml[] = this.trustHtmls([
       `〇〇〇を<b style="color:red">△◇△◇△◇</b>します。`,
       `SAMPLE`
@@ -406,25 +410,70 @@ export class AppComponent {
     const provider = TymDialogComponent.provider(
       '〇△◇の確認',
       safeHtml as string[],
-      ok_button, cancel_button
+      buttons
+      // ok_button, cancel_button
     );
     this.modal.open(TymDialogComponent, provider);
   }
 
-  open1() {
-    const ok_button = { 'ok': () => this.modal.close() }
-    const cancel_button = { 'cancel': () => this.modal.close() }
+  async open1() {
+    // const ok_button = { 'ok': () => this.modal.close() }
+    // const cancel_button = { 'cancel': () => this.modal.close() }
+    const buttons = {
+      'ok': (compo: TymDialogComponent) => {
+        const compoRef = this.modal.getComponentRef(compo);
+        compoRef!.destroy();
+        // this.modal.close();
+      },
+      'cancel': (compo: TymDialogComponent) => {
+        const compoRef = this.modal.getComponentRef(compo);
+        compoRef!.destroy();
+        // this.modal.close();
+      }
+    };
     const provider = TymDialogComponent.provider(
       'メッセージのタイトル .. 長い長い長い長い',
       ['メッセージ１', 'メッセージ２', 'メッセージ３', 'メッセージ４'],
-      ok_button, cancel_button
+      buttons
+      // ok_button, cancel_button
     );
+
+    let componentRef = await this.modal.open(
+      TymDialogComponent, provider, false,
+      (componentRef) => {
+        const compo = componentRef.instance as TymDialogComponent;
+        compo.vals.title+=" 1st";
+        console.log(compo.vals);
+      });
+    let component = componentRef.instance as TymDialogComponent;
+    if (component.actionId == 'ok') { }
+    if (component.actionId == 'cancel' || component.actionId == '') { }
+
+    let promise = this.modal.open(
+      TymDialogComponent, provider, false,
+      (componentRef) => {
+        const compo = componentRef.instance as TymDialogComponent;
+        compo.vals.title += " 2nd";
+        console.log(compo.vals);
+      });
+    await promise;
+
+    this.modal.open(TymDialogComponent, provider, false, () => { })
+      .then(
+        (componentRef) => {
+          let component = componentRef.instance as TymDialogComponent;
+          if (component.actionId == 'ok') { }
+          if (component.actionId == 'cancel' || component.actionId == '') { }
+        }
+      )
+
     let component_ref = this.modal.open(TymDialogComponent, provider, false);
     setTimeout(() => {
       const provider = TymDialogComponent.provider(
         'メッセージのタイトル',
         ['メッセージ１', 'メッセージ２'],
-        ok_button, cancel_button
+        buttons
+        // ok_button, cancel_button
       );
       this.modal.open(TymDialogComponent, provider, false);
     }, 5000);
@@ -434,7 +483,8 @@ export class AppComponent {
     // const provider1 = TymDialogComponent.provider(
     //   'メッセージのタイトル .. 長い長い長い長い',
     //   ['メッセージ１', 'メッセージ２', 'メッセージ３', 'メッセージ４'],
-    //   ok_button, cancel_button
+    //   buttons
+    //   // ok_button, cancel_button
     // );
     // this.modal.open(TymDialogComponent, provider1);
 
@@ -442,7 +492,8 @@ export class AppComponent {
     // const provider2 = TymDialogComponent.provider(
     //   'メッセージのタイトル',
     //   ['メッセージ１', 'メッセージ２'],
-    //   ok_button, cancel_button
+    //   buttons
+    //   // ok_button, cancel_button
     // );
     // // 簡易メッセージダイアログを表示します。
     // this.modal.open(TymDialogComponent, provider2);
@@ -458,7 +509,7 @@ export class AppComponent {
     );
     let component_ref = this.modal.open(TymDialogComponent, provider, false);
     // 生成したコンポーネントにアクセスできます。
-    let component = (component_ref?.instance as TymDialogComponent);
+    let component = (component_ref.instance as TymDialogComponent);
     // コンポーネントを非表示(破棄)にします。
     // this.modal.close(); または component_ref.destroy();
     setTimeout(() => {
@@ -494,7 +545,13 @@ export class AppComponent {
       },
       event.clientX, event.clientY
     );
-    this.modal.open(TymMenuComponent, provider, false);
+    let prom = this.modal.open(TymMenuComponent, provider, false, ()=>{});
+    prom.then(
+      (v)=>{
+        console.log(v);
+        this.modal.open(TymMenuComponent, provider, false);
+      }
+    );
     return false;
   }
 

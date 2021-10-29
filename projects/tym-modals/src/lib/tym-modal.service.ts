@@ -16,10 +16,10 @@ export class TymModalService {
   /**
    * 表示されているコンポーネント群
    */
-  private components: ComponentRef<unknown>[] = [];
+  private componentRefs: ComponentRef<unknown>[] = [];
 
   /**
-   * true: モーダル, false: モードレス
+   * true: モーダル, false: モーダレス
    */
   public modal = false;
 
@@ -47,24 +47,51 @@ export class TymModalService {
    * 
    * @param {any} componentType コンポーネントタイプ
    * @param {StaticProvider} provider プロバイダー
-   * @param {boolean} modal true: モーダル, false: モードレス
+   * @param {boolean} modal true: モーダル, false: モーダレス
    * @returns ComponentRef<unknown>
    */
-  open(componentType: any, provider: StaticProvider, modal = true): ComponentRef<unknown> | null {
-    if (!componentType) {
-      return null;
-    }
+  public open(
+    componentType: any, provider: StaticProvider, modal?: boolean
+  ): ComponentRef<unknown>;
+  /**
+   * コンポーネントを作成し表示する (末尾に追加)
+   * 
+   * @param {any} componentType コンポーネントタイプ
+   * @param {StaticProvider} provider プロバイダー
+   * @param {boolean} modal true: モーダル, false: モーダレス
+   * @param {(componentRef: ComponentRef<unknown>) => void} init コンポーネント生成時callback関数
+   * @returns Promise<ComponentRef<unknown>>
+   */
+  public open(
+    componentType: any, provider: StaticProvider, modal: boolean,
+    init: (componentRef: ComponentRef<unknown>) => void
+  ): Promise<ComponentRef<unknown>>;
 
+  /**
+   * コンポーネントを作成し表示する (末尾に追加)
+   * 
+   * @param {any} componentType コンポーネントタイプ
+   * @param {StaticProvider} provider プロバイダー
+   * @param {boolean} modal true: モーダル, false: モーダレス
+   * @param {(componentRef: ComponentRef<unknown>) => void} init コンポーネント生成時callback関数
+   * @returns ComponentRef<unknown> | Promise<ComponentRef<unknown>>
+   */
+  public open(
+    componentType: any, provider: StaticProvider, modal = true,
+    init?: (componentRef: ComponentRef<unknown>) => void
+  ): ComponentRef<unknown> | Promise<ComponentRef<unknown>> {
+
+    const compoRefs = this.componentRefs;
     const injector = Injector.create({ providers: [provider] });
     const factory = this.resolver.resolveComponentFactory(componentType);
-    const component = this.vcr.createComponent(factory, this.vcr.length, injector);
+    const componentRef = this.vcr.createComponent(factory, this.vcr.length, injector);
 
     // componentが破棄された時にthis.componentsから削除し背景カバーの表示を調整する
-    component.onDestroy(() => {
-      const idx = this.components.findIndex(c => c.hostView.destroyed);
-      this.components.splice(idx, 1);
-      if (this.components.length > 0) {
-        const beforeCompo = this.components[this.components.length - 1];
+    componentRef.onDestroy(() => {
+      const idx = compoRefs.findIndex(c => c.hostView.destroyed);
+      compoRefs.splice(idx, 1);
+      if (compoRefs.length > 0) {
+        const beforeCompo = compoRefs[compoRefs.length - 1];
         const elm = beforeCompo.location.nativeElement;
         // 背景カバーの挿入or移動
         elm.parentElement!.insertBefore(this.cvr, elm);
@@ -74,11 +101,12 @@ export class TymModalService {
       }
     });
 
-    const element = component.location.nativeElement as HTMLElement;
+    const element = componentRef.location.nativeElement as HTMLElement;
     element.addEventListener('click', (e) => e.stopPropagation());
     element.addEventListener('contextmenu', (e) => e.stopPropagation());
     setTimeout(() => {
       element.tabIndex = 0;
+      element.style.outline = 'none';
       element.focus();
     }, 0);
 
@@ -86,14 +114,35 @@ export class TymModalService {
     element.parentElement!.insertBefore(this.cvr, element);
 
     this.modal = modal;
-    this.components.push(component);
-    return component;
+    compoRefs.push(componentRef);
+
+    if (init) {
+      // Promise interface
+      init(componentRef);
+      return new Promise((resolve, reject) => {
+        componentRef.onDestroy(() => { resolve(componentRef) })
+      });
+    } else {
+      return componentRef;
+    }
   }
 
   /**
    * コンポーネントを破棄し非表示にする (末尾から削除)
    */
-  close(): void {
-    this.components[this.components.length - 1].destroy();
+  public close(): void {
+    this.componentRefs[this.componentRefs.length - 1].destroy();
+  }
+
+  /**
+   * componentからcomponentRefを求める
+   * 
+   * @param {unknown} component コンポーネントインスタンス
+   * @returns ComponentRef<unknown> | null
+   */
+  public getComponentRef(component: unknown): ComponentRef<unknown> | null {
+    const compoRefs = this.componentRefs;
+    const idx = compoRefs.findIndex(c => c.instance == component);
+    return (idx < 0) ? null : compoRefs[idx]
   }
 }

@@ -108,3 +108,16 @@ form>input[type="text"] {
   width: 5em;
   border: solid 1px #ccc;
 }
+ngx-tym-dialog footer button[name='cancel'] {
+  background-color: #f00 !important;
+  &:hover { background-color: #f60 !important; }
+  &:active { background-color: #f40 !important; }
+}
+ngx-tym-dialog footer button[name='ok'] {
+  background-color: #00f !important;
+  &:hover { background-color: #06f !important; }
+  &:active { background-color: #04f !important; }
+}
+ngx-tym-menu {
+  font-family: monospace;
+}

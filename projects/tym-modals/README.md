@@ -15,9 +15,9 @@ npm install tym-modals
 ## 目次 (Table of contents)
 <br>
 
-1. [簡易メッセージダイアログ](#TymDialog)
-1. [簡易コンテキストメニュー](#TymMenu)
-1. [ネストダイアログ／コンテキストメニュー](#ModalNest)
+1. [簡易メッセージダイアログ](#簡易メッセージダイアログ)
+1. [簡易コンテキストメニュー](#簡易コンテキストメニュー)
+1. [ネストダイアログ／コンテキストメニュー](#ネストダイアログコンテキストメニュー)
 1. please wait...
 
 <br> 
@@ -52,10 +52,33 @@ import { TymModalService } from "tym-modals";
   // コンポーネント(<Component>)を表示します。
     let component_ref = this.modal.open(<Component>, provider);
   // 生成したコンポーネントにアクセスできます。
-    let component = (component_ref?.instance as <Component>);
+    let component = (component_ref.instance as <Component>);
   // コンポーネントを非表示(破棄)にします。
   // ※ close() は 最後に open() されたコンポーネントを閉じます。
     this.modal.close(); または component_ref.destroy();
+  :
+  (または)
+  :
+  // コンポーネント(<Component>)を表示します。(promise inteface)
+    let component_ref = await this.modal.open(
+      <Component>,
+      provider,
+      true,  // true:モーダル, false:モーダレス
+      (component_ref) => {
+        // 生成したコンポーネントにアクセスできます。
+        let component = (component_ref.instance as <Component>);
+      });
+  :
+  (または)
+  :
+  // コンポーネント(<Component>)を表示します。(promise inteface)
+    let promise = this.modal.open(..【省略】.., ()=>{});
+    promise.then(
+      (component_ref) => {
+        // 生成したコンポーネントにアクセスできます。
+        let component = (component_ref.instance as <Component>);
+      }
+    )
   :
 ```
 
@@ -63,9 +86,8 @@ import { TymModalService } from "tym-modals";
 
 <br>
 
-<a id="TymDialog"></a>
+> ## 簡易メッセージダイアログ
 
-## 簡易メッセージダイアログ `(tym-dialog)`
 <br>
 
 簡易なメッセージダイアログを表示します。
@@ -86,19 +108,25 @@ import { TymDialogComponent } from "tym-modals";
   :
   open() {
     // ボタンのIDとアクション関数を定義します。
-    const ok_button = { 'ok': () => {
-      :
-      this.modal.close();
-    }
-    const cancel_button = { 'cancel': () => {
-      :
-      this.modal.close();
+    const buttons = {
+      'ok': (compo: TymDialogComponent) => {
+        const compoRef = this.modal.getComponentRef(compo);
+        :
+        compoRef.destory();
+        // this.modal.close();
+      },
+      'cancel': (compo: TymDialogComponent) => {
+        const compoRef = this.modal.getComponentRef(compo);
+        :
+        compoRef.destory();
+        // this.modal.close();
+      }
     }
     // 表示内容をプロバイダーとして定義します。
     const provider = TymDialogComponent.provider(
       'メッセージのタイトル',
       ['メッセージ１', 'メッセージ２'],
-      ok_button, cancel_button
+      buttons
     );
     // 簡易メッセージダイアログを表示します。
     this.modal.open(TymDialogComponent, provider);
@@ -137,8 +165,8 @@ import { SafeHtml, DomSanitizer } from "@angular/platform-browser";
     );
     // モーダレスで表示します。
     let component_ref = this.modal.open(
-      TymDialogComponent, provider, true);
-    let component = (component_ref?.instance as <TymDialogComponent>);
+      TymDialogComponent, provider, false);
+    let component = (component_ref.instance as <TymDialogComponent>);
     // component.vals.title = 'title'; // タイトルを変更できます。
     // component.vals.messages = ['msg1', 'msg2']; // メッセージを変更できます。
   }
@@ -149,20 +177,66 @@ import { SafeHtml, DomSanitizer } from "@angular/platform-browser";
 
 ![表示イメージ2](/tym-dialog-demo2.png)
 
+- 使い方3:
+
+``` scss :style.scss
+ngx-tym-dialog footer button[name='cancel'] {
+  background-color: #f00 !important;
+  &:hover { background-color: #f60 !important; }
+  &:active { background-color: #f40 !important; }
+}
+ngx-tym-dialog footer button[name='ok'] {
+  background-color: #00f !important;
+  &:hover { background-color: #06f !important; }
+  &:active { background-color: #04f !important; }
+}
+※ スタイルシートはグローバルに設定します。
+```
+
+- 表示イメージ3
+
+![表示イメージ2](/tym-dialog-demo4.png)
+
 <br> 
+
+- 使い方4:
+
+``` typescript :app.component.ts
+  open() {
+    :
+    let componentRef = await this.modal.open(TymDialogComponent, provider, false, ()=>{});
+    let component = componentRef.instance as TymDialogComponent;
+    if (component.actionId == 'ok') { }
+    if (component.actionId == 'cancel' || component.actionId == '') { }
+    ～ or ～
+    this.modal.open(TymDialogComponent, provider, false,
+      (componentRef) => {
+        const component = componentRef.instance as TymDialogComponent;
+        // component.vals.title = 'title'; // タイトルを変更できます。
+        // component.vals.messages = ['msg1', 'msg2']; // メッセージを変更できます。
+        console.log(compo.vals);
+      })
+      .then(
+        (componentRef) => {
+          let component = componentRef.instance as TymDialogComponent;
+          if (component.actionId == 'ok') { }
+          if (component.actionId == 'cancel' || component.actionId == '') { }
+        }
+      )
+```
+
 
 ---
 
 <br>
 
-<a id="TymMenu"></a>
+> ## 簡易コンテキストメニュー
 
-## 簡易コンテキストメニュー `(tym-menu)`
 <br>
 
 簡易コンテキストメニューを表示します。
 
-- 使い方:
+- 使い方1:
 
 ``` typescript :app.component.ts
 // 必要なコンポーネントを定義します。
@@ -224,14 +298,29 @@ import { TymMenuComponent } from "tym-modals";
 
 <br>
 
----
+- 使い方2:
 
-<a id="ModalNest"></a>
+``` typescript :app.component.ts
+    :
+    this.modal.open(TymMenuComponent, provider, false, ()=>{})
+      .then(
+        (componentRef)=>{
+          const component = componentRef.instance as TymMenuComponent;
+          console.log(component.groupId, component.itemId);
+        }
+      );
+    :
+```
 
-## 簡易コンテキストメニュー
 <br>
 
-簡易コンテキストメニューを表示します。
+---
+
+> ## ネストダイアログ／コンテキストメニュー
+
+<br>
+
+ダイアログ／コンテキストメニューを連続して表示できます。
 
 - 使い方:
 

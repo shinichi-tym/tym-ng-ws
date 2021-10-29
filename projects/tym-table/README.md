@@ -25,7 +25,8 @@ npm install tym-table
 
 <br>
 
-## 基本的な使い方 `(Basic usage)`
+> ## 基本的な使い方 `(Basic usage)`
+
 <br>
 
 表示される場所に htmlタグ を用意し，その中に`<ngx-tym-table>`タグを作成します。
@@ -82,34 +83,36 @@ let data = [
 ]; 
 ``` 
 
-<br/> 
+<br> 
 
 ---
 
-<br/>
+<br>
 
-## 機能 `(Features)`
+> ## 機能 `(Features)`
 
-- [基本機能](#Basicfunction) (Basic function)
-- [カラーカスタマイズ](#ColorCustomization) (Color Customization)
-- [チェックボックス非表示](#NoCheckBox) (No CheckBox)
-- [スペースカラム非表示](#NoLastSpace) (No Last Space)
-- [カラムサイズ変更](#ColumnSizeChange) (ColumnSize Change)
-- [行選択](#RowSelection) (Row Selection)
-- [ソートイベント](#SortEvent) (Sort Event)
-- [ドラッグアンドドロップ](#DragAndDrop) (Drag And Drop)
+<br>
 
-- [公開関数](#PublicFunctions) (Public Functions)
+- [基本機能](#基本機能) (Basic Function)
+- [カラーカスタマイズ](#カラーカスタマイズ) (Color Customization)
+- [チェックボックス非表示](#チェックボックス非表示) (No CheckBox)
+- [スペースカラム非表示](#スペースカラム非表示) (No Last Space)
+- [カラムサイズ変更](#カラムサイズ変更) (ColumnSize Change)
+- [行選択](#行選択) (Row Selection)
+- [ソートイベント](#ソートイベント) (Sort Event)
+- [ドラッグアンドドロップ](#ドラッグアンドドロップ) (Drag And Drop)
 
-<br/>
+- [公開関数](#公開関数) (Public Functions)
+
+<br>
 
 ---
 
-<br/>
+<br>
 
-<a id="Basicfunction"></a>
+> ### 基本機能
 
-### 基本機能 `(Basic function)`
+<br>
 
 - custom, afnc, cols, data, odrmk 値を指定すると，その値に従ってテーブルを表示します。
 
@@ -248,15 +251,15 @@ doDragOver = dragEnterOrOver;
 
 - `lastsp: boolean`
 
-<br/>
+<br>
 
 ---
 
-<br/>
+<br>
 
-<a id="ColorCustomization"></a>
+> ### カラーカスタマイズ
 
-### カラーカスタマイズ `(Color customization)`
+<br>
 
 - `custom` 値を設定するとカラーをカスタマイズできます。
 
@@ -267,15 +270,15 @@ custom = {
 }; 
 ```
 
-<br/>
+<br>
 
 ---
 
-<br/>
+<br>
 
-<a id="NoCheckBox"></a>
+> ### チェックボックス非表示
 
-### チェックボックス非表示 `(No CheckBox)`
+<br>
 
 - `chkbox` に `false` を設定するとチェックボックスカラムを非表示にできます。
 
@@ -283,15 +286,15 @@ custom = {
 chkbox = false;
 ```
 
-<br/>
+<br>
 
 ---
 
-<br/>
+<br>
 
-<a id="NoLastSpace"></a>
+> ### スペースカラム非表示
 
-### スペースカラム非表示 `(No Last Space)`
+<br>
 
 - `lastsp` に `false` を設定するとスペースカラムを非表示にできます。
 
@@ -299,28 +302,28 @@ chkbox = false;
 lastsp = false;
 ```
 
-<br/>
+<br>
 
 ---
 
-<br/>
+<br>
 
-<a id="ColumnSizeChange"></a>
+> ### カラムサイズ変更
 
-### カラムサイズ変更 (ColumnSizeChange)
+<br>
 
 - ヘッダー部分にリサイズマークを左右に移動させるとカラムサイズが変わります。
 - カラムサイズは，`cols` を設定するとリセットされます。
 
-<br/>
+<br>
 
 ---
 
-<br/>
+<br>
 
-<a id="RowSelection"></a>
+> ### 行選択
 
-### 行選択 `(Row Selection)`
+<br>
 
 - 行頭のチェックボックスによって選択行になります。
 - 選択された行は，`custom.bodySeldColor` の色に変化します。
@@ -328,47 +331,49 @@ lastsp = false;
 - `chkbox` が `false` の場合は行選択できません。  
 ただし，`setSelection` 関数では行選択できます。
 
-<br/>
+<br>
 
 ---
 
-<br/>
+<br>
 
-<a id="SortEvent"></a>
+> ### ソートイベント
 
-### ソートイベント `(Sort Event)`
+<br>
 
 - `COL` の `sortable` を設定したカラムにはオーダーマークが表示されます。
 - オーダーマークが表示されたヘッダー行の文字をクリックすると `doOrder` がコールバックされます。
 - `doOrder` 内で必要な処理を行い `odrmk` を設定してください。
 
-<br/>
+<br>
 
 ---
 
-<br/>
+<br>
 
-<a id="DragAndDrop"></a>
+> ### ドラッグアンドドロップ
 
-### ドラッグアンドドロップ `(Drag And Drop)`
+<br>
 
 - `dddef` を適切に設定し行選択すると，行をドロップできます。
 - `dddef` に設定した各関数を利用して必要な処理を実装してください。
 - `dddef` の `dragType,dragType` は，`'none','copy','move','copyMove'` だけをサポートします。
 
-<br/>
+<br>
 
 ---
 
-<br/>
+<br>
 
-<a id="PublicFunctions"></a>
+> ### 公開関数
 
-### 公開関数 `(Public Functions)`
+<br>
 
-<br/>
+> #### 再描画する関数
 
-#### drowData : 再描画する関数
+<br>
+
+    drowData(); 
 
 - htmlタグで指定した `cols`, `data`, `odrmk` の値だけを変更した場合，変更が検出されない。  
   この関数を呼び出すと再描画が行われます。
@@ -379,9 +384,13 @@ lastsp = false;
 - [戻値]
   - なし
 
-<br/>
+<br>
 
-#### getSelection : 選択行を返却する関数
+> #### 選択行を返却する関数
+
+<br>
+
+    let rownums = getSelection(); 
 
 - 選択された状態になっている行番号(複数)を返却する。
 
@@ -391,9 +400,13 @@ lastsp = false;
 - [戻値]
   - rownums: number[]
 
-<br/>
+<br>
 
-#### clearSelection : 選択行をすべてクリアする
+> #### 選択行をすべてクリアする
+
+<br>
+
+    clearSelection();
 
 - 選択された状態になっている全ての行の選択状態を解除する。
 
@@ -403,7 +416,15 @@ lastsp = false;
 - [戻値]
   - なし
 
-### setSelection : 指定した行番号(複数)を選択状態にする
+<br>
+
+> ### 指定した行番号(複数)を選択状態にする
+
+<br>
+
+    setSelection(rownums);
+
+- 指定した行番号(複数)を選択状態にする。
 
 - [引数]
   - rownums: number[]
@@ -413,7 +434,7 @@ lastsp = false;
 
 ---
 
-<br/>
+<br>
 
 ### ライセンス (License)
 The components in tym-ng-ws are released under the MIT license. [Read license](//github.com/shinichi-tym/tym-ng-ws/blob/main/LICENSE).

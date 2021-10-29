@@ -15,10 +15,10 @@ npm install tym-directive
 ## 目次 (Table of contents)
 <br>
 
-1. [エレメントのリサイズ処理](#TymResize)
-1. [簡易テーブル表示](#TymTableView)
-1. [スプリッター](#TymSplitter)
-1. [簡易イベント通知](#TymComm)
+1. [エレメントのリサイズ処理](#エレメントのリサイズ処理)
+1. [簡易テーブル表示](#簡易テーブル表示)
+1. [スプリッター](#スプリッター)
+1. [簡易イベント通知](#簡易イベント通知)
 1. please wait...
 
 <br> 
@@ -39,9 +39,8 @@ import { TymDirectiveModule } from "tym-directive";
 
 <br>
 
-<a id="TymResize"></a>
+> ## エレメントのリサイズ処理
 
-## エレメントのリサイズ処理 `(tym-resize)`
 <br>
 
 任意の `html` エレメント に対してリサイズ時の処理を行えるようにします。
@@ -78,9 +77,8 @@ tymResize="{ <u>horizontal</u> | vertical | both }"
 
 <br>
 
-<a id="TymTableView"></a>
+> ## 簡易テーブル表示
 
-## 簡易テーブル表示 `(tym-table-view)`
 <br>
 
 単純な二次元配列を，簡易にテーブル表示します。
@@ -112,7 +110,7 @@ let lastsp: boolean = true;
 - 必要に応じてスタイルシートを用意します。
 - 注意：スタイルシートはグローバルに設定する必要があります。
 
-``` style.css
+``` css
 tym-table-view>table {
   font-family: Consolas, monaco, monospace;
   font-size: 14px;
@@ -144,9 +142,8 @@ tym-table-view>table tbody tr td {
 
 <br>
 
-<a id="TymSplitter"></a>
+> ## スプリッター
 
-## スプリッター `(tym-splitter)`
 <br>
 
 コンテナ内の2つに分割された領域の分割サイズをリサイズできるようにします。
@@ -182,9 +179,8 @@ ex. <tym-table-view [tymSplitter]="['#eee', '#aaa']" ...
 
 <br>
 
-<a id="TymComm"></a>
+> ## 簡易イベント通知
 
-## 簡易イベント通知 `(tym-comm)`
 <br>
 
 イベントIDとイベント関数を登録し，イベントがポストされると，同じイベントIDを持つイベント関数がすべて実行されます。

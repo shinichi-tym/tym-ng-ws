@@ -8,13 +8,13 @@
 :host {
   font-size: 1rem;
   font-family: system-ui;
+  position: absolute;
 }
 
 ul {
   user-select: none;
   padding: 1px;
   margin: 0;
-  position: relative;
   background-color: #fff;
   border: solid 1px #ddd;
   display: inline-block;

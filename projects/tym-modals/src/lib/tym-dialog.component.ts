@@ -8,7 +8,7 @@
 import { Inject, InjectionToken, StaticProvider } from '@angular/core';
 import { Component } from '@angular/core';
 
-export interface ButtonDef { [x: string]: Function }
+export interface ButtonDefs { [x: string]: Function }
 
 @Component({
   selector: 'ngx-tym-dialog',
@@ -23,9 +23,14 @@ export class TymDialogComponent {
   private static TYM_DIALOG_TOKEN = new InjectionToken<any>('TymDialog');
 
   /**
-  * 画面用値
-  */
+   * 画面用値
+   */
   public vals: any;
+
+  /**
+   * 選択されたボタンのID
+   */
+  public actionId: string = '';
 
   /**
    * ボタンのIDと表示名の定義，利用時に定義する。
@@ -43,6 +48,16 @@ export class TymDialogComponent {
   }
 
   /**
+   * ボタンクリック時の関数
+   * @param {string} id ボタンのID
+   * @private @access private
+   */
+  public onC(btn: { id: string, val: string, act: Function }) {
+    this.actionId = btn.id;
+    btn.act(this);
+  }
+
+  /**
    * StaticProviderのuseValue値の生成
    * @param title ダイアログタイトル
    * @param messages ダイアログメッセージ
@@ -52,15 +67,15 @@ export class TymDialogComponent {
   public static provider(
     title: string,
     messages: string[],
-    ...button_defs: ButtonDef[]
+    button_defs: ButtonDefs = {}
   ): StaticProvider {
 
     let buttons: any[] = [];
-    button_defs.forEach((bd) => {
-      const id = Object.keys(bd)[0];
+    Object.keys(button_defs).forEach((id) => {
+      const act = button_defs[id];
       let bv = TymDialogComponent.BUTTONS.find((b) => b[0] == id);
       if (bv) {
-        buttons.push({ val: bv[1], act: bd[id] });
+        buttons.push({ id: id, val: bv[1], act: act });
       }
     });
 
