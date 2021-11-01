@@ -214,7 +214,6 @@ ngx-tym-dialog footer button[name='ok'] {
         const component = componentRef.instance as TymDialogComponent;
         // component.vals.title = 'title'; // タイトルを変更できます。
         // component.vals.messages = ['msg1', 'msg2']; // メッセージを変更できます。
-        console.log(compo.vals);
       })
       .then(
         (componentRef) => {
