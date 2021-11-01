@@ -19,6 +19,17 @@ export class TymModalService {
   private componentRefs: ComponentRef<unknown>[] = [];
 
   /**
+   * スクロールバーのサイズ保持用
+   */
+  private scrollbarWidth: number = -1;
+
+  /**
+   * スクロール情報保持
+   */
+  private scrollOverflow: string = '';
+  private scrollPadding: string = '';
+
+  /**
    * true: モーダル, false: モーダレス
    */
   public modal = false;
@@ -85,6 +96,8 @@ export class TymModalService {
     const injector = Injector.create({ providers: [provider] });
     const factory = this.resolver.resolveComponentFactory(componentType);
     const componentRef = this.vcr.createComponent(factory, this.vcr.length, injector);
+    const docBody = document.body;
+    const bodyStyle = docBody.style;
 
     // componentが破棄された時にthis.componentsから削除し背景カバーの表示を調整する
     componentRef.onDestroy(() => {
@@ -98,9 +111,23 @@ export class TymModalService {
       } else {
         // 背景カバーの削除
         this.cvr.parentElement!.removeChild(this.cvr)
+        // モーダル表示時にbodyスクロール抑止解除
+        bodyStyle.overflow = this.scrollOverflow;
+        bodyStyle.paddingRight = this.scrollPadding;
       }
     });
 
+    // モーダル表示時にbodyスクロール抑止
+    if (this.scrollbarWidth < 0) {
+      const rect = document.body.getClientRects()[0];
+      this.scrollbarWidth = window.innerWidth - (rect.left + rect.width + rect.right);
+      this.scrollOverflow = bodyStyle.overflow;
+      this.scrollPadding = bodyStyle.paddingRight;
+    }
+    bodyStyle.overflow = 'hidden';
+    bodyStyle.paddingRight = `${this.scrollbarWidth}px`;
+
+    // イベント等調整
     const element = componentRef.location.nativeElement as HTMLElement;
     element.addEventListener('click', (e) => e.stopPropagation());
     element.addEventListener('contextmenu', (e) => e.stopPropagation());

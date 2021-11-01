@@ -525,7 +525,10 @@ export class AppComponent {
       [['folder', false],
         ['copy', true], ['remove', false]],
     ];
-
+    // // スクロール確認
+    // for (let index = 0; index < 40; index++) {
+    //   menu[1].push(menu[1][1])
+    // }
     TymMenuComponent.MENU_DEFS = {
       'file': {
         '':'ファイル',

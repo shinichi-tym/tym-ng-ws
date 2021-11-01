@@ -9,6 +9,7 @@
   font-size: 1rem;
   font-family: system-ui;
   position: absolute;
+  padding-bottom: 3vh;
 }
 
 ul {
@@ -20,6 +21,8 @@ ul {
   display: inline-block;
   box-shadow: 3px 3px 3px #ddd;
   border-radius: 2px;
+  overflow-y: auto;
+  max-height: 94vh;
   min-width: 8em;
   li {
     color: #000;

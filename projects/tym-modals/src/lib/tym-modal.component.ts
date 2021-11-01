@@ -12,7 +12,7 @@ import { TymModalService } from './tym-modal.service';
 @Component({
   selector: 'npx-tym-modals',
   template:
-    `<div class="bg" (click)="bgC()" (contextmenu)="bgM($event)" [style.display]="display">`
+    `<div class="bg" (click)="bgC()" (contextmenu)="bgM()" [style.display]="display">`
     + `<div #c></div></div>`,
   styleUrls: ['./tym-modal.component.scss']
 })
@@ -104,9 +104,8 @@ export class TymModalComponent implements OnInit, AfterViewInit {
    * 背景を右クリック時にmodalを閉じる
    * @private @access private
    */
-  bgM(event: any) {
+  bgM() {
     this.modalClose();
-    event.stopPropagation();
     return false;
   }
 
