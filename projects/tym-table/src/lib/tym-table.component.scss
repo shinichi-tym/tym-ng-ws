@@ -154,6 +154,7 @@ table {
         cursor: pointer;
         padding-right: 1em;
         position: relative;
+        z-index: -1;
         text-decoration: underline blue dashed 1px;
       }
    
