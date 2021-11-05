@@ -8,8 +8,9 @@
 import { Inject, InjectionToken, StaticProvider } from '@angular/core';
 import { Component, AfterViewInit, HostListener, ElementRef } from '@angular/core';
 
-export type MenuDefs = { [gid: string]: { [id: string]: string } };
+export type MenuDefs = { [gid: string]: { [id: string]: string | [string, string] } };
 export type MenuItems = [...[string, boolean][]][];
+export type IconItems = [...[string, string]][];
 export type MenuAction = (group: string, item: string) => void;
 
 @Component({
@@ -87,6 +88,14 @@ export class TymMenuComponent implements AfterViewInit {
   // ];
 
   /**
+   * 表示するアイコングループを指定する。
+   * [[<group-id>, <id>], ...]
+   */
+  // public static ICON: IconItems = [
+  //   ['file', 'copy'], ['file','remove']
+  // ];
+
+  /**
    * コンストラクター
    * @param vals_ StaticProviderのuseValue値
    */
@@ -150,10 +159,11 @@ export class TymMenuComponent implements AfterViewInit {
       // group open and close action
       const ulElm = this.thisElm.firstChild as HTMLUListElement;
       for (let index = 0; index < ulElm.children.length; index++) {
-        const element = ulElm.children[index] as HTMLElement;
-        const classList = element.classList;
-        if (item.gid == element.dataset.gid) {
-          if (index == 0) {
+        const liElm = ulElm.children[index] as HTMLElement;
+        const top = this.vals.useIcons ? 2 : 0;
+        const classList = liElm.classList;
+        if (item.gid == liElm.dataset.gid) {
+          if (index == top) {
             if (classList.contains('cls')) {
               classList.replace('cls', 'opn');
             } else {
@@ -181,34 +191,66 @@ export class TymMenuComponent implements AfterViewInit {
     menuItem: MenuItems,
     menuAction: MenuAction,
     screenX: number,
-    screenY: number
+    screenY: number,
+    iconItem: IconItems = [],
   ): StaticProvider {
 
     let items: any = [];
-    const [menuDef, menu] = [TymMenuComponent.MENU_DEFS, menuItem];
+    let icons: any = [];
+    const menuDef = TymMenuComponent.MENU_DEFS;
 
-    menu.forEach((ims, ixs) => {
-      let gid: string, gfg: boolean, gnm: string;
+    // MENU_DEFS にアイコンが定義されているか調べる
+    let useItemIcon = false;
+    Object.keys(menuDef).forEach(k => {
+      Object.keys(menuDef[k]).forEach(i => {
+        if (typeof menuDef[k][i] !== 'string') useItemIcon = true;
+      })
+    });
+    const spc = (useItemIcon) ? 'spc ' : '';
+
+    // アイコングループ表示用のデータを作成する
+    iconItem.forEach((ii, ix) => {
+      const [gid, id] = ii;
+      const ni = menuDef[gid][id];
+      if (typeof ni !== 'string') {
+        const [nm, ic] = ni;
+        icons.push({ cls: '', gid: gid, id: id, nm: nm, ic: ic, fg: true, act: menuAction });
+      }
+    });
+    const useIcons = icons.length != 0;
+
+    // メニュー表示用のデータを作成する
+    menuItem.forEach((ims, ixs) => {
+      let gid: string, gfg: boolean;
+      let gnm: string, gic: string, gni: string | [string, string];
       ims.forEach((im, ix) => {
         if (ix == 0) {
           // group data
           [gid, gfg] = ims[0];
-          gnm = menuDef[gid][''];
+          gni = menuDef[gid][''];
+          [gnm, gic] = (typeof gni === 'string') ? [gni, ''] : gni;
+          if (useItemIcon) {
+            gic += (gic == '') ? 'sp spc' : ' spc';
+          }
           if (gfg) {
             // group:sub menu
-            items.push({ cls: 'cls', gid: gid, id: '', nm: gnm });
+            items.push({ cls: 'cls', gid: gid, id: '', nm: gnm, ic: gic });
           } else if (ixs > 0) {
             // group:separator
-            items.push({ cls: 'hr', gid: gid, id: '', nm: '' });
+            items.push({ cls: 'hr', gid: gid, id: '', nm: '', ic: '' });
           } else {
             // not show:1st separator
           }
         } else {
           // item data
           const [id, fg] = im;
-          const nm = menuDef[gid][id];
+          const ni = menuDef[gid][id];
+          let [nm, ic] = (typeof ni === 'string') ? [ni, ''] : ni;
           const cls = `itm${(gfg) ? ' nod idt' : ''}${(fg) ? '' : ' dis'}`;
-          items.push({ cls: cls, gid: gid, id: id, nm: nm, fg: fg, act: menuAction });
+          if (useItemIcon) {
+            ic += (ic == '') ? 'sp spc' : ' spc';
+          }
+          items.push({ cls: cls, gid: gid, id: id, nm: nm, ic: ic, fg: fg, act: menuAction });
         }
       });
     });
@@ -217,8 +259,10 @@ export class TymMenuComponent implements AfterViewInit {
       provide: TymMenuComponent.TYM_MENU_TOKEN,
       useValue: {
         items: items,
+        icons: icons,
         screenX: screenX,
-        screenY: screenY
+        screenY: screenY,
+        useIcons: useIcons
       }
     }
   }

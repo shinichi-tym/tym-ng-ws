@@ -5,7 +5,7 @@ import {
 } from "tym-table";
 import { TymComm, TYM_COMM_LISTENER } from 'tym-directive';
 import { TymModalService } from "tym-modals";
-import { TymDialogComponent, TymMenuComponent, MenuItems } from "tym-modals";
+import { TymDialogComponent, TymMenuComponent, MenuItems, IconItems } from "tym-modals";
 
 @Component({
   selector: 'app-root',
@@ -521,9 +521,9 @@ export class AppComponent {
     event.stopPropagation();
     const menu: MenuItems = [
       [['file', true],
-        ['copy', true], ['remove', false]],
+        ['copy', true], ['remove', true], ['edit', false]],
       [['folder', false],
-        ['copy', true], ['remove', false]],
+        ['copy', true], ['remove', true], ['edit', false]],
     ];
     // // スクロール確認
     // for (let index = 0; index < 40; index++) {
@@ -531,14 +531,16 @@ export class AppComponent {
     // }
     TymMenuComponent.MENU_DEFS = {
       'file': {
-        '':'ファイル',
+        '': 'ファイル',
         'copy': 'コピー',
-        'remove': '削除',
+        'edit': '編集',
+        'remove': '削除'
       },
       'folder': {
         '':'フォルダー',
         'copy': 'コピー',
-        'remove': '削除',
+        'edit': '編集',
+        'remove': '削除'
       },
     };
     const provider = TymMenuComponent.provider(
@@ -546,16 +548,61 @@ export class AppComponent {
       (gid: string, id: string) => {
         console.log(gid, id);
       },
-      event.clientX, event.clientY
+      event.clientX, event.clientY + 20
     );
-    let prom = this.modal.open(TymMenuComponent, provider, false, ()=>{});
+    let prom = this.modal.open(TymMenuComponent, provider, false, () => { });
     prom.then(
-      (v)=>{
-        console.log(v);
-        this.modal.open(TymMenuComponent, provider, false);
+      (v) => {
+        console.log(v)
       }
     );
     return false;
+  }
+
+  open4(event: MouseEvent): boolean {
+    this.open45async(event,4);
+    return false;
+  }
+  open5(event: MouseEvent): boolean {
+    this.open45async(event,5);
+    return false;
+  }
+  async open45async(event: MouseEvent, n:number) { //PointerEvent,MouseEvent
+    event.stopPropagation();
+    const menu: MenuItems = (n == 4)
+      ? [[['file', true],
+          ['copy', true], ['remove', true], ['edit', false]],
+        [['folder', false],
+          ['copy', true], ['remove', true], ['edit', false]]]
+      : [[['file', false],
+          ['copy', true], ['remove', true], ['edit', true]]];
+    const icon: IconItems = (n == 4)
+      ? []
+      : [['file', 'copy'], ['file', 'remove']];
+    TymMenuComponent.MENU_DEFS = {
+      'file': {
+        '': ['ファイル', 'far fa-file'],   // Font Awesome 5 Free利用の場合の例
+        'copy': ['コピー', 'far fa-copy'], // Font Awesome 5 Free利用の場合の例
+        'edit': ['編集', 'far fa-edit'],                    // 不要な場合は省略
+        'remove': ['削除','far fa-trash-alt'],
+      },
+      'folder': {
+        '':'フォルダー',
+        'copy': 'コピー',
+        'edit': '編集',
+        'remove': ['削除', 'menu remove']  // 独自画像などを指定する場合の例 
+      },
+    };
+    const provider = TymMenuComponent.provider(
+      menu,
+      (gid: string, id: string) => {
+        console.log(gid, id);
+      },
+      event.clientX, event.clientY + 20,
+      icon
+    );
+    let componentRef = await this.modal.open(TymMenuComponent, provider, false, () => { });
+    console.log(componentRef);
   }
 
   @Output() resizeCallback(thisElm: HTMLElement, parentElm: HTMLElement) {

@@ -22,6 +22,7 @@ export class TymModalService {
    * スクロールバーのサイズ保持用
    */
   private scrollbarWidth: number = -1;
+  private scrollBarFlg: boolean = true;
 
   /**
    * スクロール情報保持
@@ -114,15 +115,17 @@ export class TymModalService {
         // モーダル表示時にbodyスクロール抑止解除
         bodyStyle.overflow = this.scrollOverflow;
         bodyStyle.paddingRight = this.scrollPadding;
+        this.scrollBarFlg = true;
       }
     });
 
     // モーダル表示時にbodyスクロール抑止
-    if (this.scrollbarWidth < 0) {
+    if (this.scrollBarFlg) {
       const rect = document.body.getClientRects()[0];
       this.scrollbarWidth = window.innerWidth - (rect.left + rect.width + rect.right);
       this.scrollOverflow = bodyStyle.overflow;
       this.scrollPadding = bodyStyle.paddingRight;
+      this.scrollBarFlg = false;
     }
     bodyStyle.overflow = 'hidden';
     bodyStyle.paddingRight = `${this.scrollbarWidth}px`;

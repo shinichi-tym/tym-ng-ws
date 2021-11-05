@@ -6,7 +6,7 @@
  */
 
 :host {
-  font-size: 1rem;
+  font-size: .8rem;
   font-family: system-ui;
   position: absolute;
   padding-bottom: 3vh;
@@ -23,14 +23,13 @@ ul {
   border-radius: 2px;
   overflow-y: auto;
   max-height: 94vh;
-  min-width: 8em;
+  min-width: 10em;
   li {
     color: #000;
     background: #fff;
     line-height: 1.5;
     padding: .2em 2em .2em .4em;
     list-style-type: none;
-    font-size: .8em;
     max-width: 20em;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -48,7 +47,7 @@ ul {
       content: '- ';
       padding-left: .2em;
     }
-    &:hover {
+    &:hover:not(.icons,.dis) {
       background-color: #eee;
       cursor: pointer;
     }
@@ -65,5 +64,43 @@ ul {
       border: none;
       cursor: initial;
     }
+  }
+}
+
+.icons {
+  .icon {
+    width: 20px;
+    height: 20px;
+    padding: 2px;
+    text-align: center;
+    display: inline-block;
+    position: relative;
+    top: .2em;
+    line-height: 20px;
+    &:hover {
+      background-color: #eee;
+      cursor: pointer;
+    }
+    &::before {
+      font-size: 16px;
+    }
+  }
+}
+
+span {
+  &.spc {
+    width: 20px;
+    height: 20px;
+    padding: 2px;
+    text-align: center;
+    display: inline-block;
+    line-height: 20px;
+    &::before {
+      font-size: 16px;
+    }
+  }
+  &.sp::before {
+    white-space: pre-wrap;
+    content: ' ';
   }
 }

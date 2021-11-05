@@ -25,6 +25,9 @@
   border: var(--bodr);
   border-radius: 4px;
 }
+* {
+  box-sizing: border-box;
+}
 header {
   font-weight: bold;
   font-size: 1.2em;

@@ -92,7 +92,7 @@ import { TymModalService } from "tym-modals";
 
 簡易なメッセージダイアログを表示します。
 
-- 使い方:
+- 使い方1:
 
 ``` typescript :app.component.ts
 // 必要なコンポーネントを定義します。
@@ -138,6 +138,8 @@ import { TymDialogComponent } from "tym-modals";
 
 ![表示イメージ](/tym-dialog-demo.png)
 
+<br>
+
 - 使い方2:
 
 ``` typescript :app.component.ts
@@ -163,7 +165,7 @@ import { SafeHtml, DomSanitizer } from "@angular/platform-browser";
       safeHtml as string[]
           // ボタンなし
     );
-    // モーダレスで表示します。
+    // モーダレスで表示します。(true:モーダル, false:モーダレス)
     let component_ref = this.modal.open(
       TymDialogComponent, provider, false);
     let component = (component_ref.instance as <TymDialogComponent>);
@@ -176,6 +178,8 @@ import { SafeHtml, DomSanitizer } from "@angular/platform-browser";
 - 表示イメージ2
 
 ![表示イメージ2](/tym-dialog-demo2.png)
+
+<br>
 
 - 使い方3:
 
@@ -197,14 +201,15 @@ ngx-tym-dialog footer button[name='ok'] {
 
 ![表示イメージ2](/tym-dialog-demo4.png)
 
-<br> 
+<br>
 
 - 使い方4:
 
 ``` typescript :app.component.ts
-  open() {
+  async open() {
     :
-    let componentRef = await this.modal.open(TymDialogComponent, provider, false, ()=>{});
+    let componentRef = await this.modal.open(
+      TymDialogComponent, provider, false, ()=>{});
     let component = componentRef.instance as TymDialogComponent;
     if (component.actionId == 'ok') { }
     if (component.actionId == 'cancel' || component.actionId == '') { }
@@ -212,8 +217,10 @@ ngx-tym-dialog footer button[name='ok'] {
     this.modal.open(TymDialogComponent, provider, false,
       (componentRef) => {
         const component = componentRef.instance as TymDialogComponent;
-        // component.vals.title = 'title'; // タイトルを変更できます。
-        // component.vals.messages = ['msg1', 'msg2']; // メッセージを変更できます。
+        // タイトルを変更できます。
+        //   component.vals.title = 'title';
+        // メッセージを変更できます。
+        //   component.vals.messages = ['msg1', 'msg2'];
       })
       .then(
         (componentRef) => {
@@ -223,7 +230,6 @@ ngx-tym-dialog footer button[name='ok'] {
         }
       )
 ```
-
 
 ---
 
@@ -287,6 +293,7 @@ import { TymMenuComponent } from "tym-modals";
     );
     this.modal.open(TymMenuComponent, provider, false);
     :
+    return false;
   }
   :
 ```
@@ -312,6 +319,87 @@ import { TymMenuComponent } from "tym-modals";
 ```
 
 <br>
+
+- 使い方3: メニュー項目にアイコンを表示
+
+``` typescript :app.component.ts
+  // アイコン用のクラス名を指定します。
+    // 全てのメニュー項目を事前に定義しておきます。
+    // * {<group-id>: {
+    // *   '': [<group-name>, <icon-class-name's>],
+    // *   <id>: [<name>, <icon-class-name's>],
+    // *   ...}...}
+    TymMenuComponent.MENU_DEFS = {
+      'file': {
+        // Font Awesome 5 Free利用の場合の例
+        '': ['ファイル', 'far fa-file'],
+        :
+      },
+      'folder': {
+        :
+        // 不要な場合は省略可
+        'edit': '編集',
+        // 独自画像などを指定する場合の例 
+        'remove': ['削除', 'menu remove']
+      }, ...
+    };
+```
+
+``` scss
+// 独自画像用のcssの例
+.menu::before {
+  width: 16px;
+  height: 16px;
+  background-image: url(~/tym-menu-icon.png);
+  font: 16px monospace;
+  content: '  ';
+  white-space: pre-wrap;
+  display: inline-block;
+}
+.copy::before {
+  background-position-x: -0px;
+}
+.paste::before {
+  background-position-x: -16px;
+}
+.move::before {
+  background-position-x: -32px;
+}
+.remove::before {
+  background-position-x: -48px;
+}
+```
+iconイメージ ([16px] x [16px * n])  
+![iconイメージ](/tym-menu-icon.png)
+
+- 表示イメージ
+
+![表示イメージ](/tym-menu-demo1.png)
+
+<br>
+
+- 使い方4: メニュー項目にアイコングループを表示
+
+``` typescript :app.component.ts
+    // 表示するアイコングループを指定します。
+    // * [[<group-id>, <id>], ...]
+    const icons: IconItems = [
+      ['file', 'copy'], ['file','remove']
+    ];
+    :
+    // 表示内容をプロバイダーとして定義します。
+    const provider = TymMenuComponent.provider(
+      menu,
+      item_action,
+      event.clientX, event.clientY,
+      icons                  // アイコングループを指定します。
+    );
+    this.modal.open(TymMenuComponent, provider, false);
+```
+
+- 表示イメージ
+
+![表示イメージ](/tym-menu-demo2.png)
 
 ---
 

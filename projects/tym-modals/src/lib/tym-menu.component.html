@@ -1,1 +1,4 @@
-<ul><li *ngFor="let i of vals.items" class="{{i.cls}}" (click)="ma(i)" [attr.data-gid]="i.gid" [title]="i.nm" [innerText]="i.nm"></li></ul>
+<ul>
+    <li *ngIf="vals.icons.length>0" class="icons"><span *ngFor="let i of vals.icons" class="icon" class="{{i.ic}}" (click)="ma(i)" [title]="i.nm"></span></li><li *ngIf="vals.icons.length>0" class="hr"></li>
+    <li *ngFor="let i of vals.items" class="{{i.cls}}" (click)="ma(i)" [attr.data-gid]="i.gid" [title]="i.nm"><span class="{{i.ic}}"></span><span [innerText]="i.nm"></span></li>
+</ul>
