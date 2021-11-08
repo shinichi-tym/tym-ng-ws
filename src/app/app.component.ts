@@ -71,6 +71,7 @@ export class AppComponent {
   };
   @Output() chkbox: boolean = true;
   @Output() lastsp: boolean = true;
+  // @Output() autors: boolean = true;
   /////////////////////////////////////////////////////////////////////
   @Output() custom1: TYM_CUSTOM = {
     fontSize: "10px",

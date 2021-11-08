@@ -131,7 +131,7 @@ export class TymMenuComponent implements AfterViewInit {
     }
 
     // コンテキストメニューが画面外に見切れた場合に移動させる
-    setTimeout(resize, 0);
+    setTimeout(resize);
     new MutationObserver(resize)
       .observe(thisElm, { subtree: true, attributes: true, attributeFilter: ["class"] });
   }

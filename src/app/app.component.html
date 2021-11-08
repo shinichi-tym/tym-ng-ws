@@ -54,6 +54,7 @@
 <form>
   <input type="button" value="chkbox" (click)="chkbox1()">
   <input type="button" value="lastsp" (click)="lastsp1()">
+  <input type="button" value="autors" #autors (click)="autors.value=(autors.value=='autors')?'no autors':'autors'">
   <input type="button" value="any test" (click)="anyTest()">
 </form>
 
@@ -70,12 +71,13 @@
     [dddef]="dddef"
     [chkbox]="chkbox"
     [lastsp]="lastsp"
+    [autors]="autors.value=='autors'"
   ></ngx-tym-table>
 </div>
 
 <div id="tymTable2">
   <ngx-tym-table
-    [custom]="custom1" [cols]="cols1" [data]="data1" [odrmk]="odrmk1"></ngx-tym-table>
+    [custom]="custom1" [cols]="cols1" [data]="data1" [odrmk]="odrmk1" [autors]="true"></ngx-tym-table>
   <br>
   <ngx-tym-table
     [custom]="custom2" [cols]="cols2" [data]="data2" [odrmk]="odrmk2"></ngx-tym-table>

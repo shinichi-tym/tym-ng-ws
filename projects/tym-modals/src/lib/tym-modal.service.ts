@@ -138,7 +138,7 @@ export class TymModalService {
       element.tabIndex = 0;
       element.style.outline = 'none';
       element.focus();
-    }, 0);
+    });
 
     // 背景カバーの挿入or移動
     element.parentElement!.insertBefore(this.cvr, element);

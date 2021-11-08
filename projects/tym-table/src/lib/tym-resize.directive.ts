@@ -6,6 +6,7 @@
  */
 
 import { Directive, ElementRef, OnInit } from '@angular/core';
+import { TymTableUtilities } from "./tym-table.utilities";
 
 @Directive({
   selector: '[resize]'
@@ -21,8 +22,7 @@ export class ResizeDirective implements OnInit {
   constructor(
     private elementRef: ElementRef
   ) {
-    const thiElm = this.thisElm = this.elementRef.nativeElement;
-    this.thElm = thiElm.parentElement;
+    this.thisElm = this.elementRef.nativeElement;
   }
 
   /**
@@ -31,55 +31,19 @@ export class ResizeDirective implements OnInit {
   private thisElm: HTMLDivElement;
 
   /**
-   * this native element (th)
-   */
-  private thElm: HTMLTableCellElement;
-
-  /**
-   * セルを広げる (table > thead > tr > th > div)
-   * 
-   * @param {HTMLTableElement} tableElm 対象のtableエレメント
-   * @param {HTMLTableCellElement} thElm 対象のthエレメント
-   * @param {HTMLDivElement} divElm 対象のdivエレメント
-   */
-  private widen(tableElm: HTMLTableElement, thElm: HTMLTableCellElement, divElm: HTMLDivElement) {
-
-    const cntnrElm = tableElm.parentElement as HTMLElement; // ngx-tym-table エレメント
-    const scrolElm = cntnrElm.parentElement as HTMLElement; // div等のスクロールするエレメント
-
-    const scrollLeft = scrolElm.scrollLeft; // スクロール状態を保持
-    const cntnrRect = cntnrElm.getBoundingClientRect();
-    const cellElms = tableElm.querySelectorAll(`tbody tr td:nth-child(${thElm.cellIndex + 1})`);
-    // padding, margin サイズを求める
-    const realStyle = window.getComputedStyle(cellElms.item(0));
-    const padSize = ''
-      + `${realStyle.paddingLeft} + ${realStyle.paddingRight} + `
-      + `${realStyle.marginLeft} + ${realStyle.marginRight}`;
-    thElm.style.width = divElm.style.width = 'var(--bd-wd)';// 一時的にセルのサイズを縮める
-    // 全ての行をチェックし最大widthを求める (tbody > tr > td)
-    let maxWidth = Array.from(cellElms).reduce((a, b) => a.scrollWidth > b.scrollWidth ? a : b).scrollWidth;
-    thElm.style.width = divElm.style.width
-      = `calc(${Math.min(maxWidth, (cntnrRect.width * .7))}px + ${padSize})`;
-    scrolElm.scrollLeft = scrollLeft; // スクロール状態を回復
-  }
-
-  /**
    * 初期処理
    *
    * @memberof ResizeDirective
    */
   public ngOnInit() {
-    const [thisElm, thElm] = [this.thisElm, this.thElm];
+    const thisElm = this.thisElm;
+    const thElm = thisElm.parentElement as HTMLTableCellElement;
     const tableElm = thisElm.closest('table') as HTMLTableElement;
     thisElm.addEventListener('dblclick', (e: MouseEvent) => {
       if (e.shiftKey) {
-        const thElms = tableElm.querySelectorAll(`thead tr th div`);
-        thElms.forEach(elm => {
-          if (elm.hasAttribute('resize')) this.widen(tableElm,
-            elm.parentElement as HTMLTableCellElement, elm as HTMLTableCellElement);
-        });
+        TymTableUtilities._allWiden(tableElm);
       } else {
-        this.widen(tableElm, thElm, thisElm);
+        TymTableUtilities._widen(tableElm, thisElm);
       }
     });
     const observer = new MutationObserver(() => {

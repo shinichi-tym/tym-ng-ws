@@ -127,6 +127,7 @@ let data = [
     [dddef]="dddef"
     [chkbox]="chkbox"
     [latstp]="latstp"
+    [autors]="autors"
 ><ngx-tym-table>
 ```
 - `custom: TYM_CUSTOM`
@@ -251,6 +252,8 @@ doDragOver = dragEnterOrOver;
 
 - `lastsp: boolean`
 
+- `autors: boolean`
+
 <br>
 
 ---
@@ -308,6 +311,22 @@ lastsp = false;
 
 <br>
 
+> ### カラムサイズ自動変更
+
+<br>
+
+- `autors` に `true` を設定すると表示内容に従ってカラムサイズが自動的に変わります。
+
+``` typescript
+autors = true;
+```
+
+<br>
+
+---
+
+<br>
+
 > ### カラムサイズ変更
 
 <br>
@@ -328,6 +347,7 @@ lastsp = false;
 <br>
 
 - 行頭のチェックボックスによって選択行になります。
+- コンテキストアクション時に選択行になります(`afnc.doContext`で動作を上書きできます)
 - 選択された行は，`custom.bodySeldColor` の色に変化します。
 - 選択された行は，ドラッグアンドドロップの対象になります。
 - `chkbox` が `false` の場合は行選択できません。  

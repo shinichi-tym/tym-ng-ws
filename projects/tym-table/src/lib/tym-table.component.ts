@@ -10,6 +10,8 @@ import {
   Input,
   Output,
   HostBinding,
+  ElementRef,
+  AfterViewInit,
   ChangeDetectorRef
 } from '@angular/core';
 import {
@@ -21,6 +23,7 @@ import {
   TYM_COL,
   TYM_ORDER
 } from './tym-table.interface'
+import { TymTableUtilities } from "./tym-table.utilities";
 
 @Component({
   selector: 'ngx-tym-table',
@@ -32,7 +35,7 @@ import {
  * 簡易なテーブルコンポーネント
  * 
  */
-export class TymTableComponent {
+export class TymTableComponent implements AfterViewInit {
 
   //-------------------------------------------------------------------
 
@@ -372,14 +375,31 @@ export class TymTableComponent {
 
   @Input() chkbox: boolean = true;
   @Input() lastsp: boolean = true;
+  @Input() autors: boolean = false;
 
   //-------------------------------------------------------------------
-
+  private thisElm: HTMLElement;
   /**
    * コンストラクター
    */
   constructor(
-    private changeDetectorRef: ChangeDetectorRef) { }
+    private elementRef: ElementRef,
+    private changeDetectorRef: ChangeDetectorRef) {
+      this.thisElm = this.elementRef.nativeElement as HTMLElement;
+    }
+
+  //-------------------------------------------------------------------
+
+  /**
+   * ビューを初期化した後の処理
+   */
+  ngAfterViewInit() {
+    if (this.autors) {
+      setTimeout(() => {
+        TymTableUtilities._allWiden(this.thisElm.firstChild as HTMLTableElement);
+      });
+    }
+  }
 
   //-------------------------------------------------------------------
 
@@ -549,6 +569,11 @@ export class TymTableComponent {
     }
     this._rows_data = rows_data;
     this._rows_chkd = rows_chkd;
+    if (this.autors) {
+      setTimeout(() => {
+        TymTableUtilities._allWiden(this.thisElm.firstChild as HTMLTableElement);
+      });
+    }
   }
 
   /**

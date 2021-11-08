@@ -21,6 +21,8 @@
   --od-co: #fff;
   --se-co: #fee;
   --ho-co: #efe;
+  box-sizing: border-box;
+  * {box-sizing: border-box;}
 }
 
 table {
@@ -56,7 +58,6 @@ table {
           text-overflow: ellipsis;
           padding: var(--bd-pa) var(--bd-pa);
           resize: horizontal;
-          box-sizing: border-box;
         }
 
         svg {
@@ -168,7 +169,6 @@ table {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    box-sizing: border-box;
   }
 
   input[type=checkbox] {
