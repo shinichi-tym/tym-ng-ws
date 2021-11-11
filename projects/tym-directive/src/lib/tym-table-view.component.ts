@@ -21,6 +21,8 @@ export class TymTableViewComponent implements AfterViewInit {
 
   @Input() lastsp: boolean = true;
 
+  @Input() maxWidth: number = 200;
+
   /**
    * コンストラクタ
    *
@@ -33,15 +35,16 @@ export class TymTableViewComponent implements AfterViewInit {
    * ビューを初期化した後の処理
    */
   ngAfterViewInit() {
-    const thisElm: HTMLElement = this.elementRef.nativeElement;
-    const tableElm: HTMLTableElement = thisElm.firstElementChild as any;
-    const tableTr: HTMLTableRowElement = tableElm.firstChild!.firstChild as HTMLTableRowElement;
+    const thisElm = this.elementRef.nativeElement as HTMLElement; // tym-table-view
+    const tableElm = thisElm.firstElementChild as HTMLTableElement; // table
+    const theadElm = tableElm.firstElementChild as HTMLTableSectionElement; // thead
+    const tableTr = theadElm.firstElementChild as HTMLTableRowElement; // tr
     tableTr.childNodes.forEach(node => {
       const elm = node as HTMLElement;
       if (elm.tagName == 'TH') { // #comment 除去
         const realStyle = window.getComputedStyle(elm);
-        elm.style.width = (elm.clientWidth > 200)
-          ? '200px'
+        elm.style.width = (elm.clientWidth > this.maxWidth)
+          ? `${this.maxWidth}px`
           : realStyle.width;
       }
     });

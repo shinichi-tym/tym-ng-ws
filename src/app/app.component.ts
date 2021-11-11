@@ -310,7 +310,7 @@ export class AppComponent {
     for (let index = 0; index < inputs.length; index++) {
       const element = inputs[index];
       const elm_val = element.value;
-      const elm_id = element.parentElement?.previousSibling?.firstChild?.nodeValue;
+      const elm_id = element.parentElement?.previousElementSibling?.firstElementChild?.nodeValue;
       switch (elm_id) {
         case 'fontFamily':
           custom.fontFamily = elm_val;

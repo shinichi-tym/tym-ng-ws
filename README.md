@@ -36,6 +36,15 @@
 
 ![表示サンプル](/tym-dialog-demo.png)
 
+<br>
+
+---
+### `comments`
+```text
+* supports angular 12 and 13.
+* need support for angular 11? please contact us by email
+```
+---
 ### ライセンス (License)
 The components in tym-ng-ws are released under the MIT license. [Read license](//github.com/shinichi-tym/tym-ng-ws/blob/main/LICENSE).
 

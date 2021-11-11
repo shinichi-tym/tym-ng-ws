@@ -91,6 +91,7 @@ tymResize="{ <u>horizontal</u> | vertical | both }"
   [cols]="cols"
   [data]="data"
   [lastsp]="lastsp"
+  [maxWidth]="maxWidth"
 ></tym-table-view>
 ```
 
@@ -104,7 +105,8 @@ let data = [
   [ 2980, 116, 345680, "※備考参照:ここには注意事項が表示されます" ],
   [ 3980, 616, 2451680, "" ]
 ];
-let lastsp: boolean = true;
+let lastsp: boolean = true; // default true(スペースカラムを表示)
+let maxWidth: number = 200; // default 200 px
 ``` 
 
 - 必要に応じてスタイルシートを用意します。
@@ -237,9 +239,14 @@ TymComm.add(id: string, lsn: Function)
 TymComm.delElmLisrnerSet(id: string, lsn: Function)
 TymComm.post(id: string, data: any)
 ```
-
 <br>
 
+---
+### `comments`
+```text
+* supports angular 12 and 13.
+* need support for angular 11? please contact us by email
+```
 ---
 ### ライセンス (License)
 The components in tym-ng-ws are released under the MIT license. [Read license](//github.com/shinichi-tym/tym-ng-ws/blob/main/LICENSE).

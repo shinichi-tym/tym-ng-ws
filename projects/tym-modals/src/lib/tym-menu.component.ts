@@ -157,7 +157,7 @@ export class TymMenuComponent implements AfterViewInit {
       }
     } else {
       // group open and close action
-      const ulElm = this.thisElm.firstChild as HTMLUListElement;
+      const ulElm = this.thisElm.firstElementChild as HTMLUListElement;
       for (let index = 0; index < ulElm.children.length; index++) {
         const liElm = ulElm.children[index] as HTMLElement;
         const top = this.vals.useIcons ? 2 : 0;

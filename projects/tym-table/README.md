@@ -97,6 +97,7 @@ let data = [
 - [カラーカスタマイズ](#カラーカスタマイズ) (Color Customization)
 - [チェックボックス非表示](#チェックボックス非表示) (No CheckBox)
 - [スペースカラム非表示](#スペースカラム非表示) (No Last Space)
+- [カラムサイズ自動変更](#カラムサイズ自動変更) (Column Auto Change)
 - [カラムサイズ変更](#カラムサイズ変更) (ColumnSize Change)
 - [行選択](#行選択) (Row Selection)
 - [ソートイベント](#ソートイベント) (Sort Event)
@@ -454,10 +455,15 @@ autors = true;
 - [戻値]
   - なし
 
----
-
 <br>
 
+---
+### `comments`
+```text
+* supports angular 12 and 13.
+* need support for angular 11? please contact us by email
+```
+---
 ### ライセンス (License)
 The components in tym-ng-ws are released under the MIT license. [Read license](//github.com/shinichi-tym/tym-ng-ws/blob/main/LICENSE).
 

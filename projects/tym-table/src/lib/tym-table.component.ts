@@ -396,7 +396,7 @@ export class TymTableComponent implements AfterViewInit {
   ngAfterViewInit() {
     if (this.autors) {
       setTimeout(() => {
-        TymTableUtilities._allWiden(this.thisElm.firstChild as HTMLTableElement);
+        TymTableUtilities._allWiden(this.thisElm.firstElementChild as HTMLTableElement);
       });
     }
   }
@@ -571,7 +571,7 @@ export class TymTableComponent implements AfterViewInit {
     this._rows_chkd = rows_chkd;
     if (this.autors) {
       setTimeout(() => {
-        TymTableUtilities._allWiden(this.thisElm.firstChild as HTMLTableElement);
+        TymTableUtilities._allWiden(this.thisElm.firstElementChild as HTMLTableElement);
       });
     }
   }
