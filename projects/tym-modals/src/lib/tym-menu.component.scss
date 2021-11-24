@@ -6,13 +6,16 @@
  */
 
 :host {
-  font-size: .8rem;
+  --bs-sz: 16px;
+  --bx-sz: calc(var(--bs-sz) + 4px);
+  font-size: var(--bs-sz);
   font-family: system-ui;
   position: absolute;
   padding-bottom: 3vh;
 }
 
 ul {
+  font-size: .8em;
   user-select: none;
   padding: 1px;
   margin: 0;
@@ -69,34 +72,34 @@ ul {
 
 .icons {
   .icon {
-    width: 20px;
-    height: 20px;
+    width: var(--bx-sz);
+    height: var(--bx-sz);
     padding: 2px;
     text-align: center;
     display: inline-block;
     position: relative;
     top: .2em;
-    line-height: 20px;
+    line-height: var(--bx-sz);
     &:hover {
       background-color: #eee;
       cursor: pointer;
     }
     &::before {
-      font-size: 16px;
+      font-size: var(--bs-sz);
     }
   }
 }
 
 span {
   &.spc {
-    width: 20px;
-    height: 20px;
+    width: var(--bx-sz);
+    height: var(--bx-sz);
     padding: 2px;
     text-align: center;
     display: inline-block;
-    line-height: 20px;
+    line-height: var(--bx-sz);
     &::before {
-      font-size: 16px;
+      font-size: var(--bs-sz);
     }
   }
   &.sp::before {

@@ -348,25 +348,29 @@ import { TymMenuComponent } from "tym-modals";
 ``` scss
 // 独自画像用のcssの例
 .menu::before {
-  width: 16px;
-  height: 16px;
+  --sz: 16px;
+  display: inline-block;
+  width: var(--sz);
+  height: var(--sz);
   background-image: url(~/tym-menu-icon.png);
-  font: 16px monospace;
+  background-size: calc(var(--sz) * 8) var(--sz);
+  position: relative;
+  top: 2px;
+  font: var(--sz) monospace;
   content: '  ';
   white-space: pre-wrap;
-  display: inline-block;
 }
 .copy::before {
-  background-position-x: -0px;
+  background-position-x: calc(var(--sz) * -0);
 }
 .paste::before {
-  background-position-x: -16px;
+  background-position-x: calc(var(--sz) * -1);
 }
 .move::before {
-  background-position-x: -32px;
+  background-position-x: calc(var(--sz) * -2);
 }
 .remove::before {
-  background-position-x: -48px;
+  background-position-x: calc(var(--sz) * -3);
 }
 ```
 iconイメージ ([16px] x [16px * n])  
@@ -400,6 +404,32 @@ iconイメージ ([16px] x [16px * n])
 - 表示イメージ
 
 ![表示イメージ](/tym-menu-demo2.png)
+
+<br>
+
+- 使い方5: メニュー項目のサイズを変更する
+
+``` scss
+ngx-tym-menu {
+  // アイコンサイズを20pxで表示する
+  --bs-sz: 20px !important;
+  // フォントファミリーを変更する場合に指定する
+  font-family: "Meiryo UI", "MS PGothic", sans-serif !important;
+}
+// 独自画像用のcssの例
+.menu::before {
+  // アイコンサイズを20pxで表示する
+  --sz: 20px;
+   :
+
+※ スタイルシートはグローバルに設定します。
+```
+
+- 表示イメージ
+
+![表示イメージ](/tym-menu-demo3.png)
+
+<br>
 
 ---
 

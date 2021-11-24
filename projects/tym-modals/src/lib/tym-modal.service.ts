@@ -21,7 +21,7 @@ export class TymModalService {
   /**
    * スクロールバーのサイズ保持用
    */
-  private scrollbarWidth: number = -1;
+  private scrollbarWidth: string = '';
   private scrollBarFlg: boolean = true;
 
   /**
@@ -121,14 +121,15 @@ export class TymModalService {
 
     // モーダル表示時にbodyスクロール抑止
     if (this.scrollBarFlg) {
-      const rect = document.body.getClientRects()[0];
-      this.scrollbarWidth = window.innerWidth - (rect.left + rect.width + rect.right);
+      const scrollbarWidth = `${window.innerWidth - document.documentElement.clientWidth}px`;
+      const paddingRight = window.getComputedStyle(document.body).paddingRight;
+      this.scrollbarWidth = `calc(${scrollbarWidth} + ${paddingRight})`;
       this.scrollOverflow = bodyStyle.overflow;
       this.scrollPadding = bodyStyle.paddingRight;
       this.scrollBarFlg = false;
     }
     bodyStyle.overflow = 'hidden';
-    bodyStyle.paddingRight = `${this.scrollbarWidth}px`;
+    bodyStyle.paddingRight = this.scrollbarWidth;
 
     // イベント等調整
     const element = componentRef.location.nativeElement as HTMLElement;

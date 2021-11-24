@@ -119,26 +119,31 @@ ngx-tym-dialog footer button[name='ok'] {
   &:active { background-color: #04f !important; }
 }
 ngx-tym-menu {
-  font-family: monospace;
+  --bs-sz: 20px !important;
+  // font-family: "Meiryo UI", "MS PGothic", sans-serif !important;
 }
 .menu::before {
+  --sz: 20px;
   display: inline-block;
-  width: 16px;
-  height: 16px;
+  width: var(--sz);
+  height: var(--sz);
   background-image: url(~/tym-menu-icon.png);
-  font: 16px monospace;
+  background-size: calc(var(--sz) * 8) var(--sz);
+  position: relative;
+  top: 2px;
+  font: var(--sz) monospace;
   content: '  ';
   white-space: pre-wrap;
 }
 .copy::before {
-  background-position-x: -0px;
+  background-position-x: calc(var(--sz) * -0);
 }
 .paste::before {
-  background-position-x: -16px;
+  background-position-x: calc(var(--sz) * -1);
 }
 .move::before {
-  background-position-x: -32px;
+  background-position-x: calc(var(--sz) * -2);
 }
 .remove::before {
-  background-position-x: -48px;
+  background-position-x: calc(var(--sz) * -3);
 }
