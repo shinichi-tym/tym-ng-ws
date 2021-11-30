@@ -23,31 +23,31 @@
 <form><table id="cust">
   <tr>
     <td>fontFamily</td><td><input type="text" value="Consolas, monaco, monospace"></td>
-    <td>bodyColor</td><td><input type="text" value="#000000"></td>
+    <td>bodyColor</td><td><input type="text" value="#000"></td>
   </tr>
   <tr>
     <td>fontSize</td><td><input type="text" value="1rem"></td>
-    <td>bodyBoxShadow</td><td><input type="text" value="1px 1px 3px 0 #cccccc inset"></td>
+    <td>bodyBoxShadow</td><td><input type="text" value="1px 1px 3px 0 #ccc inset"></td>
   </tr>
   <tr>
-    <td>borderColor</td><td><input type="text" value="#888888"></td>
+    <td>borderColor</td><td><input type="text" value="#888"></td>
     <td>bodyBoxPadding</td><td><input type="text" value=".4em"></td>
   </tr>
   <tr>
-    <td>headerBackground</td><td><input type="text" value="#888888 linear-gradient(#888888, #666666)"></td>
-    <td>bodyEvenColor</td><td><input type="text" value="#eeeeee"></td>
+    <td>headerBackground</td><td><input type="text" value="#888 linear-gradient(#888, #666)"></td>
+    <td>bodyEvenColor</td><td><input type="text" value="#eee"></td>
   </tr>
   <tr>
-    <td>headerColor</td><td><input type="text" value="#ffffff"></td>
-    <td>bodyOddColor</td><td><input type="text" value="#ffffff"></td>
+    <td>headerColor</td><td><input type="text" value="#fff"></td>
+    <td>bodyOddColor</td><td><input type="text" value="#fff"></td>
   </tr>
   <tr>
-    <td>headerBoxShadow</td><td><input type="text" value="1px 1px 3px 0 #cccccc inset"></td>
-    <td>bodySeldColor</td><td><input type="text" value="#ffeeee"></td>
+    <td>headerBoxShadow</td><td><input type="text" value="1px 1px 3px 0 #ccc inset"></td>
+    <td>bodySeldColor</td><td><input type="text" value="#fee"></td>
   </tr>
   <tr>
-    <td></td><td></td>
-    <td>bodyHovrColor</td><td><input type="text" value="#eeffee"></td>
+    <td>bodyFocusColor</td><td><input type="text" value="#ffa"></td>
+    <td>bodyHovrColor</td><td><input type="text" value="#efe"></td>
   </tr>
 </table></form>
 
@@ -55,6 +55,7 @@
   <input type="button" value="chkbox" (click)="chkbox1()">
   <input type="button" value="lastsp" (click)="lastsp1()">
   <input type="button" value="autors" #autors (click)="autors.value=(autors.value=='autors')?'no autors':'autors'">
+  <input type="button" value="getsel" (click)="getsel()">
   <input type="button" value="any test" (click)="anyTest()">
 </form>
 
@@ -282,7 +283,7 @@ effectAllowed:[none,copy,move,copyMove], dropEffect:[none,copy,move]
 <hr><!-- ---------------------------------------------------------- -->
 <h2>tym-modals</h2>
 
-<npx-tym-modals></npx-tym-modals>
+<ngx-tym-modals></ngx-tym-modals>
 <input type="button" value="open" (click)="open()">
 <input type="button" value="open1" (click)="open1()">
 <input type="button" value="open2" (click)="open2()" (contextmenu)="open3($event)">
@@ -300,6 +301,15 @@ effectAllowed:[none,copy,move,copyMove], dropEffect:[none,copy,move]
 <br>
 <br>
 <br>
+<br>
+<br>
+<br>
+<br>
+
+<hr><!-- ---------------------------------------------------------- -->
+<h2>tym-tree</h2>
+
+<ngx-tym-tree [tree]="tree"></ngx-tym-tree>
 <br>
 <br>
 <br>

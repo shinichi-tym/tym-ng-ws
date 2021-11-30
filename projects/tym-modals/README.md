@@ -38,7 +38,7 @@ import { TymModalModule } from "tym-modals";
 
 ``` html :app.component.html
   :
-<npx-tym-modals></npx-tym-modals>
+<ngx-tym-modals></ngx-tym-modals>
   :
 ※ 画面のどこかに1つ定義します。
 ```

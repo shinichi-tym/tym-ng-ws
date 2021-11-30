@@ -100,6 +100,7 @@ let data = [
 - [カラムサイズ自動変更](#カラムサイズ自動変更) (Column Auto Change)
 - [カラムサイズ変更](#カラムサイズ変更) (ColumnSize Change)
 - [行選択](#行選択) (Row Selection)
+- [行フォーカス](#行フォーカス) (Row Focus)
 - [ソートイベント](#ソートイベント) (Sort Event)
 - [ドラッグアンドドロップ](#ドラッグアンドドロップ) (Drag And Drop)
 
@@ -138,17 +139,18 @@ export interface TYM_CUSTOM {
                               // innerid: default
   fontFamily?: string;        // --fo-fa: Consolas, monaco, monospace
   fontSize?: string           // --fo-sz: 1rem
-  borderColor?: string;       // --bo-co: #888888
-  headerBackground?: string;  // --hd-bg: #888888 linear-gradient(#888888, #666666)
-  headerColor?: string;       // --hd-co: #ffffff
-  headerBoxShadow?: string;   // --hd-sa: 1px 1px 3px 0 #cccccc inset
-  bodyColor?: string;         // --bd-co: #000000
-  bodyBoxShadow?: string;     // --bd-sa: 1px 1px 3px 0 #cccccc inset
+  borderColor?: string;       // --bo-co: #888
+  headerBackground?: string;  // --hd-bg: #888 linear-gradient(#888, #666)
+  headerColor?: string;       // --hd-co: #fff
+  headerBoxShadow?: string;   // --hd-sa: 1px 1px 3px 0 #ccc inset
+  bodyColor?: string;         // --bd-co: #000
+  bodyBoxShadow?: string;     // --bd-sa: 1px 1px 3px 0 #ccc inset
   bodyBoxPadding?: string;    // --bd-pa: .4em
-  bodyEvenColor?: string;     // --ev-co: #eeeeee
-  bodyOddColor?: string;      // --od-co: #ffffff;
-  bodySeldColor?: string;     // --se-co: #ffeeee;
-  bodyHovrColor?: string;     // --ho-co: #eeffee;
+  bodyEvenColor?: string;     // --ev-co: #eee
+  bodyOddColor?: string;      // --od-co: #fff
+  bodySeldColor?: string;     // --se-co: #fee
+  bodyHovrColor?: string;     // --ho-co: #efe
+  bodyFocusColor?: string;    // --fc-co: #ffa
 }
 ```
 - `afnc: TYM_FUNCS`
@@ -353,6 +355,21 @@ autors = true;
 - 選択された行は，ドラッグアンドドロップの対象になります。
 - `chkbox` が `false` の場合は行選択できません。  
 ただし，`setSelection` 関数では行選択できます。
+
+<br>
+
+---
+
+<br>
+
+> ### 行フォーカス
+
+<br>
+
+- 行にフォーカスが設定されます。
+- 上下キーでフォーカスを移動できます。
+- フォーカス行は，`custom.bodyFocusColor` の色に変化します。
+- スペースキーで行選択できます。
 
 <br>
 

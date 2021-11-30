@@ -122,6 +122,12 @@ ngx-tym-menu {
   --bs-sz: 20px !important;
   // font-family: "Meiryo UI", "MS PGothic", sans-serif !important;
 }
+.sz20::before {
+  --sz: 20px !important;
+}
+.sz16::before {
+  --sz: 16px !important;
+}
 .menu::before {
   --sz: 20px;
   display: inline-block;
@@ -146,4 +152,10 @@ ngx-tym-menu {
 }
 .remove::before {
   background-position-x: calc(var(--sz) * -3);
+}
+ngx-tym-tree {
+  width: 20em;
+  height: 10em;
+  border: solid 1px #888;
+  overflow: auto;
 }

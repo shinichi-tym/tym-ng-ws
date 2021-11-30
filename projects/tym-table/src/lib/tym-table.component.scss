@@ -21,6 +21,7 @@
   --od-co: #fff;
   --se-co: #fee;
   --ho-co: #efe;
+  --fc-co: #ffa;
   box-sizing: border-box;
   * {box-sizing: border-box;}
 }
@@ -96,6 +97,7 @@ table {
   tbody {
     tr {
       opacity: .8;
+      outline: none;
 
       >* {
         color: var(--bd-co);
@@ -149,6 +151,10 @@ table {
 
       &.working {
         height: var(--bd-hi);
+      }
+
+      &:focus th, &:focus td {
+        background-color: var(--fc-co);
       }
 
       td.clickact {

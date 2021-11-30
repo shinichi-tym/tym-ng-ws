@@ -10,7 +10,7 @@ import { ViewChild, ViewContainerRef } from '@angular/core';
 import { TymModalService } from './tym-modal.service';
 
 @Component({
-  selector: 'npx-tym-modals',
+  selector: 'npx-tym-modals,ngx-tym-modals',
   template:
     `<div class="bg" (click)="bgC()" (contextmenu)="bgM()" [style.display]="display">`
     + `<div #c></div></div>`,

@@ -32,6 +32,10 @@
       "tym-table": [
         "dist/tym-table/tym-table",
         "dist/tym-table"
+      ],
+      "tym-tree": [
+        "dist/tym-tree/tym-tree",
+        "dist/tym-tree"
       ]
     }
   },

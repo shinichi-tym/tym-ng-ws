@@ -132,6 +132,24 @@ export class AppComponent {
   @Output() Log = console.log;
   @Output() commdel = true;
   /////////////////////////////////////////////////////////////////////
+  @Output() tree = [
+    { tx: 'data', },
+    { tx: 'data', },
+    {
+      tx: 'DATA', children: [
+        {
+          tx: 'sub sub', children: [
+            { tx: 'sub sub sub', },
+            { tx: 'sub sub sub', },
+            { tx: 'sub sub sub', },
+          ]
+        },
+        { tx: 'sub sub', },
+      ]
+    },
+    { tx: 'data', },
+  ];
+  /////////////////////////////////////////////////////////////////////
   constructor(
     private modal: TymModalService,
     private sanitizer: DomSanitizer) {
@@ -305,12 +323,14 @@ export class AppComponent {
       }
   }
   setCustom(): void {
-    let inputs = document.getElementsByTagName('input');
+    let inputs = document.querySelectorAll<HTMLInputElement>('#cust input');
     let custom: TYM_CUSTOM = {};
     for (let index = 0; index < inputs.length; index++) {
       const element = inputs[index];
       const elm_val = element.value;
-      const elm_id = element.parentElement?.previousElementSibling?.firstElementChild?.nodeValue;
+      const elm_td = element.parentElement?.previousElementSibling as HTMLElement;
+      const elm_id = elm_td.innerText;
+      console.log(elm_id)
       switch (elm_id) {
         case 'fontFamily':
           custom.fontFamily = elm_val;
@@ -364,6 +384,10 @@ export class AppComponent {
           custom.bodyHovrColor = elm_val;
           break;
 
+        case 'bodyFocusColor':
+          custom.bodyFocusColor = elm_val;
+          break;
+
         default:
           break;
       }
@@ -389,7 +413,11 @@ export class AppComponent {
   lastsp1() {
     this.lastsp = !this.lastsp;
   }
-  
+
+  getsel() {
+    console.log(this.tymTable?.getSelection());
+  }
+
   anyTest() {
     this.tymTable?.setSelection([1,2]);
     TymComm.post('id1', 'POST DATA!');

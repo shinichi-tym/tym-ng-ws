@@ -1,0 +1,59 @@
+/*!
+ * tym-tree.js
+ * Copyright (c) 2021 shinichi tayama
+ * Released under the MIT license.
+ * see https://opensource.org/licenses/MIT
+ */
+
+:host {
+  font-size: 1rem;
+  padding: 0;
+  margin: 0;
+  display: block;
+  background-color: #fff;
+
+  box-sizing: border-box;
+  * {box-sizing: border-box;}
+}
+
+div {
+
+  >span {
+    display: block;
+    line-height: 1.5;
+    padding-right: 1em;
+    border: solid 1px transparent;
+    user-select: none;
+
+    &:focus-visible {
+      outline: none;
+    }
+    &.opn{
+      background: 0 .4em transparent no-repeat url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='.8em' height='.8em' viewBox='0 0 9 9'><path d='M1 2 L4 6 L7 2' stroke='%23000000' fill='transparent'/></svg>");
+    }
+  
+    &.cls {
+      background: 0 .4em transparent no-repeat url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='.8em' height='.8em' viewBox='0 0 9 9'><path d='M2 1 L6 4 L2 7' stroke='%23aaaaaa' fill='transparent'/></svg>");
+
+      +div {
+        display: none;
+      }
+    }
+    &.noc {
+      background-image: none;
+    }
+
+    &:focus {
+      border-color: #aaa;
+      background-color: #ddd;
+    }
+
+    >span.spc::before,
+    &::before {
+      content: '  ';
+      font-family: monospace;
+      white-space: pre-wrap;
+    }
+  }
+
+}

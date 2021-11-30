@@ -11,17 +11,18 @@
 export interface TYM_CUSTOM {
   fontFamily?: string;        // --fo-fa: Consolas, monaco, monospace
   fontSize?: string;          // --fo-sz: 1rem
-  borderColor?: string;       // --bo-co: #888888
-  headerBackground?: string;  // --hd-bg: #888888 linear-gradient(#888888, #666666)
-  headerColor?: string;       // --hd-co: #ffffff
-  headerBoxShadow?: string;   // --hd-sa: 1px 1px 3px 0 #cccccc inset
-  bodyColor?: string;         // --bd-co: #000000
-  bodyBoxShadow?: string;     // --bd-sa: 1px 1px 3px 0 #cccccc inset
+  borderColor?: string;       // --bo-co: #888
+  headerBackground?: string;  // --hd-bg: #888 linear-gradient(#888, #666)
+  headerColor?: string;       // --hd-co: #fff
+  headerBoxShadow?: string;   // --hd-sa: 1px 1px 3px 0 #ccc inset
+  bodyColor?: string;         // --bd-co: #000
+  bodyBoxShadow?: string;     // --bd-sa: 1px 1px 3px 0 #ccc inset
   bodyBoxPadding?: string;    // --bd-pa: .4em
-  bodyEvenColor?: string;     // --ev-co: #eeeeee
-  bodyOddColor?: string;      // --od-co: #ffffff;
-  bodySeldColor?: string;     // --se-co: #ffeeee;
-  bodyHovrColor?: string;     // --ho-co: #eeffee;
+  bodyEvenColor?: string;     // --ev-co: #eee
+  bodyOddColor?: string;      // --od-co: #fff
+  bodySeldColor?: string;     // --se-co: #fee
+  bodyHovrColor?: string;     // --ho-co: #efe
+  bodyFocusColor?: string;    // --fc-co: #ffa
 }
 
 /**

@@ -53,6 +53,7 @@ export class TymTableComponent implements AfterViewInit {
   @HostBinding('style.--od-co') protected bodyOddColor!: string;
   @HostBinding('style.--se-co') protected bodySeldColor!: string;
   @HostBinding('style.--ho-co') protected bodyHovrColor!: string;
+  @HostBinding('style.--fc-co') protected bodyFocusColor!: string;
 
   /**
    * 親コンポーネントから受け取るデータ
@@ -75,6 +76,7 @@ export class TymTableComponent implements AfterViewInit {
       this.bodyOddColor = custom.bodyOddColor ?? '';
       this.bodySeldColor = custom.bodySeldColor ?? '';
       this.bodyHovrColor = custom.bodyHovrColor ?? '';
+      this.bodyFocusColor = custom.bodyFocusColor ?? '';
     }
   }
 
@@ -135,7 +137,7 @@ export class TymTableComponent implements AfterViewInit {
    */
   private _doClick = (event: MouseEvent, num1: number, num2: number, row: any): void => { };
 
-   /**
+  /**
    * 親コンポーネントから受け取るデータ
    *
    * @type {TYM_FUNCS}
@@ -378,15 +380,37 @@ export class TymTableComponent implements AfterViewInit {
   @Input() autors: boolean = false;
 
   //-------------------------------------------------------------------
+
+  /**
+   * this native element
+   */
   private thisElm: HTMLElement;
+
+  /**
+   * table element
+   */
+  private tblElm!: HTMLTableElement
+
+  /**
+   * all tr elements
+   */
+  private trElms!: HTMLElement[];
+
+  /**
+   * focus index number of tr element
+   */
+  private fcIdx!: number;
+
+  //-------------------------------------------------------------------
+
   /**
    * コンストラクター
    */
   constructor(
     private elementRef: ElementRef,
     private changeDetectorRef: ChangeDetectorRef) {
-      this.thisElm = this.elementRef.nativeElement as HTMLElement;
-    }
+    this.thisElm = this.elementRef.nativeElement as HTMLElement;
+  }
 
   //-------------------------------------------------------------------
 
@@ -394,14 +418,65 @@ export class TymTableComponent implements AfterViewInit {
    * ビューを初期化した後の処理
    */
   ngAfterViewInit() {
+    const tblElm = this.thisElm.firstElementChild as HTMLTableElement;
+    const tbody = tblElm.lastElementChild as HTMLTableSectionElement;
     if (this.autors) {
       setTimeout(() => {
-        TymTableUtilities._allWiden(this.thisElm.firstElementChild as HTMLTableElement);
+        TymTableUtilities._allWiden(tblElm);
       });
     }
+    this.trElms = Array.from(tbody.children) as HTMLElement[];
+    this.tblElm = tblElm;
+    this.fcIdx = 0;
+    this.trElms[0].tabIndex = 0;
   }
 
   //-------------------------------------------------------------------
+
+  /**
+   * TR エレメントへのフォーカスインイベント
+   * @param event イベント
+   */
+  fin(event: any) {
+    (event.target as HTMLElement).tabIndex = 0;
+  }
+
+  /**
+   * TR エレメントへのフォーカスアウトイベント
+   * @param event イベント
+   */
+  fout(event: any) {
+    if (this.trElms.indexOf(event.relatedTarget) != -1)
+      (event.target as HTMLElement).tabIndex = -1;
+  }
+
+  /**
+   * キーボードによるフォーカス移動
+   * @param event イベント
+   */
+  onKeydown(event: any) {
+    const [elm, elms] = [event.target as HTMLElement, this.trElms];
+    let idx = elms.indexOf(elm);
+    switch (event.key) {
+      case 'ArrowDown':
+        idx++;
+        if (elms.length > idx) elms[idx].focus();
+        break;
+      case 'ArrowUp':
+        idx -= 2;
+        if (idx >= 0) elms[idx].focus();
+        idx++;
+        if (idx >= 0) elms[idx].focus();
+        break;
+      case ' ':
+        this._rows_chkd[idx] = !this._rows_chkd[idx];
+        break;
+      default:
+        return;
+    }
+    this.fcIdx = idx;
+    event.preventDefault();
+  }
 
   /**
    * テーブル全行チェックボックスクリック用関数
@@ -419,11 +494,11 @@ export class TymTableComponent implements AfterViewInit {
    */
   onCheckChange(event: any, row: number) {
     this._rows_chkd[row] = event;
-    if (this._rows_chkd.every(checked => checked == true)) {
-      this._allCheck = true;
-    } else {
-      this._allCheck = false;
-    }
+    this._allCheck = this._rows_chkd.every(checked => checked == true);
+    this.fcIdx = row;
+    const elm = this.trElms[row]; 
+    elm.tabIndex = 0;
+    elm.focus();
   }
 
   /**
@@ -491,14 +566,7 @@ export class TymTableComponent implements AfterViewInit {
    * @returns rownums: number[]
    */
   getSelection(): number[] {
-    let ret: number[] = [];
-    for (let index = 0; index < this._rows_chkd.length; index++) {
-      if (this._rows_chkd[index]) {
-        ret.push(index);
-
-      }
-    }
-    return ret;
+    return this._rows_chkd.map((b, i) => b ? i : -1).filter(i => i != -1);
   }
 
   /**
@@ -516,11 +584,7 @@ export class TymTableComponent implements AfterViewInit {
    */
   setSelection(rownums: number[]): void {
     rownums.forEach((val) => this._rows_chkd[val] = true);
-    if (this._rows_chkd.every(checked => checked == true)) {
-      this._allCheck = true;
-    } else {
-      this._allCheck = false;
-    }
+    this._allCheck = this._rows_chkd.every(checked => checked == true);
   }
 
   //-------------------------------------------------------------------
@@ -571,7 +635,11 @@ export class TymTableComponent implements AfterViewInit {
     this._rows_chkd = rows_chkd;
     if (this.autors) {
       setTimeout(() => {
-        TymTableUtilities._allWiden(this.thisElm.firstElementChild as HTMLTableElement);
+        TymTableUtilities._allWiden(this.tblElm);
+        const tbody = this.tblElm.lastElementChild as HTMLTableSectionElement;
+        this.trElms = Array.from(tbody.children) as HTMLElement[];
+        this.fcIdx = 0;
+        this.trElms[0].tabIndex = 0;
       });
     }
   }

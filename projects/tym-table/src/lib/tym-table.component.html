@@ -10,11 +10,12 @@
       <th *ngIf="lastsp" class="lastsp"><div></div></th>
     </tr>
   </thead>
-  <tbody>
-    <tr *ngFor="let row of _rows_data; index as r" [ngClass]="{'selected':_rows_chkd[r]}"
+  <tbody (keydown)="onKeydown($event)">
+    <tr *ngFor="let row of _rows_data; index as r" [ngClass]="{'selected':_rows_chkd[r]}" tabindex="-1"
+      (focus)="fin($event)" (blur)="fout($event)"
       (contextmenu)="onContext($event,r)" [dragdrop]="[_rows_chkd[r],r,_dd_def]" (ddDrowEvent)="_ddDrow()">
       <th *ngIf="chkbox" class="chkbox" (click)="onCheckChange(!(_rows_chkd[r]),r)"><input type="checkbox"
-        [(ngModel)]="_rows_chkd[r]" (ngModelChange)="onCheckChange($event,r)"></th>
+        [(ngModel)]="_rows_chkd[r]" (ngModelChange)="onCheckChange($event,r)" tabindex="-1"></th>
       <td *ngFor="let col of row; index as c" (click)="onClick($event,r,c)"
         [cellmk]="[col,_head_data[c]]"></td>
       <td *ngIf="lastsp" class="lastsp"></td>

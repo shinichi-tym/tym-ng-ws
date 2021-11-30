@@ -1,8 +1,8 @@
 {
-  "name": "tym-modals",
-  "version": "0.7.8",
-  "description": "'tym-modals' is a simple modal component.",
-  "keywords": ["angular", "modal", "modal-less", "modeless", "dialog", "contextmenu"],
+  "name": "tym-tree",
+  "version": "0.7.1",
+  "description": "'tym-tree' is a simple tree view component.",
+  "keywords": ["angular", "tree", "folder"],
   "repository": {
     "type": "git",
     "url": "https://github.com/shinichi-tym/tym-ng-ws.git"

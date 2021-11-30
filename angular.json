@@ -198,6 +198,37 @@
           }
         }
       }
+    },
+    "tym-tree": {
+      "projectType": "library",
+      "root": "projects/tym-tree",
+      "sourceRoot": "projects/tym-tree/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "project": "projects/tym-tree/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/tym-tree/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/tym-tree/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/tym-tree/src/test.ts",
+            "tsConfig": "projects/tym-tree/tsconfig.spec.json",
+            "karmaConfig": "projects/tym-tree/karma.conf.js"
+          }
+        }
+      }
     }
   },
   "defaultProject": "tym-ng-ws"
