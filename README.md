@@ -14,7 +14,7 @@
 1. [tym-table](/projects/tym-table/README.md)
 1. [tym-directive](/projects/tym-directive/README.md)
 1. [tym-modals](/projects/tym-modals/README.md)
-1. [tym-tree](/projects/tym-tree/README.md) (please wait...)
+1. [tym-tree](/projects/tym-tree/README.md)
 1. please wait...
 
 <br/>
