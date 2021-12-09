@@ -6,6 +6,7 @@ import {
 import { TymComm, TYM_COMM_LISTENER } from 'tym-directive';
 import { TymModalService } from "tym-modals";
 import { TymDialogComponent, TymMenuComponent, MenuItems, IconItems } from "tym-modals";
+import { TYM_TREE, TYM_TREE_OPTION } from "tym-tree";
 
 @Component({
   selector: 'app-root',
@@ -132,22 +133,80 @@ export class AppComponent {
   @Output() Log = console.log;
   @Output() commdel = true;
   /////////////////////////////////////////////////////////////////////
-  @Output() tree = [
-    { tx: 'data', },
-    { tx: 'data', },
+  @Output() tree1:TYM_TREE = [
+    'leaf-text',
+    'leaf-text',
+    [
+      'leaf-text',
+      'leaf-text',
+      [
+        'leaf-text',
+      ]
+    ],
+    'leaf-text',
+  ];
+  @Output() tree2: TYM_TREE = [
+    { text: 'leaf-text1', image: 'far fa-file-word' },
     {
-      tx: 'DATA', children: [
+      text: 'leaf-text2', children:
+        [
+          { text: 'leaf-text21', image: 'far fa-file-excel' },
+          {
+            text: 'leaf-text22', children:
+              [
+                { text: 'leaf-text221', image: 'far fa-file' },
+              ]
+          },
+        ]
+    },
+    { text: 'leaf-text3', image: 'far fa-file-powerpoint' },
+  ];
+  private children = (idxs: number[], txts: string[]): Promise<any[]> => {
+    console.log(idxs, txts);
+    let tree: any[] = [];
+    const r = Math.floor(Math.random() * 10);
+    for (let i = 0; i < r; i++) {
+      tree.push({ text: this._mkwords(), children: this.children });
+    }
+    // tree = [{ text: 'leaf-text', children: this.children }];
+    return new Promise((resolve, reject) => {
+      const t = Math.floor(8 + Math.random() * 10) * 300;
+      setTimeout(() => {
+        resolve(tree);
+      }, t);
+    })
+  }
+  @Output() tree3: TYM_TREE = [
+    { text: 'leaf-text', children: this.children },
+    { text: 'leaf-text', children: this.children },
+    { text: 'leaf-text', children: this.children },
+  ];
+  @Output() tree = [
+    { text: 'data', },
+    { text: 'long long long long long long long long long long long long', },
+    {
+      text: 'DATA', children: [
         {
-          tx: 'sub sub', children: [
-            { tx: 'sub sub sub', },
-            { tx: 'sub sub sub', },
-            { tx: 'sub sub sub', },
+          text: 'sub sub', children: [
+            { text: 'sub sub sub', },
+            { text: 'sub sub sub', },
+            { text: 'sub sub sub', },
           ]
         },
-        { tx: 'sub sub', },
+        { text: 'sub sub', },
+        { text: 'sub sub', },
+        { text: 'long long long long long long long long long long long long', },
+        { text: 'sub sub', },
+        { text: 'sub sub', },
+        { text: 'sub sub', },
       ]
     },
-    { tx: 'data', },
+    { text: 'data', },
+    { text: 'data', },
+    { text: 'data', },
+    { text: 'data', },
+    { text: 'data', },
+    { text: 'data', },
   ];
   /////////////////////////////////////////////////////////////////////
   constructor(
@@ -244,17 +303,21 @@ export class AppComponent {
     for (let index_r = 0; index_r < rows; index_r++) {
       let row = [];
       for (let index_c = 0; index_c < cols; index_c++) {
-        let wordnum: number = Math.floor(Math.random() * 3) + 1;
-        let words: string = '';
-        for (let index = 0; index < wordnum; index++) {
-          words += ' ' + Math.random().toString(36).replace(/[^a-z]+/g, '')
-            .substr(0, (Math.floor(Math.random() * 12) + 3));
-        }
-        row.push(words.substring(1));
+        row.push(this._mkwords());
       }
       data.push(row);
     }
     return data;
+  }
+
+  _mkwords(): string {
+    let wordnum: number = Math.floor(Math.random() * 3) + 1;
+    let words: string = '';
+    for (let index = 0; index < wordnum; index++) {
+      words += ' ' + Math.random().toString(36).replace(/[^a-z]+/g, '')
+        .substr(0, (Math.floor(Math.random() * 12) + 3));
+    }
+    return words.substring(1);
   }
 
   fnc5x5(): void {

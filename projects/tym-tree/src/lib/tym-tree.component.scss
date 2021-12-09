@@ -6,54 +6,80 @@
  */
 
 :host {
-  font-size: 1rem;
+  --bs-sz: 20px;
+  --bx-sz: calc(var(--bs-sz) + 4px);
+  --bg-co: #fff;
+  --fo-fa: system-ui;
+  font-size: var(--bs-sz);
   padding: 0;
   margin: 0;
   display: block;
-  background-color: #fff;
-
+  background-color: var(--bx-sz);
+  font-family: var(--fo-fa);
   box-sizing: border-box;
   * {box-sizing: border-box;}
+}
+
+.d {
+  overflow-x: hidden;
 }
 
 div {
 
   >span {
     display: block;
-    line-height: 1.5;
-    padding-right: 1em;
+    line-height: var(--bx-sz);
     border: solid 1px transparent;
     user-select: none;
+
+    padding: 2px;
+    white-space: nowrap;
 
     &:focus-visible {
       outline: none;
     }
     &.opn{
-      background: 0 .4em transparent no-repeat url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='.8em' height='.8em' viewBox='0 0 9 9'><path d='M1 2 L4 6 L7 2' stroke='%23000000' fill='transparent'/></svg>");
-    }
-  
+      background: center center/.8em transparent no-repeat url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 9 9'><path d='M1 2 L4 6 L7 2' stroke='%23000000' fill='transparent'/></svg>");
+    }  
     &.cls {
-      background: 0 .4em transparent no-repeat url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='.8em' height='.8em' viewBox='0 0 9 9'><path d='M2 1 L6 4 L2 7' stroke='%23aaaaaa' fill='transparent'/></svg>");
-
+      background: center center/.8em transparent no-repeat url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 9 9'><path d='M2 1 L6 4 L2 7' stroke='%23aaaaaa' fill='transparent'/></svg>");
       +div {
         display: none;
       }
     }
-    &.noc {
-      background-image: none;
+    &.off {
+      background: none;
     }
+    &.lod{
+      margin-left: 1em;
+      background: center center/.8em transparent no-repeat url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 9 9'><circle cx='4' cy='4' r='3' stroke='%23000000' fill='transparent'><animate attributeName='r' from='0' to='3' dur='.5s' repeatCount='indefinite'/></circle></svg>");
+    }  
 
     &:focus {
-      border-color: #aaa;
       background-color: #ddd;
     }
 
-    >span.spc::before,
-    &::before {
-      content: '  ';
-      font-family: monospace;
-      white-space: pre-wrap;
+    &:hover {
+      background-color: #cce;
     }
   }
 
+}
+span {
+  &.spc {
+    width: var(--bx-sz);
+    margin: 0 2px;
+    text-align: center;
+    display: inline-block;
+    line-height: var(--bx-sz);
+    &::before {
+      font-size: var(--bs-sz);
+    }
+  }
+  &.sp::before {
+    content: '  ';
+    font-size: var(--bs-sz);
+    font-family: monospace;
+    margin-left: var(--bs-sz);
+  }
 }

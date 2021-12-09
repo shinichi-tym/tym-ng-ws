@@ -38,10 +38,10 @@ ul {
     text-overflow: ellipsis;
     overflow: hidden;
     &.cls {
-      background:calc(100% - .5em) center #fff no-repeat url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='.8em' height='.8em' viewBox='0 0 9 9'><path d='M4 0 L8 4 L4 8' stroke='%23ff0000' fill='transparent'/></svg>");
+      background:calc(100% - .5em) center/.8em #fff no-repeat url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 9 9'><path d='M4 0 L8 4 L4 8' stroke='%23ff0000' fill='transparent'/></svg>");
     }
     &.opn {
-      background:calc(100% - .5em) center #fff no-repeat url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='.8em' height='.8em' viewBox='0 0 9 9'><path d='M0 4 L4 8 L8 4' stroke='%23ff0000' fill='transparent'/></svg>");
+      background:calc(100% - .5em) center/.8em #fff no-repeat url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 9 9'><path d='M0 4 L4 8 L8 4' stroke='%23ff0000' fill='transparent'/></svg>");
     }
     &.nod {
       display: none;

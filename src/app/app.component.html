@@ -233,7 +233,7 @@ effectAllowed:[none,copy,move,copyMove], dropEffect:[none,copy,move]
 
 <div id="tymSplitter">
   <div style="width:200px; border:solid 1px #aaa; height:100%; padding:8px;">
-    left
+    <ngx-tym-tree style="overflow: auto; height: 100%;" [tree]="tree1"></ngx-tym-tree>
   </div>
   <div tym-splitter></div>
   <div style="border:solid 1px #aaa; height:100%; padding:8px;">
@@ -309,7 +309,153 @@ effectAllowed:[none,copy,move,copyMove], dropEffect:[none,copy,move]
 <hr><!-- ---------------------------------------------------------- -->
 <h2>tym-tree</h2>
 
-<ngx-tym-tree [tree]="tree"></ngx-tym-tree>
+<table border="1" width="90%">
+  <!----->
+  <tr>
+    <td colspan="2">tree=tree1 (※static strings), option=none</td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <ngx-tym-tree
+        [tree]="tree1"></ngx-tym-tree>
+    </td>
+    <td width="50%">
+      <ngx-tym-tree
+        [tree]="tree1"
+        [option]="{no_open_close_image: true}"></ngx-tym-tree>
+    </td>
+  </tr>
+  <!----->
+  <tr>
+    <td colspan="2">tree=tree1 (※static strings), option={{ '{' }}images: 'far fa-folder-open'{{ '}' }}</td>
+  </tr>
+  <tr>
+    <td>
+      <ngx-tym-tree
+        [tree]="tree1"
+        [option]="{images: 'far fa-folder-open'}"></ngx-tym-tree>
+    </td>
+    <td>
+      <ngx-tym-tree
+        [tree]="tree1"
+        [option]="{images: 'far fa-folder-open', no_open_close_image: true}"></ngx-tym-tree>
+    </td>
+  </tr>
+</table>
+
+<br>
+<br>
+
+<table border="1" width="90%">
+  <!----->
+  <tr>
+    <td colspan="2">tree=tree1 (※static strings), option={{ '{' }}images: 
+      <br>{{ '{' }} open: 'far fa-folder-open', close: 'far fa-folder'{{ '}' }} {{ '}' }}</td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <ngx-tym-tree
+        [tree]="tree1"
+        [option]="{images: {open: 'far fa-folder-open', close: 'far fa-folder'}}"></ngx-tym-tree>
+    </td>
+    <td width="50%">
+      <ngx-tym-tree
+        [tree]="tree1"
+        [option]="{images: {open: 'far fa-folder-open', close: 'far fa-folder'}, no_open_close_image: true}">
+      </ngx-tym-tree>
+    </td>
+  </tr>
+  <!----->
+  <tr>
+    <td colspan="2">tree=tree1 (※static strings), option={{ '{' }}images: 
+      <br>{{ '{' }} open: 'far fa-folder-open', close: 'far fa-folder', none: 'far fa-file'{{ '}' }} {{ '}' }}</td>
+  </tr>
+  <tr>
+    <td>
+      <ngx-tym-tree
+        [tree]="tree1"
+        [option]="{images: {open: 'far fa-folder-open', close: 'far fa-folder', none: 'far fa-file'}}"></ngx-tym-tree>
+    </td>
+    <td>
+      <ngx-tym-tree
+        [tree]="tree1"
+        [option]="{images: {open: 'far fa-folder-open', close: 'far fa-folder', none: 'far fa-file'}, no_open_close_image: true}">
+      </ngx-tym-tree>
+    </td>
+  </tr>
+</table>
+
+<br>
+<br>
+
+<table border="1" width="90%">
+  <!----->
+  <tr>
+    <td colspan="2">tree=tree2 (※static leaf objects), 
+      <br>option={{ '{' }}images: 'far fa-folder-open'{{ '}' }}</td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <ngx-tym-tree
+        [tree]="tree2"
+        [option]="{images: 'far fa-folder-open'}"></ngx-tym-tree>
+    </td>
+    <td width="50%">
+      <ngx-tym-tree
+        [tree]="tree2"
+        [option]="{images: 'spc', no_open_close_image: true}"></ngx-tym-tree>
+    </td>
+  </tr>
+</table>
+
+<br>
+<br>
+
+<table border="1" width="90%">
+  <!----->
+  <tr>
+    <td colspan="2">tree=tree3 (dynamic leaf objects), 
+      <br>option={{ '{' }}images: 'far fa-folder-open'{{ '}' }}</td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <ngx-tym-tree
+        [tree]="tree3"
+        [option]="{images: 'far fa-folder-open'}"></ngx-tym-tree>
+    </td>
+    <td width="50%">
+      <ngx-tym-tree
+        [tree]="tree3"
+        [option]="{images: 'far fa-folder-open', no_open_close_image: true}"></ngx-tym-tree>
+    </td>
+  </tr>
+  <!----->
+  <tr>
+    <td colspan="2">tree=tree3 (dynamic leaf objects), option={{ '{' }}images: 
+      <br>{{ '{' }} open: 'far fa-folder-open', close: 'far fa-folder', none: 'far fa-file'{{ '}' }} {{ '}' }}</td>
+  </tr>
+  <tr>
+    <td>
+      <ngx-tym-tree
+        [tree]="tree3"
+        [option]="{images: {open: 'far fa-folder-open', close: 'far fa-folder', none: 'far fa-file'}}"></ngx-tym-tree>
+    </td>
+    <td>
+      <ngx-tym-tree
+        [tree]="tree3"
+        [option]="{images: {open: 'far fa-folder-open', close: 'far fa-folder', none: 'far fa-file'}, no_open_close_image: true}"></ngx-tym-tree>
+    </td>
+  </tr>
+</table>
+
+<br>
+<br>
+
+<ngx-tym-tree id="tree" [tree]="tree" ></ngx-tym-tree>
+<ngx-tym-tree
+  style="width:300px;height:200px;overflow:auto;border:solid 1px #888"
+  [tree]="tree"></ngx-tym-tree>
+
 <br>
 <br>
 <br>

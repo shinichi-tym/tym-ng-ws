@@ -153,7 +153,7 @@ ngx-tym-menu {
 .remove::before {
   background-position-x: calc(var(--sz) * -3);
 }
-ngx-tym-tree {
+#tree {
   width: 20em;
   height: 10em;
   border: solid 1px #888;
