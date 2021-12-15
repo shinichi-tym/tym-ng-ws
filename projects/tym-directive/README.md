@@ -2,6 +2,12 @@
 # `[tym-directive]`
 `tym-directive` は，`angular` の極小のディレクティブ(等)です。
 
+<br>
+
+動作イメージ (Demo screen)
+
+[https://shinichi-tym.github.io/tym-ng-ws-demo/index.html##tym-modals]
+
 ## インストール `(Installation)`
 <br>
 

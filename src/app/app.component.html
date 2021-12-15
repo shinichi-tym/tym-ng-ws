@@ -1,7 +1,7 @@
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
 
-<h1>tym-table</h1>
+<h1 id="tym-table">tym-table</h1>
 
 <hr><!-- ---------------------------------------------------------- -->
 
@@ -172,7 +172,7 @@ effectAllowed:[none,copy,move,copyMove], dropEffect:[none,copy,move]
   </tr>
 </table>
 
-<h1>tym-directive</h1>
+<h1 id="tym-directive">tym-directive</h1>
 
 <hr><!-- ---------------------------------------------------------- -->
 <h2>tym-resize</h2>
@@ -232,15 +232,33 @@ effectAllowed:[none,copy,move,copyMove], dropEffect:[none,copy,move]
 <h2>tym-splitter</h2>
 
 <div id="tymSplitter">
-  <div style="width:200px; border:solid 1px #aaa; height:100%; padding:8px;">
-    <ngx-tym-tree style="overflow: auto; height: 100%;" [tree]="tree1"></ngx-tym-tree>
+  <div style="width:200px; border:solid 1px #aaa; height:100%;">
+    <ngx-tym-tree
+      style="height:100%; padding:8px;"
+      [tree]="tree1"
+    ></ngx-tym-tree>
   </div>
   <div tym-splitter></div>
   <div style="border:solid 1px #aaa; height:100%; padding:8px;">
-    <div class="tymTable5" style="height:100%; overflow: auto;">
+    <div class="tymTable5" style="height:100%; overflow:auto;">
       <tym-table-view [cols]="cols3" [data]="data3"></tym-table-view>
     </div>
   </div>
+</div>
+
+<br>
+
+<div id="tymSplitter">
+  <ngx-tym-tree
+    style="padding:8px; width:200px; border:solid 1px #aaa; height:100%;"
+    [tree]="tree1"
+  ></ngx-tym-tree>
+<div tym-splitter></div>
+<div style="border:solid 1px #aaa; height:100%; padding:8px;">
+  <div class="tymTable5" style="height:100%; overflow:auto;">
+    <tym-table-view [cols]="cols3" [data]="data3"></tym-table-view>
+  </div>
+</div>
 </div>
 
 <hr><!-- ---------------------------------------------------------- -->
@@ -280,34 +298,40 @@ effectAllowed:[none,copy,move,copyMove], dropEffect:[none,copy,move]
 <input type="button" (click)="commdel=false" value="commdel=false">{{commdel}}
 <input type="button" (click)="TymCommPost('idd','!!!')" value="post">
 
+<h1 id="tym-modals">tym-modals</h1>
+
 <hr><!-- ---------------------------------------------------------- -->
-<h2>tym-modals</h2>
+<h2>tym-dialog</h2>
 
 <ngx-tym-modals></ngx-tym-modals>
 <input type="button" value="open" (click)="open()">
 <input type="button" value="open1" (click)="open1()">
-<input type="button" value="open2" (click)="open2()" (contextmenu)="open3($event)">
-<!-- <div style="border: solid 1px red;" (contextmenu)="open3($event)">[contextmenu]</div> -->
-<span style="border: solid 1px red;" (contextmenu)="open3($event)">[contextmenu#3]</span>
-<span style="border: solid 1px red;" (contextmenu)="open4($event)">[contextmenu#4]</span>
-<span style="border: solid 1px red;" (contextmenu)="open5($event)">[contextmenu#5]</span>
-
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
+<input type="button" value="open2" (click)="open2()">
 
 <hr><!-- ---------------------------------------------------------- -->
-<h2>tym-tree</h2>
+<h2>tym-menu</h2>
+
+<div style="border: solid 1px red;" (contextmenu)="menu($event)">[contextmenu]</div>
+<span style="border: solid 1px red;" (contextmenu)="menu1($event)">[contextmenu#1]</span>
+<span style="border: solid 1px red;" (contextmenu)="menu2($event)">[contextmenu#2]</span>
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+<h1 id="tym-tree">tym-tree</h1>
+
+<hr><!-- ---------------------------------------------------------- -->
 
 <table border="1" width="90%">
   <!----->
@@ -451,10 +475,16 @@ effectAllowed:[none,copy,move,copyMove], dropEffect:[none,copy,move]
 <br>
 <br>
 
-<ngx-tym-tree id="tree" [tree]="tree" ></ngx-tym-tree>
+<hr><!-- ---------------------------------------------------------- -->
+
+<div>
 <ngx-tym-tree
-  style="width:300px;height:200px;overflow:auto;border:solid 1px #888"
-  [tree]="tree"></ngx-tym-tree>
+  class="tree"
+  [tree]="tree" [option]="tree_opt"></ngx-tym-tree>
+<ngx-tym-tree
+  class="tree"
+  [tree]="tree" [option]="tree_opt"></ngx-tym-tree>
+</div>
 
 <br>
 <br>

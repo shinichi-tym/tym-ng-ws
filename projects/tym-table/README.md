@@ -11,6 +11,10 @@
 
 ![表示サンプル](/tym-table-demo2.png)
 
+動作イメージ (Demo screen)
+
+[https://shinichi-tym.github.io/tym-ng-ws-demo/index.html#tym-table]
+
 ## インストール `(Installation)`
 <br>
 

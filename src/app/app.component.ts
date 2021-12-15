@@ -36,7 +36,7 @@ export class AppComponent {
       this.tymTable?.drowData(); // データ更新だけのため直接再描画を実行
     },
     doContext: (event: MouseEvent, num: number, row: any) => {
-      this.open3(event);
+      this.menu(event);
       // alert("context menu\r\n" + num + " : " + JSON.stringify(this.data[num]));
       return false;
     },
@@ -133,7 +133,7 @@ export class AppComponent {
   @Output() Log = console.log;
   @Output() commdel = true;
   /////////////////////////////////////////////////////////////////////
-  @Output() tree1:TYM_TREE = [
+  @Output() tree1: TYM_TREE = [
     'leaf-text',
     'leaf-text',
     [
@@ -141,6 +141,7 @@ export class AppComponent {
       'leaf-text',
       [
         'leaf-text',
+        'leaf-text-long-long-data',
       ]
     ],
     'leaf-text',
@@ -170,7 +171,7 @@ export class AppComponent {
     }
     // tree = [{ text: 'leaf-text', children: this.children }];
     return new Promise((resolve, reject) => {
-      const t = Math.floor(8 + Math.random() * 10) * 300;
+      const t = Math.floor(Math.random() * 10) * 300;
       setTimeout(() => {
         resolve(tree);
       }, t);
@@ -181,7 +182,7 @@ export class AppComponent {
     { text: 'leaf-text', children: this.children },
     { text: 'leaf-text', children: this.children },
   ];
-  @Output() tree = [
+  @Output() tree: TYM_TREE = [
     { text: 'data', },
     { text: 'long long long long long long long long long long long long', },
     {
@@ -208,6 +209,16 @@ export class AppComponent {
     { text: 'data', },
     { text: 'data', },
   ];
+  @Output() tree_opt: TYM_TREE_OPTION = {
+    doLeafOpen: (indexs: number[], texts: string[]) => console.log('open', indexs, texts),
+    doLeafClose: (indexs: number[], texts: string[]) => console.log('close', indexs, texts),
+    doDrawList: (indexs: number[], texts: string[]) => console.log('list', indexs, texts),
+    doContext: (indexs: number[], texts: string[], event: MouseEvent) => {
+      console.log('menu', indexs, texts);
+      this.menu(event);
+      return false
+    }
+  }
   /////////////////////////////////////////////////////////////////////
   constructor(
     private modal: TymModalService,
@@ -524,8 +535,8 @@ export class AppComponent {
       }
     };
     const provider = TymDialogComponent.provider(
-      'メッセージのタイトル .. 長い長い長い長い',
-      ['メッセージ１', 'メッセージ２', 'メッセージ３', 'メッセージ４'],
+      'メッセージのタイトル .. モーダレスダイアログ',
+      ['メッセージ１', 'メッセージ２', 'メッセージ３', '閉じると次のダイアログが表示される'],
       buttons
       // ok_button, cancel_button
     );
@@ -534,7 +545,8 @@ export class AppComponent {
       TymDialogComponent, provider, false,
       (componentRef) => {
         const compo = componentRef.instance as TymDialogComponent;
-        compo.vals.title+=" 1st";
+        compo.vals.title += ' 1st';
+        compo.vals.messages[2] = "ダイアログ表示時にタイトルとメッセージを更新"
         console.log(compo.vals);
       });
     let component = componentRef.instance as TymDialogComponent;
@@ -546,9 +558,16 @@ export class AppComponent {
       (componentRef) => {
         const compo = componentRef.instance as TymDialogComponent;
         compo.vals.title += " 2nd";
+        compo.vals.messages[1] = "ダイアログ表示時にタイトルとメッセージを更新"
         console.log(compo.vals);
       });
-    await promise;
+    await promise.then(
+      (componentRef) => {
+        const compo = componentRef.instance as TymDialogComponent;
+        compo.vals.title += " 3rd";
+        compo.vals.messages[3] = "ダイアログを重ねて表示"
+        console.log(compo.vals);
+      });
 
     this.modal.open(TymDialogComponent, provider, false, () => { })
       .then(
@@ -559,57 +578,43 @@ export class AppComponent {
         }
       )
 
-    let component_ref = this.modal.open(TymDialogComponent, provider, false);
+    const provider2 = TymDialogComponent.provider(
+      'メッセージのタイトル .. モーダレスダイアログ',
+      ['メッセージ１', '3秒後にさらに表示', 'その後2秒後に閉じる'],
+      buttons
+    );
+    let component_ref = this.modal.open(TymDialogComponent, provider2, false);
     setTimeout(() => {
       const provider = TymDialogComponent.provider(
         'メッセージのタイトル',
-        ['メッセージ１', 'メッセージ２'],
+        ['下層のダイアログが', '閉じられる'],
         buttons
         // ok_button, cancel_button
       );
       this.modal.open(TymDialogComponent, provider, false);
-    }, 5000);
-    setTimeout(() => { component_ref?.destroy() }, 8000);
-
-    // // 表示内容をプロバイダーとして定義します。
-    // const provider1 = TymDialogComponent.provider(
-    //   'メッセージのタイトル .. 長い長い長い長い',
-    //   ['メッセージ１', 'メッセージ２', 'メッセージ３', 'メッセージ４'],
-    //   buttons
-    //   // ok_button, cancel_button
-    // );
-    // this.modal.open(TymDialogComponent, provider1);
-
-    // // 表示内容をプロバイダーとして定義します。
-    // const provider2 = TymDialogComponent.provider(
-    //   'メッセージのタイトル',
-    //   ['メッセージ１', 'メッセージ２'],
-    //   buttons
-    //   // ok_button, cancel_button
-    // );
-    // // 簡易メッセージダイアログを表示します。
-    // this.modal.open(TymDialogComponent, provider2);
-
+    }, 3000);
+    setTimeout(() => { component_ref.destroy() }, 5000);
   }
 
   open2() {
     const safeHtml: SafeHtml[] = this.trustHtmls(
-      ['<b>太字</b>', '<span style="color:red">赤字</span>']);
+      ['タイトルなし＆スタイル設定', '<b>太字</b>', '<span style="color:red">赤字</span>', '3秒後にメッセージ更新!']);
     const provider = TymDialogComponent.provider(
       '',
       safeHtml as string[]
     );
-    let component_ref = this.modal.open(TymDialogComponent, provider, false);
+    let component_ref = this.modal.open(TymDialogComponent, provider, true);
     // 生成したコンポーネントにアクセスできます。
     let component = (component_ref.instance as TymDialogComponent);
     // コンポーネントを非表示(破棄)にします。
     // this.modal.close(); または component_ref.destroy();
     setTimeout(() => {
-      component.vals.messages=["メッセージ"];
-    }, 5000);
+      component.vals.messages=["自動的に閉じます"];
+      setTimeout(() => component_ref.destroy(), 2000);
+    }, 3000);
   }
 
-  open3(event: MouseEvent): boolean { //PointerEvent,MouseEvent
+  menu(event: MouseEvent): boolean { //PointerEvent,MouseEvent
     event.stopPropagation();
     const menu: MenuItems = [
       [['file', true],
@@ -617,10 +622,12 @@ export class AppComponent {
       [['folder', false],
         ['copy', true], ['remove', true], ['edit', false]],
     ];
-    // // スクロール確認
-    // for (let index = 0; index < 40; index++) {
-    //   menu[1].push(menu[1][1])
-    // }
+    if (Math.random() > .5) {
+      // スクロール確認
+      for (let index = 0; index < 40; index++) {
+        menu[1].push(menu[1][1])
+      }
+    }
     TymMenuComponent.MENU_DEFS = {
       'file': {
         '': 'ファイル',
@@ -642,7 +649,10 @@ export class AppComponent {
       },
       event.clientX, event.clientY + 20
     );
-    let prom = this.modal.open(TymMenuComponent, provider, false, () => { });
+    let prom = this.modal.open(TymMenuComponent, provider, false, (componentRef) => {
+      const element = componentRef.location.nativeElement as HTMLElement;
+      element.style.setProperty('--bs-sz', '16px');
+    });
     prom.then(
       (v) => {
         console.log(v)
@@ -651,24 +661,24 @@ export class AppComponent {
     return false;
   }
 
-  open4(event: MouseEvent): boolean {
-    this.open45async(event,4);
+  menu1(event: MouseEvent): boolean {
+    this.menu12async(event,1);
     return false;
   }
-  open5(event: MouseEvent): boolean {
-    this.open45async(event,5);
+  menu2(event: MouseEvent): boolean {
+    this.menu12async(event,2);
     return false;
   }
-  async open45async(event: MouseEvent, n:number) { //PointerEvent,MouseEvent
+  async menu12async(event: MouseEvent, n:number) { //PointerEvent,MouseEvent
     event.stopPropagation();
-    const menu: MenuItems = (n == 4)
+    const menu: MenuItems = (n == 1)
       ? [[['file', true],
           ['copy', true], ['remove', true], ['edit', false]],
         [['folder', false],
           ['copy', true], ['remove', true], ['edit', false]]]
       : [[['file', false],
           ['copy', true], ['remove', true], ['edit', true]]];
-    const icon: IconItems = (n == 4)
+    const icon: IconItems = (n == 1)
       ? []
       : [['file', 'copy'], ['file', 'remove']];
     TymMenuComponent.MENU_DEFS = {
@@ -693,7 +703,10 @@ export class AppComponent {
       event.clientX, event.clientY + 20,
       icon
     );
-    let componentRef = await this.modal.open(TymMenuComponent, provider, false, () => { });
+    let componentRef = await this.modal.open(TymMenuComponent, provider, false, (componentRef) => {
+      const element = componentRef.location.nativeElement as HTMLElement;
+      element.style.setProperty('--bs-sz', (n == 1) ? '20px' : '24px');
+    });
     console.log(componentRef);
   }
 

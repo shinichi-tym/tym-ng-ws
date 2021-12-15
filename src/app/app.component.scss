@@ -118,10 +118,6 @@ ngx-tym-dialog footer button[name='ok'] {
   &:hover { background-color: #06f !important; }
   &:active { background-color: #04f !important; }
 }
-ngx-tym-menu {
-  --bs-sz: 20px !important;
-  // font-family: "Meiryo UI", "MS PGothic", sans-serif !important;
-}
 .sz20::before {
   --sz: 20px !important;
 }
@@ -153,9 +149,11 @@ ngx-tym-menu {
 .remove::before {
   background-position-x: calc(var(--sz) * -3);
 }
-#tree {
-  width: 20em;
-  height: 10em;
-  border: solid 1px #888;
+.tree {
+  width: 300px;
+  height: 200px;
   overflow: auto;
+  border: solid 1px #888;
+  display: inline-block !important;
+  margin: 1em !important;
 }

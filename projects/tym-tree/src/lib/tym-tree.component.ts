@@ -42,6 +42,14 @@ export interface TYM_TREE_OPTION {
     close: string;
     none?: string;
   }
+  /** リーフオープンアクションの関数を定義, 規定値: { } */
+  doLeafOpen?: (indexs: number[], texts: string[]) => void;
+  /** リーフクローズアクションの関数を定義, 規定値: { } */
+  doLeafClose?: (indexs: number[], texts: string[]) => void;
+  /** リスト表示アクションの関数を定義, 規定値: { } */
+  doDrawList?: (indexs: number[], texts: string[]) => void;
+  /** コンテキストアクションの関数を定義, 規定値: true */
+  doContext?: (indexs: number[], texts: string[], event: MouseEvent) => boolean;
 }
 
 @Component({
@@ -91,6 +99,13 @@ export class TymTreeComponent implements OnInit {
 
   @Input() option: TYM_TREE_OPTION = {};
 
+  //-------------------------------------------------------------------
+
+  private doLeafOpen = (indexs: number[], texts: string[]): void => { };
+  private doLeafClose = (indexs: number[], texts: string[]): void => { };
+  private doDrawList = (indexs: number[], texts: string[]): void => { };
+  private doContext = (indexs: number[], texts: string[], event: MouseEvent) => {return true};
+
   /**
    * コンストラクター
    * 
@@ -133,6 +148,10 @@ export class TymTreeComponent implements OnInit {
         }
       }
     }
+    if (opt.doLeafOpen) this.doLeafOpen = opt.doLeafOpen;
+    if (opt.doLeafClose) this.doLeafClose = opt.doLeafClose;
+    if (opt.doDrawList) this.doDrawList = opt.doDrawList;
+    if (opt.doContext) this.doContext = opt.doContext;
 
     const divElm = this.thisElm.firstElementChild as HTMLDivElement;
     this.divElm = divElm;
@@ -155,7 +174,8 @@ export class TymTreeComponent implements OnInit {
         case 'ArrowLeft':
           //ツリーを閉じる
           if (this.tree_open_close(elm, 'cls')) {
-            console.log('ArrowLeft close')
+            const [idxs, txts] = this.index_array(elm);
+            this.doLeafClose(idxs, txts);
           } else {
             //既に閉じられていた場合は上位階層へ
             const parentDivElm = elm.parentElement as HTMLDivElement;
@@ -169,7 +189,8 @@ export class TymTreeComponent implements OnInit {
         case 'ArrowRight':
           //ツリーを開く
           if (this.tree_open_close(elm, 'opn')) {
-            console.log('ArrowRight open')
+            const [idxs, txts] = this.index_array(elm);
+            this.doLeafOpen(idxs, txts);
           } else {
             //既に開かれていた場合は下位階層へ
             const nextDivElm = elm.nextElementSibling;
@@ -182,7 +203,8 @@ export class TymTreeComponent implements OnInit {
           break;
         case ' ':
           elm.dispatchEvent(new Event('progress'));
-          console.log('draw list')
+          const [idxs, txts] = this.index_array(elm);
+          setTimeout(() => this.doDrawList(idxs, txts));
           break;
         default:
           return;
@@ -290,7 +312,7 @@ export class TymTreeComponent implements OnInit {
    */
   private hover_off() {
     if (this.hover_elm) {
-      this.divElm.removeChild(this.hover_elm as HTMLSpanElement)
+      this.divElm.removeChild(this.hover_elm as HTMLSpanElement);
       this.hover_elm = null;
     }
   }
@@ -312,6 +334,14 @@ export class TymTreeComponent implements OnInit {
    */
   private hover_is_delay = () => this.hover_tim != null;
 
+  offsetelm(elm: HTMLElement): HTMLElement {
+    const posfx = ['absolute', 'relative', 'fixed'];
+    do {
+      if (posfx.indexOf(elm.style.position) >= 0) break;
+    } while (elm = elm.offsetParent as HTMLElement);
+    return elm;
+  }
+
   /**
    * ホバーエレメントの作成
    * @param span 対象のエレメント
@@ -319,15 +349,24 @@ export class TymTreeComponent implements OnInit {
    */
   private hover_on(span: HTMLSpanElement) {
     if (this.hover_is_delay()) return;
-    const baseRect = this.thisElm.getBoundingClientRect();
-    const spanRect = span.getBoundingClientRect();
-    if (baseRect.top>spanRect.top || baseRect.bottom<spanRect.bottom) return;
+    const { top: base_t, bottom: base_b } = this.thisElm.getBoundingClientRect();
+    const { top: span_t, bottom: span_b, width: span_w } = span.getBoundingClientRect();
+    const offelm = this.offsetelm(span);
+    if (Math.floor(base_t) > Math.floor(span_t) || Math.floor(base_b) < Math.floor(span_b)) return;
     const hover = span.cloneNode(true) as HTMLSpanElement;
+    hover.classList.add('hov');
     const style = hover.style;
-    style.position = 'absolute';
-    style.top = `${window.pageYOffset + spanRect.top}px`;
-    style.width = `${span.scrollWidth + 2}px`;
-    style.backgroundColor = '#cce';
+    if (offelm) {
+      const bw = parseFloat(window.getComputedStyle(offelm).borderWidth);
+      const top = span_t - offelm.getBoundingClientRect().top - bw;
+      style.width = `${span_w}px`;
+      style.top = `${top + offelm.scrollTop}px`
+      style.overflowX = 'hidden';
+      if (span.scrollWidth > span_w) hover.title = span.innerText;
+    } else {
+      style.width = `${span.scrollWidth}px`;
+      style.top = `${window.pageYOffset + span_t}px`;
+    }
     this.divElm.appendChild(hover);
     this.hover_elm = hover;
 
@@ -346,7 +385,8 @@ export class TymTreeComponent implements OnInit {
         if (this.click_open_close(span, hover, target, e.offsetX)) {
           this.divElm.dataset.idx = this.elm_list.indexOf(span).toString();
         } else {
-          console.log('draw list');
+          const [idxs, txts] = this.index_array(span);
+          setTimeout(() => this.doDrawList(idxs, txts));
         }
       }
       this.hover_off();
@@ -356,6 +396,16 @@ export class TymTreeComponent implements OnInit {
     hover.addEventListener('dblclick', e => {
       const aft = this.change_open_close(span, hover);
       if (aft != 'cls') span.dispatchEvent(new Event('progress'));
+    });
+    //ダブルクリック時に開閉
+    hover.addEventListener('contextmenu', e => {
+      const [idxs, txts] = this.index_array(span);
+      if (!this.doContext(idxs, txts, e)) {
+        e.stopPropagation();
+        e.preventDefault();
+        return false;
+      }
+      return true;
     });
   }
 

@@ -8,6 +8,10 @@
 
 ![表示サンプル](/tym-tree-demo1.png)
 
+動作イメージ (Demo screen)
+
+[https://shinichi-tym.github.io/tym-ng-ws-demo/index.html#tym-tree]
+
 ## インストール `(Installation)`
 <br>
 
@@ -27,7 +31,7 @@ npm install tym-tree
 ``` html
   :
   <ngx-tym-tree
-    style="width:300px;height:200px;overflow:auto;border:solid 1px #888;"
+    style="width:300px;height:200px;border:solid 1px #888;"
     [tree]="tree"
     [option]="option"
   ></ngx-tym-tree>
@@ -83,8 +87,9 @@ import { TYM_TREE, TYM_TREE_OPTION } from "tym-tree";
 - [動的データ表示２](#動的データ表示２) (Dynamic data display 2)
 - [アイコン表示](#アイコン表示) (Show icon)
 - [開閉イメージ非表示](#開閉イメージ非表示) (Hides open / closed images)
-- [コンテキストイベント] please wait...
-- [リスト表示イベント] please wait...
+- [開閉イベント](開閉イベント) (Open / Close event)
+- [コンテキストイベント](コンテキストイベント) (Contextmenu event)
+- [リスト表示イベント](リスト表示イベント) (Draw list event)
 
 <br>
 
@@ -126,7 +131,7 @@ export interface TYM_LEAF {
   /** リーフごとにアイコンを表示する時のクラス文字列 */
   image?: string;
   /** 子リーフの配列 または 子リーフ取得用関数 */
-  children?: any[] | ((indexs: number[], texts: string[]) => Promise<TYM_TREE>);
+  children?: TYM_TREE | ((indexs: number[], texts: string[]) => Promise<TYM_TREE>);
 }
 
 /**
@@ -154,6 +159,14 @@ export interface TYM_TREE_OPTION {
     close: string;
     none?: string;
   }
+  /** リーフオープンアクションの関数を定義, 規定値: { } */
+  doLeafOpen?: (indexs: number[], texts: string[]) => void;
+  /** リーフクローズアクションの関数を定義, 規定値: { } */
+  doLeafClose?: (indexs: number[], texts: string[]) => void;
+  /** リスト表示アクションの関数を定義, 規定値: { } */
+  doDrawList?: (indexs: number[], texts: string[]) => void;
+  /** コンテキストアクションの関数を定義, 規定値: true */
+  doContext?: (indexs: number[], texts: string[], event: MouseEvent) => boolean;
 }
 ```
 
@@ -264,7 +277,7 @@ export interface TYM_TREE_OPTION {
     'leaf-text',
     'leaf-text',
   ];
-  - or -
+  // or //
   let tree: TYM_TREE = [
     { text: 'leaf-text', },
     { text: 'leaf-text', },
@@ -290,11 +303,11 @@ export interface TYM_TREE_OPTION {
       none: 'far fa-file',        // ファイルアイコン
     }
   }
-  - or -
+  // or //
   let option: TYM_TREE_OPTION = {
     images: 'far fa-folder-open',
   }
-  - or -
+  // or //
   let tree: TYM_TREE = [
     { text: 'leaf-text', image: 'far fa-file-word' },
     { text: 'leaf-text', image: 'far fa-file-excel' },
@@ -304,11 +317,64 @@ export interface TYM_TREE_OPTION {
 
 <br>
 
-> ### 閉開イメージ非表示
+> ### 開閉イメージ非表示
 
 <br>
 
 - `option.no_open_close_image` に `false` を設定することで開閉イメージを非表示にできます。
+
+<br>
+
+---
+
+<br>
+
+> ### 開閉イベント
+
+<br>
+
+- `option.doLeafOpen` に イベント関数を設定します。
+- `option.doLeafClose` に イベント関数を設定します。
+- リーフが開閉する時に実行されます。
+- 開閉イメージをクリックすると開閉します。
+- 開閉イメージが非表示でアイコンをクリックすると開閉します。
+- リーフをダブルクリックすると開閉します。
+- フォーカス行で左右矢印キーの押下で開閉します。
+
+<br>
+
+---
+
+<br>
+
+> ### コンテキストイベント
+
+<br>
+
+- `option.doContext` に イベント関数を設定します。
+- 右クリックすると実行されます。
+
+<br>
+
+---
+
+<br>
+
+> ### リスト表示イベント
+
+<br>
+
+- `option.doDrawList` に イベント関数を設定します。
+- マウスクリック時に実行されます。
+- マウスダブルクリック時も最初のクリック時に実行されます。
+- フォーカス行でスペースキーを押下すると実行されます。
+
+<br>
+
+---
+
+- [リスト表示イベント](リスト表示イベント) (Draw list event)
+
 
 <br>
 

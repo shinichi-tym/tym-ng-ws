@@ -2,6 +2,12 @@
 # `[tym-modals]`
 `tym-modals` は，`angular` の簡易なダイアログやコンテキストメニュー表示用のラッパーです。
 
+<br>
+
+動作イメージ (Demo screen)
+
+[https://shinichi-tym.github.io/tym-ng-ws-demo/index.html##tym-modals]
+
 ## インストール `(Installation)`
 <br>
 
@@ -423,6 +429,14 @@ ngx-tym-menu {
    :
 
 ※ スタイルシートはグローバルに設定します。
+```
+または
+``` typescript
+  this.modal.open(TymDialogComponent, provider, false,
+    (componentRef) => {
+      const element = componentRef.location.nativeElement as HTMLElement;
+      element.style.setProperty('--bs-sz', '20px');
+    });
 ```
 
 - 表示イメージ

@@ -6,18 +6,25 @@
  */
 
 :host {
-  --bs-sz: 20px;
+  --bs-sz: 16px;
   --bx-sz: calc(var(--bs-sz) + 4px);
   --bg-co: #fff;
+  --fc-co: #cef;
+  --ho-co: #eff;
   --fo-fa: system-ui;
   font-size: var(--bs-sz);
   padding: 0;
   margin: 0;
   display: block;
+  overflow-y: auto;
   background-color: var(--bx-sz);
   font-family: var(--fo-fa);
   box-sizing: border-box;
   * {box-sizing: border-box;}
+  *::before {
+    box-sizing: border-box;
+    font-size: var(--bs-sz);
+  }
 }
 
 .d {
@@ -54,16 +61,14 @@ div {
       margin-left: 1em;
       background: center center/.8em transparent no-repeat url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 9 9'><circle cx='4' cy='4' r='3' stroke='%23000000' fill='transparent'><animate attributeName='r' from='0' to='3' dur='.5s' repeatCount='indefinite'/></circle></svg>");
     }  
-
     &:focus {
-      background-color: #ddd;
+      background-color: var(--fc-co);
     }
-
-    &:hover {
-      background-color: #cce;
+    &.hov {
+      position: absolute;
+      background-color: var(--ho-co);
     }
   }
-
 }
 span {
   &.spc {
@@ -72,13 +77,9 @@ span {
     text-align: center;
     display: inline-block;
     line-height: var(--bx-sz);
-    &::before {
-      font-size: var(--bs-sz);
-    }
   }
   &.sp::before {
     content: '  ';
-    font-size: var(--bs-sz);
     font-family: monospace;
     margin-left: var(--bs-sz);
   }
