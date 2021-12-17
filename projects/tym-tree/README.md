@@ -90,6 +90,7 @@ import { TYM_TREE, TYM_TREE_OPTION } from "tym-tree";
 - [開閉イベント](開閉イベント) (Open / Close event)
 - [コンテキストイベント](コンテキストイベント) (Contextmenu event)
 - [リスト表示イベント](リスト表示イベント) (Draw list event)
+- [表示のカスタマイズ](#表示のカスタマイズ) (Customization)
 
 <br>
 
@@ -224,13 +225,21 @@ export interface TYM_TREE_OPTION {
 
 <br>
 
-> ### 動的データ表示１
+> ### 動的データ表示
 
 <br>
 
 - 動的なデータを表示できます。
+- `children` は，下位階層が一度も取得されていない時，  
+  ・ 下位階層を表示するタイミングで呼び出されます。
+- `children` は，下位階層が一度取得されている時，  
+  ・ リーフをダブルクリックしたタイミングで呼び出されます。  
+  ・ フォーカスのあるリーフでスペースキーを押下したタイミングで呼びされます。
 
 ``` typescript
+  //////////////////////////////////////////////////
+  // ※ 下位階層の取得関数を定義
+  //////////////////////////////////////////////////
   // get dynamic data
   let children = (indexs: number[], texts: string[]) => Promise<TYM_TREE> {
     return new Promise((resolve, reject) => {
@@ -240,6 +249,9 @@ export interface TYM_TREE_OPTION {
     });
   };
 
+  //////////////////////////////////////////////////
+  // ※ リーフごとに取得関数で定義
+  //////////////////////////////////////////////////
   // dynamic data
   let tree: TYM_TREE = [
     { text: 'leaf-text', children: children },
@@ -247,26 +259,10 @@ export interface TYM_TREE_OPTION {
     { text: 'leaf-text', children: [ ... ] },   // 子は静的データ
     { text: 'leaf-text', },     // 子データなし
   ];
-```
 
-<br>
-
-> ### 動的データ表示２
-
-<br>
-
-- 動的なデータを表示できます。
-
-``` typescript
-  // get dynamic data
-  let children = (indexs: number[], texts: string[]) => Promise<TYM_TREE> {
-    return new Promise((resolve, reject) => {
-      let tree: TYM_TREE;
-      :
-      resolve(tree);
-    });
-  };
-
+  //////////////////////////////////////////////////
+  // ※ リーフごとに取得関数で定義
+  //////////////////////////////////////////////////
   // option
   let option: TYM_TREE_OPTION = {
     children: children
@@ -283,6 +279,7 @@ export interface TYM_TREE_OPTION {
     { text: 'leaf-text', },
     { text: 'leaf-text', children: children },    // children は無視されます
   ];
+
 ```
 
 <br>
@@ -373,8 +370,36 @@ export interface TYM_TREE_OPTION {
 
 ---
 
-- [リスト表示イベント](リスト表示イベント) (Draw list event)
+<br>
 
+> ### 表示のカスタマイズ
+
+<br>
+
+- [表示のカスタマイズ](#表示のカスタマイズ) (Color Customization)
+
+``` scss
+ngx-tym-tree {
+  // アイコンサイズを20pxで表示する
+  --bs-sz: 16px !important;
+  // フォーカス行のバックグラウンドカラーを指定する
+  --fc-co: #cef !important;
+  // ホバー行のバックグラウンドカラーを指定する
+  --ho-co: #eff !important;
+  // フォントファミリーを変更する場合に指定する
+  font-family: "Meiryo UI", "MS PGothic", sans-serif !important;
+  // フォントカラーを変更する場合に指定する
+  color: #000 !important;
+  // バックグラウンドカラーを指定する
+  background-color: #fff !important;
+}
+
+※ スタイルシートはグローバルに設定します。
+```
+
+<br>
+
+---
 
 <br>
 

@@ -54,7 +54,7 @@ export interface TYM_TREE_OPTION {
 
 @Component({
   selector: 'ngx-tym-tree',
-  template: `<div class="d"></div>`,
+  template: `<div class="d" tabIndex="0"></div>`,
   styleUrls: ['./tym-tree.component.scss']
 })
 export class TymTreeComponent implements OnInit {
@@ -97,10 +97,14 @@ export class TymTreeComponent implements OnInit {
    */
   @Input() tree: TYM_TREE = [];
 
+  /**
+   * オプションデータ
+   */
   @Input() option: TYM_TREE_OPTION = {};
 
   //-------------------------------------------------------------------
 
+  // デフォルトイベント関数
   private doLeafOpen = (indexs: number[], texts: string[]): void => { };
   private doLeafClose = (indexs: number[], texts: string[]): void => { };
   private doDrawList = (indexs: number[], texts: string[]): void => { };
@@ -123,6 +127,7 @@ export class TymTreeComponent implements OnInit {
 
   //-------------------------------------------------------------------
 
+  // アイコン用クラス文字列
   private i_opn: string = '';
   private i_cls: string = '';
   private i_noc: string = '';
@@ -133,6 +138,7 @@ export class TymTreeComponent implements OnInit {
    * @memberof TymTreeComponent
    */
   ngOnInit(): void {
+    // オプション定義からデフォルト値マージ
     const opt = this.option;
     if (opt.images) {
       const images = opt.images;
@@ -153,6 +159,7 @@ export class TymTreeComponent implements OnInit {
     if (opt.doDrawList) this.doDrawList = opt.doDrawList;
     if (opt.doContext) this.doContext = opt.doContext;
 
+    // 初期リーフ生成
     const divElm = this.thisElm.firstElementChild as HTMLDivElement;
     this.divElm = divElm;
     this.create_child(divElm, this.tree, 0);
@@ -173,7 +180,7 @@ export class TymTreeComponent implements OnInit {
           break;
         case 'ArrowLeft':
           //ツリーを閉じる
-          if (this.tree_open_close(elm, 'cls')) {
+          if (this.open_close_by_keybd(elm, 'cls')) {
             const [idxs, txts] = this.index_array(elm);
             this.doLeafClose(idxs, txts);
           } else {
@@ -188,7 +195,7 @@ export class TymTreeComponent implements OnInit {
           break;
         case 'ArrowRight':
           //ツリーを開く
-          if (this.tree_open_close(elm, 'opn')) {
+          if (this.open_close_by_keybd(elm, 'opn')) {
             const [idxs, txts] = this.index_array(elm);
             this.doLeafOpen(idxs, txts);
           } else {
@@ -206,6 +213,12 @@ export class TymTreeComponent implements OnInit {
           const [idxs, txts] = this.index_array(elm);
           setTimeout(() => this.doDrawList(idxs, txts));
           break;
+        case 'Tab':
+          if (e.shiftKey) {
+            divElm.tabIndex = -1;
+            setTimeout(() => divElm.tabIndex = 0);
+          }
+          return;
         default:
           return;
       }
@@ -217,24 +230,37 @@ export class TymTreeComponent implements OnInit {
     //ホイール操作時にホバーを消す
     divElm.addEventListener('wheel', e => this.hover_off());
     divElm.addEventListener('mouseleave', e => this.hover_off());
+    divElm.addEventListener('focus', (e:FocusEvent) => {
+      const idx = parseInt(divElm.dataset.idx || "0");
+      this.change_focus(this.elm_list, idx);
+    });
   }
 
   //-------------------------------------------------------------------
 
-  private hover_elm: HTMLSpanElement | null = null;
-  private hover_tim: any = null;
-
-  //-------------------------------------------------------------------
-
+  // エレメント作成用
   private create_span_elm = () => this.renderer.createElement('span') as HTMLSpanElement;
   private create_div_elm = () => this.renderer.createElement('div') as HTMLDivElement;
+
+  /**
+   * リーフ開閉状態文字列(クラス文字列)切り替え
+   * @param elm 対象のエレメント
+   * @returns リーフ状態文字列
+   */
   private swap_open_close_str = (elm: HTMLElement) =>
     elm.classList.contains('cls') ? ['cls', 'opn'] : elm.classList.contains('opn') ? ['opn', 'cls'] : ['noc', 'noc'];
 
   //-------------------------------------------------------------------
 
-  private replace_icon(span: HTMLElement, bef: string, aft: string) {
+  /**
+   * 開閉表示を切り替える
+   * @param span 対象のエレメント
+   * @param bef 変更前リーフ状態文字列
+   * @param aft 変更後リーフ状態文字列
+   */
+  private swap_open_close(span: HTMLElement, bef: string, aft: string) {
     span.classList.replace(bef, aft);
+    // リーフデータにimage設定が無い場合 アイコンの開閉を切り替える
     if (!(span.dataset.image)) {
       const _span = span.firstElementChild as HTMLElement;
       const _icon = (aft == 'opn') ? this.i_opn : (aft == 'cls') ? this.i_cls : this.i_noc;
@@ -248,10 +274,10 @@ export class TymTreeComponent implements OnInit {
    * @param mode 処理モード ('opn':開く,'cls':閉じる)
    * @returns {true:実行, false:未実行}
    */
-  private tree_open_close(span: HTMLElement, mode: string): boolean {
+  private open_close_by_keybd(span: HTMLElement, mode: string): boolean {
     const [bef, aft] = this.swap_open_close_str(span);
     if (mode == aft) {
-      this.replace_icon(span, bef, aft);
+      this.swap_open_close(span, bef, aft);
       this.clear_elm_list();
       if (aft == 'opn') {
         if (span.nextElementSibling?.tagName != 'DIV') {
@@ -270,42 +296,42 @@ export class TymTreeComponent implements OnInit {
    * @param hover ホバーエレメント
    * @returns 実行後のクラス文字列
    */
-  private change_open_close(span: HTMLElement, hover: HTMLElement): string {
+  private open_close_by_click(span: HTMLElement, hover: HTMLElement): string {
     const [bef, aft] = this.swap_open_close_str(span);
-    this.replace_icon(span, bef, aft);
-    this.replace_icon(hover, bef, aft);
+    this.swap_open_close(span, bef, aft);
+    this.swap_open_close(hover, bef, aft);
     this.clear_elm_list();
     return aft;
   }
 
   /**
-   * 開閉マークによる開閉
-   * @param elm1 対象のエレメント
-   * @param elm2 対象のエレメント
-   * @param offset クリック位置(x)
+   * 開閉マーク,アイコンクリック判定
+   * @param span 対象のエレメント
+   * @param event イベントオブジェクト
+   * @returns {true:対象, false:非対称}
    */
-  private click_open_close(span: HTMLElement, hover: HTMLElement, target: HTMLElement, offset: number): boolean {
+  private is_open_close_area(span: HTMLElement, event: MouseEvent): boolean {
     let ret = false;
+    const { target: target, offsetX: offset } = event;
     const s_classList = span.classList;
-    const t_classList = target.classList;
+    const t_classList = (target as HTMLElement).classList;
     if ((s_classList.contains('sp')) && (t_classList.contains('sp'))) {
       const ck = offset - parseInt(window.getComputedStyle(span).paddingLeft);
-      if (ck >= 0 && ck <= 16) {
+      const sz = parseInt(window.getComputedStyle(span, "::before").marginLeft);
+      if (0 <= ck && ck <= sz) {
         ret = true;
       }
     } else if ((s_classList.contains('off')) && (t_classList.contains('spc'))) {
       ret = true;
     }
-    if (ret) {
-      const aft = this.change_open_close(span, hover);
-      if (aft == 'opn') {
-        if (span.nextElementSibling?.tagName != 'DIV') {
-          span.dispatchEvent(new Event('progress'));
-        }
-      }
-    }
     return ret;
   }
+
+  //-------------------------------------------------------------------
+
+  // ホバーエレメント保持用 / ホバー非表示タイミング
+  private hover_elm: HTMLSpanElement | null = null;
+  private hover_tim: any = null;
 
   /**
    * ホバーエレメントの削除
@@ -334,7 +360,12 @@ export class TymTreeComponent implements OnInit {
    */
   private hover_is_delay = () => this.hover_tim != null;
 
-  offsetelm(elm: HTMLElement): HTMLElement {
+  /**
+   * 相対座標対象のparentエレメント
+   * @param elm 対象のエレメント
+   * @returns 取得したエレメント | null
+   */
+  parentElm(elm: HTMLElement): HTMLElement | null {
     const posfx = ['absolute', 'relative', 'fixed'];
     do {
       if (posfx.indexOf(elm.style.position) >= 0) break;
@@ -345,27 +376,29 @@ export class TymTreeComponent implements OnInit {
   /**
    * ホバーエレメントの作成
    * @param span 対象のエレメント
-   * @returns 作成しあ
    */
   private hover_on(span: HTMLSpanElement) {
     if (this.hover_is_delay()) return;
     const { top: base_t, bottom: base_b } = this.thisElm.getBoundingClientRect();
     const { top: span_t, bottom: span_b, width: span_w } = span.getBoundingClientRect();
-    const offelm = this.offsetelm(span);
+    const offelm = this.parentElm(span);
     if (Math.floor(base_t) > Math.floor(span_t) || Math.floor(base_b) < Math.floor(span_b)) return;
     const hover = span.cloneNode(true) as HTMLSpanElement;
     hover.classList.add('hov');
-    const style = hover.style;
     if (offelm) {
       const bw = parseFloat(window.getComputedStyle(offelm).borderWidth);
       const top = span_t - offelm.getBoundingClientRect().top - bw;
-      style.width = `${span_w}px`;
-      style.top = `${top + offelm.scrollTop}px`
-      style.overflowX = 'hidden';
+      Object.assign(hover.style, {
+        width: `${span_w}px`,
+        top: `${top + offelm.scrollTop}px`,
+        overflowX: 'hidden',
+      });
       if (span.scrollWidth > span_w) hover.title = span.innerText;
     } else {
-      style.width = `${span.scrollWidth}px`;
-      style.top = `${window.pageYOffset + span_t}px`;
+      Object.assign(hover.style, {
+        width: `${span.scrollWidth}px`,
+        top: `${window.pageYOffset + span_t}px`,
+      });
     }
     this.divElm.appendChild(hover);
     this.hover_elm = hover;
@@ -380,21 +413,26 @@ export class TymTreeComponent implements OnInit {
     });
     //クリック時に開閉およびフォーカス設定
     hover.addEventListener('click', e => {
-      if (e.detail <= 1) {
-        const target = e.target as HTMLElement;
-        if (this.click_open_close(span, hover, target, e.offsetX)) {
-          this.divElm.dataset.idx = this.elm_list.indexOf(span).toString();
+      if (e.detail == 1) {
+        if (this.is_open_close_area(span, e)) {
+          const aft = this.open_close_by_click(span, hover);
+          if (aft == 'opn') {
+            if (span.nextElementSibling?.tagName != 'DIV') {
+              span.dispatchEvent(new Event('progress'));
+            }
+          }
         } else {
           const [idxs, txts] = this.index_array(span);
           setTimeout(() => this.doDrawList(idxs, txts));
         }
+        this.divElm.dataset.idx = this.elm_list.indexOf(span).toString();
       }
       this.hover_off();
       span.focus();
     });
     //ダブルクリック時に開閉
     hover.addEventListener('dblclick', e => {
-      const aft = this.change_open_close(span, hover);
+      const aft = this.open_close_by_click(span, hover);
       if (aft != 'cls') span.dispatchEvent(new Event('progress'));
     });
     //ダブルクリック時に開閉
@@ -409,17 +447,22 @@ export class TymTreeComponent implements OnInit {
     });
   }
 
+  //-------------------------------------------------------------------
+
   /**
    * エレメントを作成する
    * @param level エレメントの階層番号
-   * @param tx エレメントのテキスト
+   * @param idx 階層ごとの行番号
+   * @param text エレメントのテキスト
+   * @param image 個別イメージ用クラス文字列
    * @returns 作成したエレメント
    */
-  private create_span(index: number, level: number, text: string, image?: string): HTMLSpanElement {
+  private create_span(level: number, idx: number, text: string, image?: string): HTMLSpanElement {
     const span = this.create_span_elm();
     const spanic = this.create_span_elm();
     const spantx = this.create_span_elm();
     if (image) {
+      // リーフデータにimage設定がある場合
       spanic.classList.value = 'spc ' + image;
       span.dataset.image = 't';
     } else {
@@ -435,7 +478,7 @@ export class TymTreeComponent implements OnInit {
     }
     span.style.paddingLeft = `${level}em`;
     span.style.backgroundPositionX = `${level}em`;
-    span.dataset.index = `${index}`;
+    span.dataset.index = `${idx}`;
     span.appendChild(spanic);
     span.appendChild(spantx);
 
@@ -446,6 +489,12 @@ export class TymTreeComponent implements OnInit {
     });
     return span;
   }
+
+  /**
+   * ローディングエレメントを作成する
+   * @param level エレメントの階層番号
+   * @returns 作成したエレメント
+   */
   private create_loading(level: number): HTMLSpanElement {
     const span = this.create_span_elm();
     span.classList.value = 'sp lod';
@@ -454,6 +503,12 @@ export class TymTreeComponent implements OnInit {
     span.style.backgroundPositionX = `${level}em`;
     return span;
   }
+
+  /**
+   * 対象エレメントのインデックス・テキスト情報を取得する
+   * @param span 対象のエレメント
+   * @returns エレメントのインデックス・テキスト情報
+   */
   private index_array(span: HTMLElement): [number[],string[]] {
     let idxs: number[] = [];
     let txts: string[] = [];
@@ -465,7 +520,16 @@ export class TymTreeComponent implements OnInit {
     return [idxs.reverse(),txts.reverse()];
   }
 
+  /**
+   * 子階層を作成する
+   * @param level エレメントの階層番号
+   * @param idx 階層ごとの行番号
+   * @param children リスト取得関数
+   * @param span 対象のエレメント
+   * @param parent 親のエレメント
+   */
   private async create_subtree(level: number, idx: number, children: Function, span: HTMLElement, parent: HTMLElement) {
+    // リストを作成するdivエレメントを求める
     let _div = span.nextElementSibling as HTMLElement;
     if (_div?.tagName == 'DIV') {
       while (_div.firstChild) {
@@ -477,15 +541,21 @@ export class TymTreeComponent implements OnInit {
       parent.insertBefore(_div_wk, _div);
       _div = _div_wk;
     }
+
+    // ローディングエレメントを作成
     _div.appendChild(this.create_loading(level));
+
+    // リスト取得関数を呼び出す
     const [idxs, txts] = this.index_array(span);
     let tree = await children(idxs, txts);
+
+    // 取得したリストからエレメントを作成する
     if (tree.length > 0) {
       this.create_child(_div, tree, level + 1);
-      this.replace_icon(span, 'noc', 'opn');
+      this.swap_open_close(span, 'noc', 'opn');
     } else {
       _div.removeChild(_div.firstChild!);
-      this.replace_icon(span, 'opn', 'noc');
+      this.swap_open_close(span, 'opn', 'noc');
     }
     this.hover_off();
     this.clear_elm_list();
@@ -504,9 +574,9 @@ export class TymTreeComponent implements OnInit {
     children.forEach((l, idx) => {
       const [tx, ch, im] = (typeof l == 'string') ? [l, ,] : (Array.isArray(l)) ? [, l,] : [l.text, l.children, l.image];
       if (tx) {
-        const span = this.create_span(idx, level, tx, im);
+        const span = this.create_span(level, idx, tx, im);
         parent.appendChild(span);
-        if (typeof l == 'string') this.replace_icon(span, 'cls', 'noc');
+        if (typeof l == 'string') this.swap_open_close(span, 'cls', 'noc');
         const option = this.option;
         if (typeof option.children == 'function') {
           const children = option.children;
@@ -522,7 +592,7 @@ export class TymTreeComponent implements OnInit {
       if (Array.isArray(ch)) {
         const prev = parent.lastElementChild as HTMLSpanElement;
         if (prev.classList.contains('noc')) {
-          this.replace_icon(prev, 'noc', 'cls');
+          this.swap_open_close(prev, 'noc', 'cls');
         }
         const div = this.create_div_elm()
         parent.appendChild(div);

@@ -8,17 +8,16 @@
 :host {
   --bs-sz: 16px;
   --bx-sz: calc(var(--bs-sz) + 4px);
-  --bg-co: #fff;
   --fc-co: #cef;
   --ho-co: #eff;
-  --fo-fa: system-ui;
   font-size: var(--bs-sz);
   padding: 0;
   margin: 0;
   display: block;
   overflow-y: auto;
-  background-color: var(--bx-sz);
-  font-family: var(--fo-fa);
+  color: #000;
+  background-color: #fff;
+  font-family: system-ui;
   box-sizing: border-box;
   * {box-sizing: border-box;}
   *::before {
