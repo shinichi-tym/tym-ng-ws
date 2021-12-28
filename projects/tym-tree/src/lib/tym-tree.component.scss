@@ -6,24 +6,24 @@
  */
 
 :host {
-  --bs-sz: 16px;
-  --bx-sz: calc(var(--bs-sz) + 4px);
-  --fc-co: #cef;
-  --ho-co: #eff;
-  font-size: var(--bs-sz);
   padding: 0;
   margin: 0;
   display: block;
   overflow-y: auto;
   color: #000;
   background-color: #fff;
+  // アイコンサイズを20pxで表示する
+  --bs-sz: 16px;
+  font-size: var(--bs-sz);
   font-family: system-ui;
-  box-sizing: border-box;
-  * {box-sizing: border-box;}
-  *::before {
-    box-sizing: border-box;
-    font-size: var(--bs-sz);
-  }
+  // フォーカス行のバックグラウンドカラーを指定する
+  --fc-co: #cef;
+  // フォーカス行のボーダーカラーを指定する。
+  --fc-bc: #888;
+  // ホバー行のバックグラウンドカラーを指定する
+  --ho-co: #eff;
+  // ホバー行のボーダーカラーを指定する。
+  --ho-bc: #444;
 }
 
 .d {
@@ -31,24 +31,32 @@
 }
 
 div {
+  padding: 0;
+  margin: 0;
+  border: none;
+
+  span {
+    display: inline-block;
+    white-space: nowrap;
+    user-select: none;
+  }
 
   >span {
     display: block;
-    line-height: var(--bx-sz);
     border: solid 1px transparent;
-    user-select: none;
-
+    border-radius: 2px;
     padding: 2px;
-    white-space: nowrap;
+    line-height: calc(1em + 4px);
+    height: calc(1em + 4px);
 
     &:focus-visible {
       outline: none;
     }
     &.opn{
-      background: center center/.8em transparent no-repeat url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 9 9'><path d='M1 2 L4 6 L7 2' stroke='%23000000' fill='transparent'/></svg>");
+      background: 0 center/.8em transparent no-repeat url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 9 9'><path d='M1 2 L4 6 L7 2' stroke='%23000000' fill='transparent'/></svg>");
     }  
     &.cls {
-      background: center center/.8em transparent no-repeat url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 9 9'><path d='M2 1 L6 4 L2 7' stroke='%23aaaaaa' fill='transparent'/></svg>");
+      background: 0 center/.8em transparent no-repeat url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 9 9'><path d='M2 1 L6 4 L2 7' stroke='%23aaaaaa' fill='transparent'/></svg>");
       +div {
         display: none;
       }
@@ -58,28 +66,40 @@ div {
     }
     &.lod{
       margin-left: 1em;
-      background: center center/.8em transparent no-repeat url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 9 9'><circle cx='4' cy='4' r='3' stroke='%23000000' fill='transparent'><animate attributeName='r' from='0' to='3' dur='.5s' repeatCount='indefinite'/></circle></svg>");
-    }  
+      background: 0 .4em/.9em transparent no-repeat url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 9 9'><circle cx='4' cy='4' r='3' stroke='%23000000' fill='transparent'><animate attributeName='r' from='0' to='3' dur='.5s' repeatCount='indefinite'/></circle></svg>");
+    }
+    &.cur{
+      border-color: var(--fc-bc);
+    }
     &:focus {
       background-color: var(--fc-co);
+      border-color: var(--fc-bc);
     }
-    &.hov {
-      position: absolute;
-      background-color: var(--ho-co);
+    >span {
+      &:last-child {
+        min-width: 100%;
+        font: 1em/calc(1em + 4px);
+      }
+      &.spc {
+        width: calc(1em + 4px);
+        margin: 0 2px;
+        text-align: center;
+        display: inline-block;
+        +span{
+          min-width: calc(100% - 24px);
+        }
+      }
     }
   }
-}
-span {
-  &.spc {
-    width: var(--bx-sz);
-    margin: 0 2px;
-    text-align: center;
-    display: inline-block;
-    line-height: var(--bx-sz);
-  }
-  &.sp::before {
-    content: '  ';
-    font-family: monospace;
-    margin-left: var(--bs-sz);
+  &.hov {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    >span {
+      box-sizing: content-box;
+      min-width: fit-content;
+    }
   }
 }

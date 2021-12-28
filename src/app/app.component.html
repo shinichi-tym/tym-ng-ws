@@ -232,9 +232,9 @@ effectAllowed:[none,copy,move,copyMove], dropEffect:[none,copy,move]
 <h2>tym-splitter</h2>
 
 <div id="tymSplitter">
-  <div style="width:200px; border:solid 1px #aaa; height:100%;">
+  <div style="width:200px; border:solid 1px #aaa; height:100%;overflow-y:auto">
     <ngx-tym-tree
-      style="height:100%; padding:8px;"
+      style="padding:8px;"
       [tree]="tree1"
     ></ngx-tym-tree>
   </div>
@@ -250,7 +250,7 @@ effectAllowed:[none,copy,move,copyMove], dropEffect:[none,copy,move]
 
 <div id="tymSplitter">
   <ngx-tym-tree
-    style="padding:8px; width:200px; border:solid 1px #aaa; height:100%;"
+    style="width:200px; border:solid 1px #aaa;"
     [tree]="tree1"
   ></ngx-tym-tree>
 <div tym-splitter></div>
