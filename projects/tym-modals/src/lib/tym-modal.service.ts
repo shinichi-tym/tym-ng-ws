@@ -1,6 +1,6 @@
 /*!
  * tym-modals.js
- * Copyright (c) 2021 shinichi tayama
+ * Copyright (c) 2021, 2022 shinichi tayama
  * Released under the MIT license.
  * see https://opensource.org/licenses/MIT
  */
@@ -31,6 +31,11 @@ export class TymModalService {
   private scrollPadding: string = '';
 
   /**
+   * ダイアログ表示前のフォーカス
+   */
+  private beforeFocus: HTMLElement | null = null;
+
+  /**
    * true: モーダル, false: モーダレス
    */
   public modal = false;
@@ -43,7 +48,17 @@ export class TymModalService {
   /**
    * コンポーネントの背景カバー要素(DIV)(tym-modal.component.tsで設定)
    */
-  public cvr!: HTMLDivElement;
+  public cvr!: HTMLElement;
+
+  /**
+   * body first フォーカスコントロール用要素(SPAN)(tym-modal.component.tsで設定)
+   */
+  public fin!: HTMLElement;
+
+  /**
+   * body last フォーカスコントロール用要素(SPAN)(tym-modal.component.tsで設定)
+   */
+  public fot!: HTMLElement;
 
   /**
    * コンストラクター
@@ -93,6 +108,8 @@ export class TymModalService {
     init?: (componentRef: ComponentRef<unknown>) => void
   ): ComponentRef<unknown> | Promise<ComponentRef<unknown>> {
 
+    this.beforeFocus = this.beforeFocus || document.activeElement as HTMLElement;
+
     const compoRefs = this.componentRefs;
     const injector = Injector.create({ providers: [provider] });
     const factory = this.resolver.resolveComponentFactory(componentType);
@@ -116,13 +133,18 @@ export class TymModalService {
         bodyStyle.overflow = this.scrollOverflow;
         bodyStyle.paddingRight = this.scrollPadding;
         this.scrollBarFlg = true;
+        this.beforeFocus?.focus();
+        this.beforeFocus = null;
+        // フォーカスコントロール用要素の削除
+        this.fin.remove();
+        this.fot.remove();
       }
     });
 
     // モーダル表示時にbodyスクロール抑止
     if (this.scrollBarFlg) {
       const scrollbarWidth = `${window.innerWidth - document.documentElement.clientWidth}px`;
-      const paddingRight = window.getComputedStyle(document.body).paddingRight;
+      const paddingRight = window.getComputedStyle(docBody).paddingRight;
       this.scrollbarWidth = `calc(${scrollbarWidth} + ${paddingRight})`;
       this.scrollOverflow = bodyStyle.overflow;
       this.scrollPadding = bodyStyle.paddingRight;
@@ -135,14 +157,16 @@ export class TymModalService {
     const element = componentRef.location.nativeElement as HTMLElement;
     element.addEventListener('click', (e) => e.stopPropagation());
     element.addEventListener('contextmenu', (e) => e.stopPropagation());
-    setTimeout(() => {
-      element.tabIndex = 0;
-      element.style.outline = 'none';
-      element.focus();
-    });
+    setTimeout(() => this.cvr.focus());
 
     // 背景カバーの挿入or移動
     element.parentElement!.insertBefore(this.cvr, element);
+
+    // フォーカスコントロール用要素の追加
+    if (compoRefs.length == 0) {
+      docBody.appendChild(this.fot);
+      docBody.insertBefore(this.fin, docBody.firstElementChild);
+    }
 
     this.modal = modal;
     compoRefs.push(componentRef);

@@ -170,7 +170,43 @@ export interface TYM_TREE_OPTION {
   doDrawList?: (indexs: number[], texts: string[]) => void;
   /** コンテキストアクションの関数を定義, 規定値: true */
   doContext?: (indexs: number[], texts: string[], event: MouseEvent) => boolean;
+
+  /** ドラッグタイプ(effectAllowed), 規定値: none */
+  dragType?: 'none' | 'copy' | 'move' | 'copyMove';
+  /** ドロップ効果(dropEffect), 規定値: none */
+  dropType?: 'none' | 'copy' | 'move';
+  /** ドラッグ開始時の関数を定義 */
+  doDragStart?: (event: DragEvent, indexs: number[], texts: string[]) => void;
+  /** ドラッグ終了時の関数を定義, 規定値: { } */
+  doDragEnd?: (event: DragEvent, indexs: number[], texts: string[]) => void;
+  /** ドロップターゲットに入った時の関数を定義 */
+  doDragEnter?: (event: DragEvent, indexs: number[], texts: string[]) => void;
+  /** ドロップターゲットの上にある時の関数を定義 */
+  doDragOver?: (event: DragEvent, indexs: number[], texts: string[]) => void;
+  /** ドロップターゲットにドロップされた時の関数を定義, 規定値: { } */
+  doDrop?: (event: DragEvent, indexs: number[], texts: string[]) => void;
+
 }
+/* 規定値 */
+doDragStart(event: DragEvent, indexs: number[], texts: string[]) {
+  event.dataTransfer?.setData('text/plain', idxs.toString());
+  event.dataTransfer?.setData('application/json', JSON.stringify({ idxs, txts }));
+  event.dataTransfer!.effectAllowed = this.dragType as any;
+}
+dragEnterOrOver(event: DragEvent, indexs: number[], texts: string[]) {
+  event.preventDefault();
+  if (this._dd_def.dropType != event.dataTransfer?.effectAllowed) {
+    if (event.dataTransfer?.effectAllowed == 'copyMove') {
+      event.dataTransfer!.dropEffect = this._dd_def.dropType as any;
+    } else {
+      event.dataTransfer!.dropEffect = 'none';
+    }
+  } else {
+    event.dataTransfer!.dropEffect = this._dd_def.dropType as any;
+  }
+}
+doDragEnter = dragEnterOrOver;
+doDragOver = dragEnterOrOver;
 ```
 
 <br>

@@ -6,7 +6,7 @@ import {
 import { TymComm, TYM_COMM_LISTENER } from 'tym-directive';
 import { TymModalService } from "tym-modals";
 import { TymDialogComponent, TymMenuComponent, MenuItems, IconItems } from "tym-modals";
-import { TYM_TREE, TYM_TREE_OPTION } from "tym-tree";
+import { TymTreeComponent, TYM_TREE, TYM_LEAF, TYM_TREE_OPTION } from "tym-tree";
 
 @Component({
   selector: 'app-root',
@@ -21,6 +21,10 @@ export class AppComponent {
 
   @ViewChild("tymTable")
   private tymTable?: TymTableComponent;
+  @ViewChild("tymTree") private tymTree?: TymTreeComponent;
+  @ViewChild("tree_d0") private tree_d0?: TymTreeComponent;
+  @ViewChild("tree_d1") private tree_d1?: TymTreeComponent;
+  @ViewChild("tree_d2") private tree_d2?: TymTreeComponent;
   /////////////////////////////////////////////////////////////////////
   dragType: string = 'move';
   dropType: string = 'move';
@@ -218,6 +222,9 @@ export class AppComponent {
       this.menu(event);
       return false
     }
+  }
+  @Output() tree_opt_1: TYM_TREE_OPTION = {
+    children:this.children,
   }
   /////////////////////////////////////////////////////////////////////
   constructor(
@@ -708,6 +715,103 @@ export class AppComponent {
       element.style.setProperty('--bs-sz', (n == 1) ? '20px' : '24px');
     });
     console.log(componentRef);
+  }
+
+  //-----------------------------------------------------------------
+  private leaf_d!: TYM_LEAF;
+  private get_leaf_d = (indexs: number[]) => {
+    const idxlen = indexs.length;
+    const g = (tree_d: TYM_TREE, level: number): [TYM_TREE, TYM_LEAF] => {
+      const n = indexs[level];
+      const leaf = tree_d[n] as TYM_LEAF;
+      level++;
+      return (level < idxlen) ? g(leaf.children as TYM_TREE, level) : [tree_d, leaf];
+    }
+    return g(this.tree_d, 0);
+  }
+  private leaf_err() {
+    const provider = TymDialogComponent.provider(
+      '',
+      ['移動できません(can\'t move)']
+    );
+    let component_ref = this.modal.open(TymDialogComponent, provider, true);
+    // 生成したコンポーネントにアクセスできます。
+    let component = (component_ref.instance as TymDialogComponent);
+    setTimeout(() => component_ref.destroy(), 2000);
+  }
+  @Output() tree_d: TYM_TREE = [
+    { text: 'leaf-text1', data: [[111111, 112, 113, ''], [114, 115, 116, '']] },
+    {
+      text: 'leaf-text2', data: [[221, 222222, 223, ''], [224, 225, 226, '']], children:
+        [
+          { text: 'leaf-text2-1', data: [[2111, 2112, 2113, '']] },
+          {
+            text: 'leaf-text2-2', data: [[2211, 2212, 2213, '']], children:
+              [
+                { text: 'leaf-text2-2-1', data: [[22111, 22112, 22113, '※注意']] },
+              ]
+          },
+        ]
+    },
+    { text: 'leaf-text3', data: [[331, 332, 333333, ''], [334, 335, 336, '']] },
+  ];
+  @Output() option_d: TYM_TREE_OPTION = {
+    dragType: 'none',
+    dropType: 'move',
+    doDrawList: (indexs: number[], texts: string[]) => {
+      [, this.leaf_d] = this.get_leaf_d(indexs);
+      this.data_d = this.leaf_d.data;
+    },
+    doDrop: (event: DragEvent, indexs: number[], texts: string[]) => {
+      const rowidx = parseInt(event.dataTransfer?.getData('text/plain') as string);
+      const rowData = (this.leaf_d.data as any[]).splice(rowidx, 1);
+      this.data_d = this.leaf_d.data = [...this.leaf_d.data];
+      [, this.leaf_d] = this.get_leaf_d(indexs);
+      for (let i = 0; i < rowData.length; i++) {
+        (this.leaf_d.data as any[]).push(rowData[i]);
+      }
+    }
+  }
+  @Output() option_d2: TYM_TREE_OPTION = {
+    dragType: 'none',
+    dropType: 'move',
+    doDrop: (event: DragEvent, indexs: number[], texts: string[]) => {
+      const leaf_fr_idxstr = event.dataTransfer?.getData('text/plain') as string;
+      const leaf_to_idxsstr = indexs.join(',');
+      console.log(leaf_fr_idxstr, leaf_to_idxsstr, leaf_fr_idxstr?.startsWith(leaf_to_idxsstr))
+      if (leaf_to_idxsstr?.startsWith(leaf_fr_idxstr)) { this.leaf_err(); return; }
+      const leaf_fr_idxs = leaf_fr_idxstr?.split(',').map(s => parseInt(s)) as number[]
+      if (leaf_fr_idxs.length <= 1) { this.leaf_err(); return; }
+      const [tree_fr, leaf_fr] = this.get_leaf_d(leaf_fr_idxs);
+      const [, leaf_to] = this.get_leaf_d(indexs);
+      if (!leaf_to.children) leaf_to.children = [];
+      (leaf_to.children as TYM_TREE).push(leaf_fr);
+      leaf_fr_idxs.pop();
+      tree_fr.splice(tree_fr.findIndex(l => l == leaf_fr), 1)
+      this.tree_d1?.clearTree();
+      this.tree_d1?.openTree(leaf_fr_idxs);
+      this.tree_d2?.clearTree();
+      this.tree_d2?.openTree(indexs);
+    }
+  }
+  @Output() cols_d: TYM_COL[] = [
+    { title: "単価", width: "8em", align: "right" },
+    { title: "販売数", width: "8em", align: "right" },
+    { title: "売上", width: "10em", align: "right" },
+    { title: "注意事項", width: "10em", align: "left" }
+  ];
+  @Output() data_d: any[][] | any = [];
+
+  tree_open() {
+    this.tymTree?.openTree([2,0,0,0]);
+  }
+  clear_tree() {
+    this.tymTree?.clearTree();
+  }
+  clear_tree2() {
+    this.tree_d0?.clearTree();
+    this.tree_d1?.clearTree();
+    this.tree_d2?.clearTree();
   }
 
   @Output() resizeCallback(thisElm: HTMLElement, parentElm: HTMLElement) {

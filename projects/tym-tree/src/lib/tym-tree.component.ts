@@ -1,6 +1,6 @@
 /*!
  * tym-tree.js
- * Copyright (c) 2021 shinichi tayama
+ * Copyright (c) 2021, 2022 shinichi tayama
  * Released under the MIT license.
  * see https://opensource.org/licenses/MIT
  */
@@ -17,6 +17,7 @@ export interface TYM_LEAF {
   image?: string;
   /** 子リーフの配列 または 子リーフ取得用関数 */
   children?: TYM_TREE | ((indexs: number[], texts: string[]) => Promise<TYM_TREE>);
+  [any:string]: any
 }
 
 /**
@@ -50,6 +51,22 @@ export interface TYM_TREE_OPTION {
   doDrawList?: (indexs: number[], texts: string[]) => void;
   /** コンテキストアクションの関数を定義, 規定値: true */
   doContext?: (indexs: number[], texts: string[], event: MouseEvent) => boolean;
+
+  /** ドラッグタイプ(effectAllowed), 規定値: none */
+  dragType?: 'none' | 'copy' | 'move' | 'copyMove';
+  /** ドロップ効果(dropEffect), 規定値: none */
+  dropType?: 'none' | 'copy' | 'move';
+  /** ドラッグ開始時の関数を定義 */
+  doDragStart?: (event: DragEvent, indexs: number[], texts: string[]) => void;
+  /** ドラッグ終了時の関数を定義, 規定値: { } */
+  doDragEnd?: (event: DragEvent, indexs: number[], texts: string[]) => void;
+  /** ドロップターゲットに入った時の関数を定義 */
+  doDragEnter?: (event: DragEvent, indexs: number[], texts: string[]) => void;
+  /** ドロップターゲットの上にある時の関数を定義 */
+  doDragOver?: (event: DragEvent, indexs: number[], texts: string[]) => void;
+  /** ドロップターゲットにドロップされた時の関数を定義, 規定値: { } */
+  doDrop?: (event: DragEvent, indexs: number[], texts: string[]) => void;
+
 }
 
 @Component({
@@ -109,6 +126,13 @@ export class TymTreeComponent implements OnInit {
   private doLeafClose = (indexs: number[], texts: string[]): void => { };
   private doDrawList = (indexs: number[], texts: string[]): void => { };
   private doContext = (indexs: number[], texts: string[], event: MouseEvent) => { return true };
+  private dragType = 'none';
+  private dropType = 'none';
+  private doDragStart = this._doDragStart;
+  private doDragEnd = (event: DragEvent, indexs: number[], texts: string[]): void => { };
+  private doDragEnter = this._doDragEnterOrOver;
+  private doDragOver = this._doDragEnterOrOver;
+  private doDrop = (event: DragEvent, indexs: number[], texts: string[]): void => { };
 
   /**
    * コンストラクター
@@ -158,6 +182,13 @@ export class TymTreeComponent implements OnInit {
     if (opt.doLeafClose) this.doLeafClose = opt.doLeafClose;
     if (opt.doDrawList) this.doDrawList = opt.doDrawList;
     if (opt.doContext) this.doContext = opt.doContext;
+    if (opt.dragType) this.dragType = opt.dragType;
+    if (opt.dropType) this.dropType = opt.dropType;
+    if (opt.doDragStart) this.doDragStart = opt.doDragStart;
+    if (opt.doDragEnd) this.doDragEnd = opt.doDragEnd;
+    if (opt.doDragEnter) this.doDragEnter = opt.doDragEnter;
+    if (opt.doDragOver) this.doDragOver = opt.doDragOver;
+    if (opt.doDrop) this.doDrop = opt.doDrop;
 
     // 初期リーフ生成
     const divElm = this.thisElm.firstElementChild as HTMLDivElement;
@@ -198,6 +229,190 @@ export class TymTreeComponent implements OnInit {
 
     //コンテキストメニューイベントの動作
     divElm.addEventListener('contextmenu', e => ev(e, this.context_event));
+
+    //ドロップ用のイベント等設定
+    this.setDropElm(divElm);
+
+  }
+
+  /**
+   * ターゲットエレメントを求める
+   * @param e イベント
+   * @returns [target, span]
+   */
+  private targetSpan(e: Event) {
+    const target = e.target as HTMLElement;
+    const parent = target.parentElement as HTMLElement;
+    return (parent.tagName == 'SPAN') ? [target, parent] : [target, target];
+  }
+
+  //-------------------------------------------------------------------
+
+  // ドラッグ中のspanエレメント
+  private dragElm: HTMLElement | null = null;
+
+  /**
+   * ドラッグ用のイベント等設定
+   * @param thisElm HTMLElement
+   * @param span HTMLElement
+   */
+  private setDragElm(hovElm: HTMLElement, span: HTMLElement): void {
+    hovElm.draggable = (this.dragType != 'none');
+    const dragStart = (e: DragEvent) => this._dragStart(e, span);
+    const dragEnd = (e: DragEvent) => this._dragEnd(e, span);
+    if (hovElm.draggable) {
+      hovElm.addEventListener('dragstart', dragStart);
+      hovElm.addEventListener('dragend', dragEnd);
+    } else {
+      hovElm.removeEventListener('dragend', dragEnd);
+      hovElm.removeEventListener('dragstart', dragStart);
+    }
+  }
+
+  /**
+   * ドロップ用のイベント等設定
+   * @param thisElm HTMLElement
+   */
+  private setDropElm(thisElm: HTMLElement): void {
+    const droptarget = (this.dropType != 'none');
+    if (droptarget) {
+      thisElm.addEventListener('dragenter', this._dragEnter);
+      thisElm.addEventListener('dragover', this._dragOver);
+      thisElm.addEventListener('dragleave', this._dragleave);
+      thisElm.addEventListener('drop', this._drop);
+    } else {
+      thisElm.removeEventListener('drop', this._drop);
+      thisElm.removeEventListener('dragover', this._dragleave);
+      thisElm.removeEventListener('dragover', this._dragOver);
+      thisElm.removeEventListener('dragenter', this._dragEnter);
+    }
+  }
+
+  //-------------------------------------------------------------------
+
+  private dragidxs: number[] = [];
+  private dragtxts: string[] = [];
+  /**
+   * ドラッグ開始時の関数
+   * @param event DragEvent
+   * @param span HTMLElement
+   */
+  private _dragStart = (event: DragEvent, span: HTMLElement): void => {
+    this.hover_tm_dly = 1;
+    this.dragElm = span;
+    const [idxs, txts] = [this.dragidxs, this.dragtxts] = this.index_array(span);
+    this.doDragStart!(event, idxs, txts);
+    // _dd_com.drag_type = event.dataTransfer?.effectAllowed as any ?? 'none';
+  }
+
+  /**
+   * ドラッグ開始時のデフォルト関数
+   * @param event DragEvent
+   * @param indexs エレメントのインデックス情報
+   * @param texts エレメントのテキスト情報
+   */
+  private _doDragStart(event: DragEvent, indexs: number[], texts: string[]): void {
+    event.dataTransfer?.setData('text/plain', indexs.toString());
+    event.dataTransfer?.setData('application/json', JSON.stringify({ indexs, texts }));
+    event.dataTransfer!.effectAllowed = this.dragType as any;
+  };
+
+  /**
+   * ドラッグ終了時の関数を定義
+   * @param event DragEvent
+   * @param span HTMLElement
+   */
+  private _dragEnd = (event: DragEvent, span: HTMLElement): void => {
+    // const [idxs, txts] = this.index_array(span);
+    this.doDragEnd!(event, this.dragidxs, this.dragtxts);
+    this.dragElm = null;
+    this.hover_tm_dly = null;
+  }
+
+  /**
+   * ドロップターゲットに入った時の関数
+   * @param event DragEvent
+   */
+  private _dragEnter = (event: DragEvent): void => {
+    const [, span] = this.targetSpan(event);
+    const [idxs, txts] = this.index_array(span);
+    this.doDragEnter!(event, idxs, txts);
+    console.log('_dragEnter',idxs)
+
+    switch (event.dataTransfer!.dropEffect) {
+      case 'move':
+        // 他のtable(等)からの移動
+        if (this.dragElm == null) {
+          //
+        }
+        // 自のtable(等)から移動
+        else {
+          //
+        }
+
+        break;
+
+      case 'copy':
+        // 複写
+
+        break;
+
+      default:
+        break;
+    }
+  }
+
+  /**
+   * ロップターゲットの上にある時の関数
+   * @param event DragEvent
+   */
+  private _dragOver = (event: DragEvent): void => {
+    const [, span] = this.targetSpan(event);
+    const [idxs, txts] = this.index_array(span);
+    span.classList.add('dtg');
+    this.doDragOver!(event, idxs, txts);
+    console.log('_dragOver')
+  }
+
+  /**
+   * ドロップターゲットの上にある時のデフォルト関数
+   * @param event DragEvent
+   * @param indexs エレメントのインデックス情報
+   * @param texts エレメントのテキスト情報
+   */
+  private _doDragEnterOrOver(event: DragEvent, indexs: number[], texts: string[]): void {
+    event.preventDefault();
+    if (this.dropType != event.dataTransfer?.effectAllowed) {
+      if (event.dataTransfer?.effectAllowed == 'copyMove') {
+        event.dataTransfer!.dropEffect = this.dropType as any;
+      } else {
+        event.dataTransfer!.dropEffect = 'none';
+      }
+    } else {
+      event.dataTransfer!.dropEffect = this.dropType as any;
+    }
+  }
+
+  /**
+   * ロップターゲットを離れた時の関数
+   * @param event DragEvent
+   */
+  private _dragleave = (event: DragEvent): void => {
+    const [, span] = this.targetSpan(event);
+    span.classList.remove('dtg');
+    console.log('_dragleave')
+  }
+
+  /**
+   * ドロップターゲットにドロップされた時の関数
+   * @param event DragEvent
+   */
+  private _drop = (event: DragEvent): void => {
+    const [, span] = this.targetSpan(event);
+    span.classList.remove('dtg');
+    const [idxs, txts] = this.index_array(span);
+    this.doDrop!(event, idxs, txts);
+    console.log('_drop')
   }
 
   //-------------------------------------------------------------------
@@ -394,9 +609,8 @@ export class TymTreeComponent implements OnInit {
    */
   private is_open_close_area(event: MouseEvent): boolean {
     let ret = false;
-    const span = event.target as HTMLElement;
-    const parent = span.parentElement as HTMLElement;
-    if (parent.tagName != 'SPAN') {
+    const [target, span] = this.targetSpan(event);
+    if (target == span) {
       if (!span.classList.contains('off')) {
         const { paddingLeft: pads, backgroundPositionX: bgxs } = window.getComputedStyle(span);
         const [ofx, pad, bgx] = [event.offsetX, parseInt(pads), parseInt(bgxs)];
@@ -404,8 +618,8 @@ export class TymTreeComponent implements OnInit {
           ret = true;
         }
       }
-    } else if (span.classList.contains('spc')) {
-      if (parent.classList.contains('off')) ret = true;
+    } else if (target.classList.contains('spc')) {
+      if (span.classList.contains('off')) ret = true;
     }
     return ret;
   }
@@ -514,6 +728,8 @@ export class TymTreeComponent implements OnInit {
       backgroundColor: spanStyle.getPropertyValue('--ho-co'),
       borderColor: spanStyle.getPropertyValue('--ho-bc'),
     } as CSSStyleDeclaration);
+    //ドラッグ用のイベント等設定
+    this.setDragElm(hov_inn, span);
     document.body.appendChild(hov_div);
     this.hover_elm = hov_div;
 
@@ -575,7 +791,6 @@ export class TymTreeComponent implements OnInit {
   /**
    * 子階層を作成する
    * @param level エレメントの階層番号
-   * @param idx 階層ごとの行番号
    * @param children リスト取得関数
    * @param span 対象のエレメント
    * @param parent 親のエレメント
@@ -633,12 +848,12 @@ export class TymTreeComponent implements OnInit {
         const option = this.option;
         if (typeof option.children == 'function') {
           const children = option.children;
-          span.onprogress = () => {
-            this.create_subtree(level, children, span, parent);
+          span.onprogress = async () => {
+            await this.create_subtree(level, children, span, parent);
           }
         } if (typeof ch == 'function') {
-          span.onprogress = () => {
-            this.create_subtree(level, ch, span, parent);
+          span.onprogress = async () => {
+            await this.create_subtree(level, ch, span, parent);
           }
         }
       }
@@ -652,6 +867,25 @@ export class TymTreeComponent implements OnInit {
         this.create_child(div, ch, level + 1);
       }
     });
+    if (children.length == 0) {
+      const option = this.option;
+      if (typeof option.children == 'function') {
+        const children = option.children;
+        // ローディングエレメントを作成
+        parent.appendChild(this.create_loading(level));
+
+        // リスト取得関数を呼び出す
+        children([], []).then((tree) => {
+          // 取得したリストからエレメントを作成する
+          if (tree.length > 0) {
+            this.create_child(parent, tree, 0);
+          } else {
+            parent.removeChild(parent.firstChild!);
+          }
+          this.clear_elm_list();
+        })
+      }
+    }
   }
 
   //-------------------------------------------------------------------
@@ -710,5 +944,61 @@ export class TymTreeComponent implements OnInit {
       this._elm_list = Array.from(this.divElm.querySelectorAll('div>span:not(.cls+div span,.lod)'));
     }
     return this._elm_list;
+  }
+
+  //-------------------------------------------------------------------
+
+  public async openTree(indexs: number[], force: boolean = false) {
+    const ot = async (divElm: HTMLElement, level: number): Promise<boolean> => {
+      const n = indexs[level];
+      const spanElms = Array.from(divElm.querySelectorAll(':scope>span'));
+      if (n >= spanElms.length) return Promise.resolve(false);
+      const span = spanElms[n] as HTMLElement;
+      //ツリーを開く
+      if (span.nextElementSibling?.tagName != 'DIV') {
+        if (span.onprogress) {
+          const intx = span.lastElementChild as HTMLElement;
+          const tx = intx.innerText;
+          intx.innerText = ' .. loading .. ';
+          await span.onprogress(new ProgressEvent(''));
+          intx.innerText = tx;
+        } else {
+          this.set_focus_by_elm(span);
+          return Promise.resolve(false);
+        }
+      }
+      const div = span.nextElementSibling as HTMLElement;
+      this.open_close_by_keybd(span, 'opn');
+      level++;
+      if (level < indexs.length) {
+        return ot(div, level);
+      } else {
+        this.set_focus_by_elm(span);
+        return Promise.resolve(true);
+      }
+    }
+    return ot(this.divElm, 0);
+  }
+
+  public clearTree(indexs: number[] = []) {
+    // const tg = (divElm: HTMLElement, level: number): HTMLElement | null => {
+    //   const n = indexs[level];
+    //   const spanElms = Array.from(divElm.querySelectorAll(':scope>span'));
+    //   if (n >= spanElms.length) return null;
+    //   const span = spanElms[n] as HTMLElement;
+    //   //ツリーを開く
+    //   if (span.nextElementSibling?.tagName != 'DIV') {
+    //     return null;
+    //   }
+    //   const div = span.nextElementSibling as HTMLElement;
+    //   level++;
+    //   return (level < indexs.length) ? tg(div, level) : null;
+    // }
+    // const _div = (indexs.length == 0) ? this.divElm : tg(this.divElm, 0);
+    const _div = this.divElm;
+    while (_div?.firstChild) {
+      _div.removeChild(_div.firstChild);
+    }
+    this.create_child(this.divElm, this.tree, 0);
   }
 }

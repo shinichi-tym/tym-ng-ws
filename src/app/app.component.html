@@ -231,7 +231,7 @@ effectAllowed:[none,copy,move,copyMove], dropEffect:[none,copy,move]
 <hr><!-- ---------------------------------------------------------- -->
 <h2>tym-splitter</h2>
 
-<div id="tymSplitter">
+<div class="tymSplitter">
   <div style="width:200px; border:solid 1px #aaa; height:100%;overflow-y:auto">
     <ngx-tym-tree
       style="padding:8px;"
@@ -248,17 +248,17 @@ effectAllowed:[none,copy,move,copyMove], dropEffect:[none,copy,move]
 
 <br>
 
-<div id="tymSplitter">
+<div class="tymSplitter">
   <ngx-tym-tree
     style="width:200px; border:solid 1px #aaa;"
     [tree]="tree1"
   ></ngx-tym-tree>
-<div tym-splitter></div>
-<div style="border:solid 1px #aaa; height:100%; padding:8px;">
-  <div class="tymTable5" style="height:100%; overflow:auto;">
-    <tym-table-view [cols]="cols3" [data]="data3"></tym-table-view>
+  <div tym-splitter></div>
+  <div style="border:solid 1px #aaa; height:100%; padding:8px;">
+    <div class="tymTable5" style="height:100%; overflow:auto;">
+      <tym-table-view [cols]="cols3" [data]="data3"></tym-table-view>
+    </div>
   </div>
-</div>
 </div>
 
 <hr><!-- ---------------------------------------------------------- -->
@@ -481,10 +481,60 @@ effectAllowed:[none,copy,move,copyMove], dropEffect:[none,copy,move]
 <ngx-tym-tree
   class="tree"
   [tree]="tree" [option]="tree_opt"></ngx-tym-tree>
-<ngx-tym-tree
+<ngx-tym-tree #tymTree
   class="tree"
-  [tree]="tree" [option]="tree_opt"></ngx-tym-tree>
+  [tree]="[]" [option]="tree_opt_1"></ngx-tym-tree>
 </div>
+<input type="button" value="tree_open" (click)="tree_open()">
+<input type="button" value="clear_tree" (click)="clear_tree()">
+
+<hr><!-- ---------------------------------------------------------- -->
+
+<div>left dragType:'none',dropType:'move', right dragType:'move',dropType:'none'</div>
+<div class="tymSplitter">
+  <ngx-tym-tree #tree_d0
+    style="width:200px; border:solid 1px #aaa;"
+    [tree]="tree_d"
+    [option]="option_d"
+  ></ngx-tym-tree>
+  <div tym-splitter></div>
+  <div style="border:solid 1px #aaa; height:100%; padding:8px;">
+    <div class="tymTable5" style="height:100%; overflow:auto;">
+
+      <ngx-tym-table
+        [custom]="{fontSize: '10px'}"
+        [afnc]="afnc"
+        [cols]="cols_d"
+        [data]="data_d"
+        [dddef]="{dragType:'move',dropType:'none'}"
+        [chkbox]="chkbox"
+        [lastsp]="lastsp"
+        [autors]="autors.value=='autors'"
+      ></ngx-tym-table>
+
+    </div>
+  </div>
+</div>
+
+<br>
+
+<div>left dragType:'move',dropType:'none', right dragType:'none',dropType:'move'</div>
+<div class="tymSplitter" style="width:fit-content">
+  <ngx-tym-tree #tree_d1
+    style="width:300px; border:solid 1px #aaa;"
+    [tree]="tree_d"
+    [option]="{dragType:'move',dropType:'none'}"
+  ></ngx-tym-tree>
+  <div tym-splitter></div>
+  <!-- <div style="border:solid 1px #aaa; height:100%; padding:8px;"> -->
+    <ngx-tym-tree #tree_d2
+      style="width:300px; border:solid 1px #aaa;"
+      [tree]="tree_d"
+      [option]="option_d2"
+    ></ngx-tym-tree>
+  <!-- </div> -->
+</div>
+<input type="button" value="clear_tree" (click)="clear_tree2()">
 
 <br>
 <br>

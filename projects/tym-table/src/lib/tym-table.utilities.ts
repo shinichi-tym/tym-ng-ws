@@ -1,6 +1,6 @@
 /*!
  * tym-table.js
- * Copyright (c) 2021 shinichi tayama
+ * Copyright (c) 2021, 2022 shinichi tayama
  * Released under the MIT license.
  * see https://opensource.org/licenses/MIT
  */
@@ -30,6 +30,7 @@ export class TymTableUtilities {
     const scrollLeft = scrolElm.scrollLeft; // スクロール状態を保持
     const cntnrRect = cntnrElm.getBoundingClientRect();
     const cellElms = tableElm.querySelectorAll(`tbody tr td:nth-child(${thElm.cellIndex + 1})`);
+    if (cellElms.length <= 0) return;
     // padding, margin サイズを求める
     const realStyle = window.getComputedStyle(cellElms.item(0));
     const padSize = ''

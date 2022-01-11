@@ -1,6 +1,6 @@
 /*!
  * tym-modals.js
- * Copyright (c) 2021 shinichi tayama
+ * Copyright (c) 2021, 2022 shinichi tayama
  * Released under the MIT license.
  * see https://opensource.org/licenses/MIT
  */
@@ -80,9 +80,35 @@ export class TymModalComponent implements OnInit, AfterViewInit {
    * ビューを初期化した後の処理
    */
   ngAfterViewInit() {
-    this.modal.vcr = this.vcr;
-    this.modal.cvr = this.renderer.createElement('div');
-    this.modal.cvr.style.cssText = 'width:100%;height:100%;position:fixed;top:0;left:0;background:rgba(0,0,0,.1);';
+    const vcr = this.vcr;
+    const cvr = this.renderer.createElement('div') as HTMLElement;
+    cvr.tabIndex = 0;
+    const fin = this.renderer.createElement('span') as HTMLElement;
+    fin.tabIndex = 1;
+    const fot = this.renderer.createElement('span') as HTMLElement;
+    fot.tabIndex = 0;
+    const span = this.renderer.createElement('span') as HTMLElement;
+    span.tabIndex = 0;
+
+    cvr.classList.value = 'cv';
+    cvr.addEventListener('keydown', e => {
+      if (e.key == 'Tab' && e.shiftKey) span.focus();
+    });
+
+    const fcs = () => cvr.focus();
+    fin.addEventListener('focusin', fcs);
+    fot.addEventListener('focusin', fcs);
+    span.addEventListener('focusin', e => {
+      if (e.relatedTarget != cvr) cvr.focus();
+    });
+    span.addEventListener('keydown', fcs)
+
+    this.thisElm.appendChild(span);
+    const modal = this.modal;
+    modal.vcr = vcr;
+    modal.fin = fin;
+    modal.fot = fot;
+    modal.cvr = cvr;
   }
 
   /**

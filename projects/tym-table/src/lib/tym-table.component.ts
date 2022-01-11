@@ -1,6 +1,6 @@
 /*!
  * tym-table.js
- * Copyright (c) 2021 shinichi tayama
+ * Copyright (c) 2021, 2022 shinichi tayama
  * Released under the MIT license.
  * see https://opensource.org/licenses/MIT
  */
@@ -428,7 +428,7 @@ export class TymTableComponent implements AfterViewInit {
     this.trElms = Array.from(tbody.children) as HTMLElement[];
     this.tblElm = tblElm;
     this.fcIdx = 0;
-    this.trElms[0].tabIndex = 0;
+    if (this.trElms.length > 0) this.trElms[0].tabIndex = 0; 
   }
 
   //-------------------------------------------------------------------
@@ -639,7 +639,7 @@ export class TymTableComponent implements AfterViewInit {
         const tbody = this.tblElm.lastElementChild as HTMLTableSectionElement;
         this.trElms = Array.from(tbody.children) as HTMLElement[];
         this.fcIdx = 0;
-        this.trElms[0].tabIndex = 0;
+        if (this.trElms.length > 0) this.trElms[0].tabIndex = 0; 
       });
     }
   }
