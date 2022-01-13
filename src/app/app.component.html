@@ -478,15 +478,16 @@ effectAllowed:[none,copy,move,copyMove], dropEffect:[none,copy,move]
 <hr><!-- ---------------------------------------------------------- -->
 
 <div>
-<ngx-tym-tree
+<ngx-tym-tree #tymTree1
   class="tree"
   [tree]="tree" [option]="tree_opt"></ngx-tym-tree>
-<ngx-tym-tree #tymTree
+<ngx-tym-tree #tymTree2
   class="tree"
   [tree]="[]" [option]="tree_opt_1"></ngx-tym-tree>
 </div>
 <input type="button" value="tree_open" (click)="tree_open()">
 <input type="button" value="clear_tree" (click)="clear_tree()">
+<input type="button" value="update_tree" (click)="update_tree()">
 
 <hr><!-- ---------------------------------------------------------- -->
 
@@ -534,7 +535,7 @@ effectAllowed:[none,copy,move,copyMove], dropEffect:[none,copy,move]
     ></ngx-tym-tree>
   <!-- </div> -->
 </div>
-<input type="button" value="clear_tree" (click)="clear_tree2()">
+<input type="button" value="clear_tree(redraw)" (click)="clear_tree2()">
 
 <br>
 <br>

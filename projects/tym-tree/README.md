@@ -87,10 +87,15 @@ import { TYM_TREE, TYM_TREE_OPTION } from "tym-tree";
 - [動的データ表示２](#動的データ表示２) (Dynamic data display 2)
 - [アイコン表示](#アイコン表示) (Show icon)
 - [開閉イメージ非表示](#開閉イメージ非表示) (Hides open / closed images)
-- [開閉イベント](開閉イベント) (Open / Close event)
-- [コンテキストイベント](コンテキストイベント) (Contextmenu event)
-- [リスト表示イベント](リスト表示イベント) (Draw list event)
+- [開閉イベント](#開閉イベント) (Open / Close event)
+- [コンテキストイベント](#コンテキストイベント) (Contextmenu event)
+- [リスト表示イベント](#リスト表示イベント) (Draw list event)
+- [ドラッグアンドドロップイベント](#ドラッグアンドドロップイベント) (Drag and Drop event)
 - [表示のカスタマイズ](#表示のカスタマイズ) (Customization)
+
+<br>
+
+- [公開関数](#公開関数) (Public Functions)
 
 <br>
 
@@ -100,7 +105,7 @@ import { TYM_TREE, TYM_TREE_OPTION } from "tym-tree";
 
 > ### 基本機能
 
-- tree, option 値を指定すると，その値に従ってツリー構造データを表示します。
+- `tree`, `option` 値を指定すると，その値に従ってツリー構造データを表示します。
 - 開閉イメージをクリックすると，下位階層を表示・非表示します。
 - 開閉イメージが非表示の場合，アイコンが表示されていると，アイコンをクリックすると，下位階層を表示・非表示します。
 - リーフをダブルクリックすると，下位階層を表示・非表示します。
@@ -113,6 +118,7 @@ import { TYM_TREE, TYM_TREE_OPTION } from "tym-tree";
   - 下位階層が表示で，左矢印を押下すると下位階層を非表示にします。
   - 下位階層が非表示で，左矢印を押下すると上位階層にフォーカス移動します。
 - リーフの長い文字も，ホバーで表示します。
+- `tree` を変更した場合は，再描画関数で再描画する必要があります。
 
 <br>
 
@@ -388,6 +394,7 @@ doDragOver = dragEnterOrOver;
 
 - `option.doContext` に イベント関数を設定します。
 - 右クリックすると実行されます。
+- `tree` を変更した場合は，再描画関数で再描画する必要があります。
 
 <br>
 
@@ -403,6 +410,17 @@ doDragOver = dragEnterOrOver;
 - マウスクリック時に実行されます。
 - マウスダブルクリック時も最初のクリック時に実行されます。
 - フォーカス行でスペースキーを押下すると実行されます。
+
+<br>
+
+---
+
+> ### ドラッグアンドドロップイベント
+
+<br>
+
+- `option` の `dragType`, `dropType`, `doDragStart`, `doDragEnd`, `doDragEnter`, `doDragOver`, `doDrop` に 必要なイベント関数を設定します。
+- `tree` を変更した場合は，再描画関数で再描画する必要があります。
 
 <br>
 
@@ -446,6 +464,153 @@ ngx-tym-tree {
 
 <br>
 
+> ### 公開関数
+
+<br>
+
+> #### 階層を開く関数
+
+<br>
+
+    let opened = await openTree(indexs); 
+    let opened = await openTree(indexs, force); 
+
+- 指定した階層ごとのインデックス番号をもとに，階層を開く。
+
+- [引数]
+  - indexs: number[]
+    - 開く場所を，階層ごとのインデックス番号で指定します。
+    - 例) [1,2,0]  
+      TOP階層の1番目,その中の階層の2番目,その中の0番目を開く
+  - force: boolean
+    - true  : 階層を開く際に `tree` から再描画する。
+    - false : 階層を開く際に，未描画の場合だけ `tree` から再描画する(省略値)。
+
+- [戻値]
+  - opened: boolean
+    - true  : 全て開けた場合
+    - false : 開けなかった場合
+
+<br>
+
+> #### 階層をクリアする関数
+
+<br>
+
+    clearTree()
+    clearTree(indexs)
+
+- 指定した階層ごとのインデックス番号の下位階層をクリアする。
+
+- [引数]
+  - indexs: number[]
+    - クリアする場所を，階層ごとのインデックス番号で指定する。
+    - 省略した場合は，TOP階層からクリアする。
+
+- [戻値]
+  - なし
+
+<br>
+
+---
+
+<br>
+
+> #### リーフデータを取得する関数
+
+    let [subtree, index] = TymTreeComponent.getTree(tree, indexs);
+
+- スタティックな `tree` から，指定した階層ごとのインデックス番号の `subtree` と `index` を求める。
+- 求めたリーフは次のようなイメージで更新できる。  
+  ` // static strings `  
+  ` subtree[index] = 'update text'; `  
+  ` // static leaf objects `  
+  ` subtree[index].text = 'update text'; `  
+  ` subtree[index] = {text: 'update text'}; `
+- 変更した場合は，再描画関数で再描画する必要があります。
+
+- [引数]
+  - tree: TYM_TREE
+    - 描画に利用している `tree`。
+  - indexs: number[]
+    - 求める `subtree` を，階層ごとのインデックス番号で指定する。
+
+- [戻値]
+  - subtree: TYM_TREE | null
+    - `tree` の部分ツリー，存在しない場合は `null`
+  - index: number
+    - `subtree` に対するインデックス番号。
+
+<br>
+
+---
+
+> #### (描画済みの)リーフを更新する関数
+
+<br>
+
+please wait...
+
+    updateLeaf()
+
+- ???
+
+- [引数]
+  - ???
+
+- [戻値]
+  - ???
+
+<br>
+
+---
+
+<br>
+
+> #### (描画済みの)リーフを削除する関数
+
+<br>
+
+please wait...
+
+    removeLeaf()
+
+- ???
+
+- [引数]
+  - ???
+
+- [戻値]
+  - ???
+
+<br>
+
+---
+
+<br>
+
+> #### (描画済みのツリーに)リーフを追加する関数
+
+<br>
+
+please wait...
+
+    insertLeaf()
+
+- ???
+
+- [引数]
+  - ???
+
+- [戻値]
+  - ???
+
+<br>
+
+---
+
+<br>
+
 その他の表示サンプル (Display image)
 
 ![表示サンプル2](/tym-tree-demo2.png)
@@ -453,6 +618,10 @@ ngx-tym-tree {
 ![表示サンプル3](/tym-tree-demo3.png)
 
 ![表示サンプル4](/tym-tree-demo4.png)
+
+![表示サンプル5](/tym-tree-demo5.png)
+
+![表示サンプル6](/tym-tree-demo6.png)
 
 ---
 ### `comments`

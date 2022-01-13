@@ -21,7 +21,8 @@ export class AppComponent {
 
   @ViewChild("tymTable")
   private tymTable?: TymTableComponent;
-  @ViewChild("tymTree") private tymTree?: TymTreeComponent;
+  @ViewChild("tymTree1") private tymTree1?: TymTreeComponent;
+  @ViewChild("tymTree2") private tymTree2?: TymTreeComponent;
   @ViewChild("tree_d0") private tree_d0?: TymTreeComponent;
   @ViewChild("tree_d1") private tree_d1?: TymTreeComponent;
   @ViewChild("tree_d2") private tree_d2?: TymTreeComponent;
@@ -175,7 +176,7 @@ export class AppComponent {
     }
     // tree = [{ text: 'leaf-text', children: this.children }];
     return new Promise((resolve, reject) => {
-      const t = Math.floor(Math.random() * 10) * 300;
+      const t = Math.floor((.2 + Math.random()) * 8) * 300;
       setTimeout(() => {
         resolve(tree);
       }, t);
@@ -788,9 +789,9 @@ export class AppComponent {
       (leaf_to.children as TYM_TREE).push(leaf_fr);
       leaf_fr_idxs.pop();
       tree_fr.splice(tree_fr.findIndex(l => l == leaf_fr), 1)
-      this.tree_d1?.clearTree();
-      this.tree_d1?.openTree(leaf_fr_idxs);
-      this.tree_d2?.clearTree();
+      this.tree_d1?.clearTree(leaf_fr_idxs);
+      // this.tree_d1?.openTree(leaf_fr_idxs);
+      this.tree_d2?.clearTree(indexs);
       this.tree_d2?.openTree(indexs);
     }
   }
@@ -803,15 +804,31 @@ export class AppComponent {
   @Output() data_d: any[][] | any = [];
 
   tree_open() {
-    this.tymTree?.openTree([2,0,0,0]);
+    setTimeout(() => this.tymTree1?.openTree([2, 0, 0, 0]));
+    setTimeout(() => this.tymTree2?.openTree([2, 1, 1, 1],true));
   }
   clear_tree() {
-    this.tymTree?.clearTree();
+    setTimeout(() => this.tymTree1?.clearTree());
+    setTimeout(() => this.tymTree2?.clearTree());
   }
   clear_tree2() {
-    this.tree_d0?.clearTree();
-    this.tree_d1?.clearTree();
-    this.tree_d2?.clearTree();
+    setTimeout(() => this.tree_d0?.clearTree());
+    setTimeout(() => this.tree_d1?.clearTree());
+    setTimeout(() => this.tree_d2?.clearTree());
+  }
+  update_tree() {
+    const [tree, n] = TymTreeComponent.getTree(this.tree, [2, 0, 0]);
+    // const [tree, n] = TymTreeComponent.getTree(this.tree1, [1, 1, 0]);
+    if (tree != null) {
+      const leaf = tree[n];
+      if (typeof leaf == 'string') {
+        tree[n] = 'PPPPPPPPPPPPPPPP';
+      } else {
+        (leaf as TYM_LEAF).text = 'TTTTTTTTTTTTTTT';
+      }
+    } else {
+      console.log('@@ err');
+    }
   }
 
   @Output() resizeCallback(thisElm: HTMLElement, parentElm: HTMLElement) {
