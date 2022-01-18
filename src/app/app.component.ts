@@ -215,11 +215,11 @@ export class AppComponent {
     { text: 'data', },
   ];
   @Output() tree_opt: TYM_TREE_OPTION = {
-    doLeafOpen: (indexs: number[], texts: string[]) => console.log('open', indexs, texts),
-    doLeafClose: (indexs: number[], texts: string[]) => console.log('close', indexs, texts),
-    doDrawList: (indexs: number[], texts: string[]) => console.log('list', indexs, texts),
-    doContext: (indexs: number[], texts: string[], event: MouseEvent) => {
-      console.log('menu', indexs, texts);
+    doLeafOpen: (indexs: number[], texts: string[], leaf: any) => console.log('open', indexs, texts, leaf),
+    doLeafClose: (indexs: number[], texts: string[], leaf: any) => console.log('close', indexs, texts, leaf),
+    doDrawList: (indexs: number[], texts: string[], leaf: any) => console.log('list', indexs, texts, leaf),
+    doContext: (indexs: number[], texts: string[], event: MouseEvent, leaf: any) => {
+      console.log('menu', indexs, texts, leaf);
       this.menu(event);
       return false
     }
@@ -334,7 +334,7 @@ export class AppComponent {
     let words: string = '';
     for (let index = 0; index < wordnum; index++) {
       words += ' ' + Math.random().toString(36).replace(/[^a-z]+/g, '')
-        .substr(0, (Math.floor(Math.random() * 12) + 3));
+        .substring(0, (Math.floor(Math.random() * 12) + 3));
     }
     return words.substring(1);
   }
@@ -759,11 +759,13 @@ export class AppComponent {
   @Output() option_d: TYM_TREE_OPTION = {
     dragType: 'none',
     dropType: 'move',
-    doDrawList: (indexs: number[], texts: string[]) => {
+    doDrawList: (indexs: number[], texts: string[], leaf: any) => {
+      console.log('list', indexs, texts, leaf);
       [, this.leaf_d] = this.get_leaf_d(indexs);
       this.data_d = this.leaf_d.data;
     },
-    doDrop: (event: DragEvent, indexs: number[], texts: string[]) => {
+    doDrop: (event: DragEvent, indexs: number[], texts: string[], leaf: any) => {
+      console.log('drop', indexs, texts, leaf);
       const rowidx = parseInt(event.dataTransfer?.getData('text/plain') as string);
       const rowData = (this.leaf_d.data as any[]).splice(rowidx, 1);
       this.data_d = this.leaf_d.data = [...this.leaf_d.data];
@@ -776,7 +778,8 @@ export class AppComponent {
   @Output() option_d2: TYM_TREE_OPTION = {
     dragType: 'none',
     dropType: 'move',
-    doDrop: (event: DragEvent, indexs: number[], texts: string[]) => {
+    doDrop: (event: DragEvent, indexs: number[], texts: string[], leaf: any) => {
+      console.log('drop', indexs, texts, leaf);
       const leaf_fr_idxstr = event.dataTransfer?.getData('text/plain') as string;
       const leaf_to_idxsstr = indexs.join(',');
       console.log(leaf_fr_idxstr, leaf_to_idxsstr, leaf_fr_idxstr?.startsWith(leaf_to_idxsstr))
@@ -803,32 +806,44 @@ export class AppComponent {
   ];
   @Output() data_d: any[][] | any = [];
 
-  tree_open() {
-    setTimeout(() => this.tymTree1?.openTree([2, 0, 0, 0]));
-    setTimeout(() => this.tymTree2?.openTree([2, 1, 1, 1],true));
+  private getTI(v: string) {
+    return [(document.getElementById('radio1') as HTMLInputElement).checked
+      ? this.tymTree1 : this.tymTree2, JSON.parse(`[${v}]`)];
   }
-  clear_tree() {
-    setTimeout(() => this.tymTree1?.clearTree());
-    setTimeout(() => this.tymTree2?.clearTree());
+  tree_open(v: any) {
+    const [tree, indexs] = this.getTI(v.value);
+    tree?.openTree(indexs);
+    // tree?.openTree(indexs, true);
   }
+  clear_tree(v: any) {
+    const [tree, indexs] = this.getTI(v.value);
+    tree?.clearTree(indexs);
+  }
+  update_tree(v: any, t: any) {
+    const [tree, indexs] = this.getTI(v.value);
+    const [tree2, n] = TymTreeComponent.getTree(this.tree, indexs);
+    if (tree2 != null) {
+      const leaf = tree2[n];
+      if (typeof leaf == 'string') {
+        tree2[n] = t.value;
+      } else {
+        (leaf as TYM_LEAF).text = t.value;
+      }
+      // tree.updateLeafText(indexs, t.value);
+      tree.clearTree(indexs.slice(0,-1));
+    } else {
+      console.log('@@ err');
+    }
+  }
+  remove_leaf(v: any) {
+    const [tree, indexs] = this.getTI(v.value);
+    tree?.removeLeaf(indexs);
+  }
+
   clear_tree2() {
     setTimeout(() => this.tree_d0?.clearTree());
     setTimeout(() => this.tree_d1?.clearTree());
     setTimeout(() => this.tree_d2?.clearTree());
-  }
-  update_tree() {
-    const [tree, n] = TymTreeComponent.getTree(this.tree, [2, 0, 0]);
-    // const [tree, n] = TymTreeComponent.getTree(this.tree1, [1, 1, 0]);
-    if (tree != null) {
-      const leaf = tree[n];
-      if (typeof leaf == 'string') {
-        tree[n] = 'PPPPPPPPPPPPPPPP';
-      } else {
-        (leaf as TYM_LEAF).text = 'TTTTTTTTTTTTTTT';
-      }
-    } else {
-      console.log('@@ err');
-    }
   }
 
   @Output() resizeCallback(thisElm: HTMLElement, parentElm: HTMLElement) {

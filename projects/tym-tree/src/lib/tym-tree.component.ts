@@ -16,7 +16,7 @@ export interface TYM_LEAF {
   /** リーフごとにアイコンを表示する時のクラス文字列 */
   image?: string;
   /** 子リーフの配列 または 子リーフ取得用関数 */
-  children?: TYM_TREE | ((indexs: number[], texts: string[]) => Promise<TYM_TREE>);
+  children?: TYM_TREE | ((indexs: number[], texts: string[], leaf?: any) => Promise<TYM_TREE>);
   /** 任意のデータ */
   [any:string]: any
 }
@@ -31,7 +31,7 @@ export type TYM_TREE = (string | TYM_LEAF | TYM_TREE)[];
  */
 export interface TYM_TREE_OPTION {
   /** 子リーフ取得用関数 (TYM_LEAF.childrenは無視する) */
-  children?: (indexs: number[], texts: string[]) => Promise<TYM_TREE>;
+  children?: (indexs: number[], texts: string[], leaf?: any) => Promise<TYM_TREE>;
   /** 開閉用のマークを非表示する場合にtrueを指定する */
   no_open_close_image?: boolean;
   /**
@@ -45,28 +45,28 @@ export interface TYM_TREE_OPTION {
     none?: string;
   }
   /** リーフオープンアクションの関数を定義, 規定値: { } */
-  doLeafOpen?: (indexs: number[], texts: string[]) => void;
+  doLeafOpen?: (indexs: number[], texts: string[], leaf?: TYM_LEAF) => void;
   /** リーフクローズアクションの関数を定義, 規定値: { } */
-  doLeafClose?: (indexs: number[], texts: string[]) => void;
+  doLeafClose?: (indexs: number[], texts: string[], leaf?: TYM_LEAF) => void;
   /** リスト表示アクションの関数を定義, 規定値: { } */
-  doDrawList?: (indexs: number[], texts: string[]) => void;
+  doDrawList?: (indexs: number[], texts: string[], leaf?: TYM_LEAF) => void;
   /** コンテキストアクションの関数を定義, 規定値: true */
-  doContext?: (indexs: number[], texts: string[], event: MouseEvent) => boolean;
+  doContext?: (indexs: number[], texts: string[], event: MouseEvent, leaf?: TYM_LEAF) => boolean;
 
   /** ドラッグタイプ(effectAllowed), 規定値: none */
   dragType?: 'none' | 'copy' | 'move' | 'copyMove';
   /** ドロップ効果(dropEffect), 規定値: none */
   dropType?: 'none' | 'copy' | 'move';
   /** ドラッグ開始時の関数を定義 */
-  doDragStart?: (event: DragEvent, indexs: number[], texts: string[]) => void;
+  doDragStart?: (event: DragEvent, indexs: number[], texts: string[], leaf?: TYM_LEAF) => void;
   /** ドラッグ終了時の関数を定義, 規定値: { } */
-  doDragEnd?: (event: DragEvent, indexs: number[], texts: string[]) => void;
+  doDragEnd?: (event: DragEvent, indexs: number[], texts: string[], leaf?: TYM_LEAF) => void;
   /** ドロップターゲットに入った時の関数を定義 */
-  doDragEnter?: (event: DragEvent, indexs: number[], texts: string[]) => void;
+  doDragEnter?: (event: DragEvent, indexs: number[], texts: string[], leaf?: TYM_LEAF) => void;
   /** ドロップターゲットの上にある時の関数を定義 */
-  doDragOver?: (event: DragEvent, indexs: number[], texts: string[]) => void;
+  doDragOver?: (event: DragEvent, indexs: number[], texts: string[], leaf?: TYM_LEAF) => void;
   /** ドロップターゲットにドロップされた時の関数を定義, 規定値: { } */
-  doDrop?: (event: DragEvent, indexs: number[], texts: string[]) => void;
+  doDrop?: (event: DragEvent, indexs: number[], texts: string[], leaf?: TYM_LEAF) => void;
 
 }
 
@@ -123,17 +123,17 @@ export class TymTreeComponent implements OnInit {
   //-------------------------------------------------------------------
 
   // デフォルトイベント関数
-  private doLeafOpen = (indexs: number[], texts: string[]): void => { };
-  private doLeafClose = (indexs: number[], texts: string[]): void => { };
-  private doDrawList = (indexs: number[], texts: string[]): void => { };
-  private doContext = (indexs: number[], texts: string[], event: MouseEvent) => { return true };
+  private doLeafOpen = (indexs: number[], texts: string[], leaf?: any): void => { };
+  private doLeafClose = (indexs: number[], texts: string[], leaf?: any): void => { };
+  private doDrawList = (indexs: number[], texts: string[], leaf?: any): void => { };
+  private doContext = (indexs: number[], texts: string[], event: MouseEvent, leaf?: any) => { return true };
   private dragType = 'none';
   private dropType = 'none';
   private doDragStart = this._doDragStart;
-  private doDragEnd = (event: DragEvent, indexs: number[], texts: string[]): void => { };
+  private doDragEnd = (event: DragEvent, indexs: number[], texts: string[], leaf?: any): void => { };
   private doDragEnter = this._doDragEnterOrOver;
   private doDragOver = this._doDragEnterOrOver;
-  private doDrop = (event: DragEvent, indexs: number[], texts: string[]): void => { };
+  private doDrop = (event: DragEvent, indexs: number[], texts: string[], leaf?: any): void => { };
 
   /**
    * コンストラクター
@@ -293,6 +293,7 @@ export class TymTreeComponent implements OnInit {
 
   private dragidxs: number[] = [];
   private dragtxts: string[] = [];
+  private dragleaf: any = undefined;
   /**
    * ドラッグ開始時の関数
    * @param event DragEvent
@@ -301,8 +302,8 @@ export class TymTreeComponent implements OnInit {
   private _dragStart = (event: DragEvent, span: HTMLElement): void => {
     this.hover_tm_dly = 1;
     this.dragElm = span;
-    const [idxs, txts] = [this.dragidxs, this.dragtxts] = this.index_array(span);
-    this.doDragStart!(event, idxs, txts);
+    const [idxs, txts, leaf] = [this.dragidxs, this.dragtxts, this.dragleaf] = this.index_array(span);
+    this.doDragStart!(event, idxs, txts, leaf);
     // _dd_com.drag_type = event.dataTransfer?.effectAllowed as any ?? 'none';
   }
 
@@ -311,8 +312,9 @@ export class TymTreeComponent implements OnInit {
    * @param event DragEvent
    * @param indexs エレメントのインデックス情報
    * @param texts エレメントのテキスト情報
+   * @param leaf リーフオブジェクト
    */
-  private _doDragStart(event: DragEvent, indexs: number[], texts: string[]): void {
+  private _doDragStart(event: DragEvent, indexs: number[], texts: string[], leaf: any): void {
     event.dataTransfer?.setData('text/plain', indexs.toString());
     event.dataTransfer?.setData('application/json', JSON.stringify({ indexs, texts }));
     event.dataTransfer!.effectAllowed = this.dragType as any;
@@ -325,7 +327,7 @@ export class TymTreeComponent implements OnInit {
    */
   private _dragEnd = (event: DragEvent, span: HTMLElement): void => {
     // const [idxs, txts] = this.index_array(span);
-    this.doDragEnd!(event, this.dragidxs, this.dragtxts);
+    this.doDragEnd!(event, this.dragidxs, this.dragtxts, this.dragleaf);
     this.dragElm = null;
     this.hover_tm_dly = null;
   }
@@ -336,30 +338,8 @@ export class TymTreeComponent implements OnInit {
    */
   private _dragEnter = (event: DragEvent): void => {
     const [, span] = this.targetSpan(event);
-    const [idxs, txts] = this.index_array(span);
-    this.doDragEnter!(event, idxs, txts);
-
-    switch (event.dataTransfer!.dropEffect) {
-      case 'move':
-        // 他のtable(等)からの移動
-        if (this.dragElm == null) {
-          //
-        }
-        // 自のtable(等)から移動
-        else {
-          //
-        }
-
-        break;
-
-      case 'copy':
-        // 複写
-
-        break;
-
-      default:
-        break;
-    }
+    const [idxs, txts, leaf] = this.index_array(span);
+    this.doDragEnter(event, idxs, txts, leaf);
   }
 
   /**
@@ -368,9 +348,9 @@ export class TymTreeComponent implements OnInit {
    */
   private _dragOver = (event: DragEvent): void => {
     const [, span] = this.targetSpan(event);
-    const [idxs, txts] = this.index_array(span);
+    const [idxs, txts, leaf] = this.index_array(span);
     span.classList.add('dtg');
-    this.doDragOver!(event, idxs, txts);
+    this.doDragOver!(event, idxs, txts, leaf);
   }
 
   /**
@@ -379,7 +359,7 @@ export class TymTreeComponent implements OnInit {
    * @param indexs エレメントのインデックス情報
    * @param texts エレメントのテキスト情報
    */
-  private _doDragEnterOrOver(event: DragEvent, indexs: number[], texts: string[]): void {
+  private _doDragEnterOrOver(event: DragEvent, indexs: number[], texts: string[], leaf?: any): void {
     event.preventDefault();
     if (this.dropType != event.dataTransfer?.effectAllowed) {
       if (event.dataTransfer?.effectAllowed == 'copyMove') {
@@ -407,9 +387,9 @@ export class TymTreeComponent implements OnInit {
    */
   private _drop = (event: DragEvent): void => {
     const [, span] = this.targetSpan(event);
+    const [idxs, txts, leaf] = this.index_array(span);
     span.classList.remove('dtg');
-    const [idxs, txts] = this.index_array(span);
-    this.doDrop!(event, idxs, txts);
+    this.doDrop!(event, idxs, txts, leaf);
   }
 
   //-------------------------------------------------------------------
@@ -433,8 +413,8 @@ export class TymTreeComponent implements OnInit {
         //ツリーを閉じる
         if (this.open_close_by_keybd(elm, 'cls')) {
           this.hover_on(elm);
-          const [idxs, txts] = this.index_array(elm);
-          this.doLeafClose(idxs, txts);
+          const [idxs, txts, leaf] = this.index_array(elm);
+          this.doLeafClose(idxs, txts, leaf);
         } else {
           //既に閉じられていた場合は上位階層へ
           const parentDivElm = elm.parentElement as HTMLDivElement;
@@ -449,8 +429,8 @@ export class TymTreeComponent implements OnInit {
         //ツリーを開く
         if (this.open_close_by_keybd(elm, 'opn')) {
           this.hover_on(elm);
-          const [idxs, txts] = this.index_array(elm);
-          this.doLeafOpen(idxs, txts);
+          const [idxs, txts, leaf] = this.index_array(elm);
+          this.doLeafOpen(idxs, txts, leaf);
         } else {
           //既に開かれていた場合は下位階層へ
           const nextDivElm = elm.nextElementSibling;
@@ -464,8 +444,8 @@ export class TymTreeComponent implements OnInit {
       case ' ':
         //スペースキーによりツリー＆リスト再取得
         elm.dispatchEvent(new Event('progress'));
-        const [idxs, txts] = this.index_array(elm);
-        setTimeout(() => this.doDrawList(idxs, txts));
+        const [idxs, txts, leaf] = this.index_array(elm);
+        setTimeout(() => this.doDrawList(idxs, txts, leaf));
         break;
       case 'Tab':
         //ツリー内からShift+TABキーによるフォーカスアウト時にツリーの前にフォーカスを移す
@@ -497,8 +477,8 @@ export class TymTreeComponent implements OnInit {
           }
         }
       } else {
-        const [idxs, txts] = this.index_array(span);
-        setTimeout(() => this.doDrawList(idxs, txts));
+        const [idxs, txts, leaf] = this.index_array(span);
+        setTimeout(() => this.doDrawList(idxs, txts, leaf));
       }
       this.set_focus_by_elm(span);
     }
@@ -522,8 +502,8 @@ export class TymTreeComponent implements OnInit {
    */
   private context_event = (e: MouseEvent, span: HTMLElement): boolean => {
     this.set_focus_by_elm(span);
-    const [idxs, txts] = this.index_array(span);
-    if (!this.doContext(idxs, txts, e)) {
+    const [idxs, txts, leaf] = this.index_array(span);
+    if (!this.doContext(idxs, txts, e, leaf)) {
       e.stopPropagation();
       e.preventDefault();
       return false;
@@ -536,6 +516,7 @@ export class TymTreeComponent implements OnInit {
   // エレメント作成用
   private create_span_elm = () => this.renderer.createElement('span') as HTMLSpanElement;
   private create_div_elm = () => this.renderer.createElement('div') as HTMLDivElement;
+  private remove_children = (_div: any) => { while (_div?.firstChild) { _div.removeChild(_div.firstChild); } }
 
   /**
    * リーフ開閉状態文字列(クラス文字列)切り替え
@@ -774,7 +755,7 @@ export class TymTreeComponent implements OnInit {
    * @param span 対象のエレメント
    * @returns エレメントのインデックス・テキスト情報
    */
-  private index_array(span: HTMLElement): [number[], string[]] {
+  private index_array(span: HTMLElement): [number[], string[], any] {
     let idxs: number[] = [];
     let txts: string[] = [];
     for (let elm = span; !elm.classList.contains('d'); elm = elm.parentElement!) {
@@ -782,7 +763,8 @@ export class TymTreeComponent implements OnInit {
       idxs.push(parseInt(_elm.dataset.index!));
       txts.push((_elm.lastElementChild as HTMLElement).innerText);
     }
-    return [idxs.reverse(), txts.reverse()];
+    const leaf = (span.onprogress) ? span.onprogress(new ProgressEvent('get')) : undefined;
+    return [idxs.reverse(), txts.reverse(), leaf];
   }
 
   /**
@@ -799,9 +781,7 @@ export class TymTreeComponent implements OnInit {
     // リストを作成するdivエレメントを求める
     let _div = span.nextElementSibling as HTMLElement;
     if (_div?.tagName == 'DIV') {
-      while (_div.firstChild) {
-        _div.removeChild(_div.firstChild);
-      }
+      this.remove_children(_div);
     } else {
       const _div_wk = this.create_div_elm();
       parent.insertBefore(_div_wk, _div);
@@ -812,8 +792,8 @@ export class TymTreeComponent implements OnInit {
     _div.appendChild(this.create_loading(level));
 
     // リスト取得関数を呼び出す
-    const [idxs, txts] = this.index_array(span);
-    let tree = (typeof children == 'function') ? await children(idxs, txts) : children;
+    const [idxs, txts, leaf] = this.index_array(span);
+    let tree = (typeof children == 'function') ? await children(idxs, txts, leaf) : children;
 
     // 取得したリストからエレメントを作成する
     if (tree?.length > 0) {
@@ -828,54 +808,59 @@ export class TymTreeComponent implements OnInit {
   }
 
   /**
+   * リーフを作成する
+   * @param parent 親エレメント
+   * @param l リーフ情報
+   * @param level 階層番号
+   * @param o インデックス用
+   */
+  private create_leaf(parent: HTMLElement, l: string | TYM_TREE | TYM_LEAF, level: number, o: any) {
+    // const isStr = (typeof l == 'string');
+    const [_text, _array, _image, _leaf] = (typeof l == 'string')
+      ? [l, , ,] : (Array.isArray(l)) ? [, l, ,] : [l.text, , l.image, l];
+    const create_subtree_event = (ch: Function | TYM_TREE, sp: HTMLElement) => {
+      return (e: Event): Promise<any> | any => {
+        if (e.type == 'get') return _leaf;
+        return this.create_subtree(level, ch, sp, parent);
+      }
+    }
+    // l is not string array
+    if (_text) {
+      const span = this.create_span(level, o.idx++, _text, _image);
+      parent.appendChild(span);
+      // const option = this.option;
+      const optChildren = this.option.children;
+      if (typeof optChildren == 'function') {
+        span.onprogress = create_subtree_event(optChildren, span);
+      } else {
+        if (_leaf) {
+          span.onprogress = create_subtree_event((_leaf as TYM_LEAF).children!, span);
+        }
+        if (!_leaf?.children) {
+          this.swap_open_close(span, 'cls', 'noc');
+        }
+      }
+    }
+    // l is string array
+    if (_array) {
+      const prev = parent.lastElementChild as HTMLSpanElement;
+      if (prev.classList.contains('noc')) {
+        this.swap_open_close(prev, 'noc', 'cls');
+      }
+      prev.onprogress = create_subtree_event(_array, prev);
+    }
+  }
+
+  /**
    * ツリーのリーフ群を作成する
    * @param parent 親リーフ
    * @param children 子リーフ群
    * @param level エレメントの階層番号
    */
   private create_child(parent: HTMLElement, children: TYM_TREE, level: number) {
-    while (parent.firstChild) {
-      parent.removeChild(parent.firstChild);
-    }
-    let idx = 0;
-    children.forEach((l) => {
-      const [tx, ch, im] = (typeof l == 'string') ? [l, ,] : (Array.isArray(l)) ? [, l,] : [l.text, l.children, l.image];
-      if (tx) {
-        const span = this.create_span(level, idx++, tx, im);
-        parent.appendChild(span);
-        if (typeof l == 'string') this.swap_open_close(span, 'cls', 'noc');
-        const option = this.option;
-        if (typeof option.children == 'function') {
-          const children = option.children;
-          span.onprogress = async () => {
-            await this.create_subtree(level, children, span, parent);
-          }
-        } else {
-          if (typeof ch == 'function') {
-            span.onprogress = async () => {
-              await this.create_subtree(level, ch, span, parent);
-            }
-          } if (!ch) {
-            this.swap_open_close(span, 'cls', 'noc');
-            if (typeof l != 'string') {
-              const _l = l as TYM_LEAF;
-              span.onprogress = async () => {
-                await this.create_subtree(level, _l.children as TYM_TREE, span, parent);
-              }
-            }
-          }
-        }
-      }
-      if (Array.isArray(ch)) {
-        const prev = parent.lastElementChild as HTMLSpanElement;
-        if (prev.classList.contains('noc')) {
-          this.swap_open_close(prev, 'noc', 'cls');
-        }
-        prev.onprogress = async () => {
-          this.create_subtree(level, ch, prev, parent)
-        }
-      }
-    });
+    this.remove_children(parent);
+    const o = { idx: 0 };
+    children.forEach(l => this.create_leaf(parent, l, level, o));
     if (children.length == 0) {
       const option = this.option;
       if (typeof option.children == 'function') {
@@ -956,9 +941,11 @@ export class TymTreeComponent implements OnInit {
   }
 
   //-------------------------------------------------------------------
+  // 公開関数
+  //-------------------------------------------------------------------
 
   /**
-   * 指定した階層ごとのインデックス番号をもとに，階層を開く
+   * 指定した，階層ごとのインデックス番号をもとに，階層を開く
    * @param indexs 階層ごとのインデックス番号
    * @param force true:再描画, false:未描画の場合だけ再描画
    * @returns true:全て開けた, false:開けなかった
@@ -994,33 +981,109 @@ export class TymTreeComponent implements OnInit {
   }
 
   /**
-   * 指定した階層ごとのインデックス番号の下位階層をクリア
+   * ターゲットエレメントとチャイルドエレメントを求める
+   * @param indexs 階層ごとのインデックス番号
+   * @returns [ターゲットエレメント, チャイルドエレメント]
+   */
+  private getIdxElm(indexs: number[]): [HTMLElement | null, HTMLElement | null] {
+    const tg = (divElm: HTMLElement, level: number): [HTMLElement | null, HTMLElement | null] => {
+      const n = indexs[level++];
+      const spanElms = Array.from(divElm.querySelectorAll(':scope>span'));
+      if (n >= spanElms.length) return [null, null];
+      //ターゲットエレメント
+      const span = spanElms[n] as HTMLElement;
+      if (span.nextElementSibling?.tagName != 'DIV') {
+        return (level < indexs.length) ? [null, null] : [span, null];
+      }
+      //チャイルドエレメント
+      const div = span.nextElementSibling as HTMLElement;
+      // level++;
+      return (level < indexs.length) ? tg(div, level) : [span, div];
+    }
+    return tg(this.divElm, 0)
+  }
+
+  /**
+   * 指定した，階層ごとのインデックス番号の下位階層をクリア・再描画
    * @param indexs 階層ごとのインデックス番号
    */
   public clearTree(indexs: number[] = []) {
-    const tg = (divElm: HTMLElement, level: number): HTMLElement | null => {
-      const n = indexs[level];
-      const spanElms = Array.from(divElm.querySelectorAll(':scope>span'));
-      if (n >= spanElms.length) return null;
-      const span = spanElms[n] as HTMLElement;
-      //ツリーを開く
-      if (span.nextElementSibling?.tagName != 'DIV') {
-        return null;
-      }
-      const div = span.nextElementSibling as HTMLElement;
-      level++;
-      return (level < indexs.length) ? tg(div, level) : div;
-    }
     if (indexs.length == 0) {
       this.create_child(this.divElm, this.tree, 0);
+      this.clear_elm_list();
     } else {
-      const _div = tg(this.divElm, 0);
-      while (_div?.firstChild) {
-        _div.removeChild(_div.firstChild);
-      }
-      _div?.previousElementSibling?.dispatchEvent(new Event('progress'));
+      const [_span, _div] = this.getIdxElm(indexs);
+      this.remove_children(_div);
+      _span?.dispatchEvent(new Event('progress'));
     }
   }
+
+  /**
+   * 指定した，階層ごとのインデックス番号のリーフとその下位階層を削除
+   * @param indexs 階層ごとのインデックス番号
+   */
+  public removeLeaf(indexs: number[] = []) {
+    if (indexs.length > 0) {
+      const [_span, _div] = this.getIdxElm(indexs);
+      this.remove_children(_div);
+      _div?.parentElement?.removeChild(_div);
+      const _parent = _span?.parentElement;
+      _parent?.removeChild(_span!);
+      if (_parent?.childElementCount == 0) {
+        const span = _parent.previousElementSibling as HTMLElement;
+        _parent.parentElement?.removeChild(_parent);
+        this.swap_open_close(span, 'opn', 'cls');
+      }
+      this.clear_elm_list();
+    }
+  }
+
+  /**
+   * 
+   * @param indexs 階層ごとのインデックス番号
+   * @param text 設定するテキスト
+   */
+  public updateLeafText(indexs: number[], text: string) {
+    if (indexs.length > 0 && text.length > 0) {
+      const [_span,] = this.getIdxElm(indexs);
+      if (_span?.lastElementChild) {
+        const elm = _span?.lastElementChild as HTMLElement;
+        elm.innerText = text;
+      }
+    }
+  }
+
+  /**
+   * 指定した，階層ごとのインデックス番号の子リーフとして追加する
+   * @param indexs 階層ごとのインデックス番号
+   * @param tree 追加するリーフ情報
+   */
+  // public insertLeaf(indexs: number[] = [], tree: TYM_TREE) {
+  //   let _div;
+  //   if (indexs.length == 0) {
+  //     _div = this.divElm;
+  //   } else {
+  //     let _span;
+  //     [_span, _div] = this.getIdxElm(indexs);
+  //     if (_span) {
+  //       if (!_div) {
+  //         const _nextspan = _span.nextElementSibling as HTMLElement;
+  //         const _div_wk = this.create_div_elm();
+  //         _span.parentElement?.insertBefore(_div_wk, _nextspan);
+  //         _div = _div_wk;
+  //       }
+  //     }
+  //   }
+  //   if (_div) {
+  //     const spanElms = Array.from(_div.querySelectorAll(':scope>span'));
+  //     this.create_leaf(_div, tree, indexs.length, { idx: spanElms.length });
+  //     this.clear_elm_list();
+  //   }
+  // }
+
+  //-------------------------------------------------------------------
+  // 公開スタティック関数
+  //-------------------------------------------------------------------
 
   /**
    * リーフデータを取得する関数
@@ -1036,8 +1099,7 @@ export class TymTreeComponent implements OnInit {
         if (Array.isArray(l)) n++;
         return (i == n);
       });
-      const t = (typeof (_tree[n]) == 'string' && Array.isArray(_tree[n + 1]))
-        ? _tree[n + 1] : _tree[n];
+      const t = (typeof (_tree[n]) == 'string' && Array.isArray(_tree[n + 1])) ? _tree[n + 1] : _tree[n];
       level++;
       if (level < indexs.length) {
         if (typeof t == 'string') return [null, -1];
@@ -1046,17 +1108,12 @@ export class TymTreeComponent implements OnInit {
         } else if (typeof t == 'string') {
           return [null, -1];
         } else {
-          if (Array.isArray(t.children)) {
-            return ot(t.children, level);
-          }
-          return [null, -1];
+          return (Array.isArray(t.children)) ? ot(t.children, level) : [null, -1];
         }
       } else {
         return [_tree, n];
       }
     }
-    return (indexs.length == 0)
-      ? [null, -1]
-      : ot(tree, 0);
+    return (indexs.length == 0) ? [null, -1] : ot(tree, 0);
   }
 }

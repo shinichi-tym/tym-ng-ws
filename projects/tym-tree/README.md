@@ -30,7 +30,7 @@ npm install tym-tree
 
 ``` html
   :
-  <ngx-tym-tree
+  <ngx-tym-tree #tymTree
     style="width:300px;height:200px;border:solid 1px #888;"
     [tree]="tree"
     [option]="option"
@@ -50,10 +50,23 @@ import { TymTreeModule } from "tym-tree";
   :
 ```
 
+コンポーネントの機能を利用する。
+
+``` typescript :app.component.ts
+  :
+import { tymTreeComponent } from "tym-tree";
+  :
+  @ViewChild("tymTree")
+  private tymTree?: tymTreeComponent;
+  :
+  // クリアを実行
+  this.tymTree?.clearTree();
+```
+
 表示するためのデータを用意します。
 
 ``` typescript
-import { TYM_TREE, TYM_TREE_OPTION } from "tym-tree";
+import { TYM_TREE, TYM_LEAF, TYM_TREE_OPTION } from "tym-tree";
   :
   let tree: TYM_TREE = [
     'leaf-text',
@@ -169,37 +182,37 @@ export interface TYM_TREE_OPTION {
     none?: string;
   }
   /** リーフオープンアクションの関数を定義, 規定値: { } */
-  doLeafOpen?: (indexs: number[], texts: string[]) => void;
+  doLeafOpen?: (indexs: number[], texts: string[], leaf?: any) => void;
   /** リーフクローズアクションの関数を定義, 規定値: { } */
-  doLeafClose?: (indexs: number[], texts: string[]) => void;
+  doLeafClose?: (indexs: number[], texts: string[], leaf?: any) => void;
   /** リスト表示アクションの関数を定義, 規定値: { } */
-  doDrawList?: (indexs: number[], texts: string[]) => void;
+  doDrawList?: (indexs: number[], texts: string[], leaf?: any) => void;
   /** コンテキストアクションの関数を定義, 規定値: true */
-  doContext?: (indexs: number[], texts: string[], event: MouseEvent) => boolean;
+  doContext?: (indexs: number[], texts: string[], event: MouseEvent, leaf?: any) => boolean;
 
   /** ドラッグタイプ(effectAllowed), 規定値: none */
   dragType?: 'none' | 'copy' | 'move' | 'copyMove';
   /** ドロップ効果(dropEffect), 規定値: none */
   dropType?: 'none' | 'copy' | 'move';
   /** ドラッグ開始時の関数を定義 */
-  doDragStart?: (event: DragEvent, indexs: number[], texts: string[]) => void;
+  doDragStart?: (event: DragEvent, indexs: number[], texts: string[], leaf?: any) => void;
   /** ドラッグ終了時の関数を定義, 規定値: { } */
-  doDragEnd?: (event: DragEvent, indexs: number[], texts: string[]) => void;
+  doDragEnd?: (event: DragEvent, indexs: number[], texts: string[], leaf?: any) => void;
   /** ドロップターゲットに入った時の関数を定義 */
-  doDragEnter?: (event: DragEvent, indexs: number[], texts: string[]) => void;
+  doDragEnter?: (event: DragEvent, indexs: number[], texts: string[], leaf?: any) => void;
   /** ドロップターゲットの上にある時の関数を定義 */
-  doDragOver?: (event: DragEvent, indexs: number[], texts: string[]) => void;
+  doDragOver?: (event: DragEvent, indexs: number[], texts: string[], leaf?: any) => void;
   /** ドロップターゲットにドロップされた時の関数を定義, 規定値: { } */
-  doDrop?: (event: DragEvent, indexs: number[], texts: string[]) => void;
+  doDrop?: (event: DragEvent, indexs: number[], texts: string[], leaf?: any) => void;
 
 }
 /* 規定値 */
-doDragStart(event: DragEvent, indexs: number[], texts: string[]) {
+doDragStart(event: DragEvent, indexs: number[], texts: string[], leaf?: any) {
   event.dataTransfer?.setData('text/plain', idxs.toString());
   event.dataTransfer?.setData('application/json', JSON.stringify({ idxs, txts }));
   event.dataTransfer!.effectAllowed = this.dragType as any;
 }
-dragEnterOrOver(event: DragEvent, indexs: number[], texts: string[]) {
+dragEnterOrOver(event: DragEvent, indexs: number[], texts: string[], leaf?: any) {
   event.preventDefault();
   if (this._dd_def.dropType != event.dataTransfer?.effectAllowed) {
     if (event.dataTransfer?.effectAllowed == 'copyMove') {
@@ -285,7 +298,7 @@ doDragOver = dragEnterOrOver;
   // ※ 下位階層の取得関数を定義
   //////////////////////////////////////////////////
   // get dynamic data
-  let children = (indexs: number[], texts: string[]) => Promise<TYM_TREE> {
+  let children = (indexs: number[], texts: string[], leaf?: any) => Promise<TYM_TREE> {
     return new Promise((resolve, reject) => {
       let tree: TYM_TREE;
       :
@@ -475,7 +488,7 @@ ngx-tym-tree {
     let opened = await openTree(indexs); 
     let opened = await openTree(indexs, force); 
 
-- 指定した階層ごとのインデックス番号をもとに，階層を開く。
+- 指定した，階層ごとのインデックス番号をもとに，階層を開く。
 
 - [引数]
   - indexs: number[]
@@ -500,7 +513,7 @@ ngx-tym-tree {
     clearTree()
     clearTree(indexs)
 
-- 指定した階層ごとのインデックス番号の下位階層をクリアする。
+- 指定した，階層ごとのインデックス番号の下位階層をクリアし，再描画する。
 
 - [引数]
   - indexs: number[]
@@ -516,18 +529,72 @@ ngx-tym-tree {
 
 <br>
 
+> #### (描画済みの)リーフを削除する関数
+
+<br>
+
+    removeLeaf(indexs);
+
+- 指定した，階層ごとのインデックス番号のリーフとその下位階層を削除する。
+- 画面上の描画データだけを削除する。
+- `tree` から削除されていなければ，再描画時に再度描画される。
+
+- [引数]
+  - indexs: number[]
+    - 削除する場所を，階層ごとのインデックス番号で指定する。
+    - 省略([])した場合は何もしない。
+
+- [戻値]
+  - なし
+
+<br>
+
+---
+
+> #### (描画済みの)リーフのテキストを更新する関数
+
+<br>
+
+    updateLeafText(indexs, text);
+
+- 指定した，階層ごとのインデックス番号のリーフのテキストを更新する。
+- 画面上の描画データだけを削除する。
+- `tree` が更新されていなければ，再描画時に再度描画される。
+
+- [引数]
+  - indexs: number[]
+    - 更新する場所を，階層ごとのインデックス番号で指定する。
+    - 対象が存在しない場合は何もしない。
+  - text: string
+    - 設定するテキスト
+
+- [戻値]
+  - なし
+
+<br>
+
+---
+
+<br>
+
 > #### リーフデータを取得する関数
+
+<br>
 
     let [subtree, index] = TymTreeComponent.getTree(tree, indexs);
 
-- スタティックな `tree` から，指定した階層ごとのインデックス番号の `subtree` と `index` を求める。
+- スタティックな `tree` から，指定した，階層ごとのインデックス番号の `subtree` と `index` を求める。
 - 求めたリーフは次のようなイメージで更新できる。  
   ` // static strings `  
   ` subtree[index] = 'update text'; `  
   ` // static leaf objects `  
   ` subtree[index].text = 'update text'; `  
   ` subtree[index] = {text: 'update text'}; `
-- 変更した場合は，再描画関数で再描画する必要があります。
+- 変更した場合は，再描画関数で再描画する必要がある。  
+  ` // update drawing text `  
+  ` updateLeafText(indexs, 'update text'); `  
+  ` // redraw tree `  
+  ` clearTree(indexs.slice(0,-1)); `  
 
 - [引数]
   - tree: TYM_TREE
@@ -540,70 +607,6 @@ ngx-tym-tree {
     - `tree` の部分ツリー，存在しない場合は `null`
   - index: number
     - `subtree` に対するインデックス番号。
-
-<br>
-
----
-
-> #### (描画済みの)リーフを更新する関数
-
-<br>
-
-please wait...
-
-    updateLeaf()
-
-- ???
-
-- [引数]
-  - ???
-
-- [戻値]
-  - ???
-
-<br>
-
----
-
-<br>
-
-> #### (描画済みの)リーフを削除する関数
-
-<br>
-
-please wait...
-
-    removeLeaf()
-
-- ???
-
-- [引数]
-  - ???
-
-- [戻値]
-  - ???
-
-<br>
-
----
-
-<br>
-
-> #### (描画済みのツリーに)リーフを追加する関数
-
-<br>
-
-please wait...
-
-    insertLeaf()
-
-- ???
-
-- [引数]
-  - ???
-
-- [戻値]
-  - ???
 
 <br>
 

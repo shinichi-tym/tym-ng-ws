@@ -485,9 +485,16 @@ effectAllowed:[none,copy,move,copyMove], dropEffect:[none,copy,move]
   class="tree"
   [tree]="[]" [option]="tree_opt_1"></ngx-tym-tree>
 </div>
-<input type="button" value="tree_open" (click)="tree_open()">
-<input type="button" value="clear_tree" (click)="clear_tree()">
-<input type="button" value="update_tree" (click)="update_tree()">
+
+<input type="radio" id="radio1" name="radio" value="1" checked><label for="radio1">left</label>
+<input type="radio" id="radio2" name="radio" value="2"><label for="radio2">right</label>&nbsp;
+indexs:<input type="text" #treeidxs size="10" value="2,0,0">,
+uptext:<input type="text" #treetext size="10" value="up text"><br>
+
+<input type="button" value="tree_open" (click)="tree_open(treeidxs)">
+<input type="button" value="clear_tree" (click)="clear_tree(treeidxs)">
+<input type="button" value="update_tree" (click)="update_tree(treeidxs, treetext)">
+<input type="button" value="remove_leaf" (click)="remove_leaf(treeidxs)">
 
 <hr><!-- ---------------------------------------------------------- -->
 
