@@ -249,9 +249,6 @@ export class TymTreeComponent implements OnInit {
 
   //-------------------------------------------------------------------
 
-  // ドラッグ中のspanエレメント
-  private dragElm: HTMLElement | null = null;
-
   /**
    * ドラッグ用のイベント等設定
    * @param thisElm HTMLElement
@@ -294,6 +291,7 @@ export class TymTreeComponent implements OnInit {
   private dragidxs: number[] = [];
   private dragtxts: string[] = [];
   private dragleaf: any = undefined;
+
   /**
    * ドラッグ開始時の関数
    * @param event DragEvent
@@ -301,10 +299,8 @@ export class TymTreeComponent implements OnInit {
    */
   private _dragStart = (event: DragEvent, span: HTMLElement): void => {
     this.hover_tm_dly = 1;
-    this.dragElm = span;
     const [idxs, txts, leaf] = [this.dragidxs, this.dragtxts, this.dragleaf] = this.index_array(span);
     this.doDragStart!(event, idxs, txts, leaf);
-    // _dd_com.drag_type = event.dataTransfer?.effectAllowed as any ?? 'none';
   }
 
   /**
@@ -326,9 +322,7 @@ export class TymTreeComponent implements OnInit {
    * @param span HTMLElement
    */
   private _dragEnd = (event: DragEvent, span: HTMLElement): void => {
-    // const [idxs, txts] = this.index_array(span);
     this.doDragEnd!(event, this.dragidxs, this.dragtxts, this.dragleaf);
-    this.dragElm = null;
     this.hover_tm_dly = null;
   }
 
@@ -358,6 +352,7 @@ export class TymTreeComponent implements OnInit {
    * @param event DragEvent
    * @param indexs エレメントのインデックス情報
    * @param texts エレメントのテキスト情報
+   * @param leaf リーフオブジェクト
    */
   private _doDragEnterOrOver(event: DragEvent, indexs: number[], texts: string[], leaf?: any): void {
     event.preventDefault();
@@ -466,6 +461,7 @@ export class TymTreeComponent implements OnInit {
   /**
    * クリックイベント処理
    * @param e マウスイベント
+   * @param span 対象のエレメント
    */
   private click_event = (e: MouseEvent, span: HTMLElement) => {
     if (e.detail == 1) {
@@ -487,6 +483,7 @@ export class TymTreeComponent implements OnInit {
   /**
    * ダブルクリックイベント処理
    * @param e マウスイベント
+   * @param span 対象のエレメント
    */
   private dblclick_event = (e: MouseEvent, span: HTMLElement) => {
     span.focus();
@@ -498,6 +495,7 @@ export class TymTreeComponent implements OnInit {
   /**
    * コンテキストメニューイベント処理
    * @param e マウスイベント
+   * @param span 対象のエレメント
    * @returns {true:有効, false:キャンセル}
    */
   private context_event = (e: MouseEvent, span: HTMLElement): boolean => {
@@ -513,7 +511,7 @@ export class TymTreeComponent implements OnInit {
 
   //-------------------------------------------------------------------
 
-  // エレメント作成用
+  // エレメント作成・削除用
   private create_span_elm = () => this.renderer.createElement('span') as HTMLSpanElement;
   private create_div_elm = () => this.renderer.createElement('div') as HTMLDivElement;
   private remove_children = (_div: any) => { while (_div?.firstChild) { _div.removeChild(_div.firstChild); } }
@@ -569,7 +567,6 @@ export class TymTreeComponent implements OnInit {
   /**
    * エレメントの開閉を行う (click)
    * @param span 対象のエレメント
-   * @param hover ホバーエレメント
    * @returns 実行後のクラス文字列
    */
   private open_close_by_click(span: HTMLElement): string {
@@ -581,7 +578,6 @@ export class TymTreeComponent implements OnInit {
 
   /**
    * 開閉マーク,アイコンクリック判定
-   * @param span 対象のエレメント
    * @param event イベントオブジェクト
    * @returns {true:対象, false:非対称}
    */
@@ -688,6 +684,7 @@ export class TymTreeComponent implements OnInit {
     const { top: base_t, bottom: base_b } = this.thisElm.getBoundingClientRect();
     const { top: span_t, bottom: span_b, left: span_l, height: span_h } = span.getBoundingClientRect();
     const spanStyle = window.getComputedStyle(span);
+    console.log(spanStyle.paddingLeft);
     const { width: base_w } = this.divElm.getBoundingClientRect();
     if (Math.floor(base_t) > Math.floor(span_t) || Math.floor(base_b) < Math.floor(span_b)) return;
     const hov_div = this.create_div_elm();
@@ -706,6 +703,8 @@ export class TymTreeComponent implements OnInit {
       backgroundColor: spanStyle.getPropertyValue('--ho-co'),
       borderColor: spanStyle.getPropertyValue('--ho-bc'),
     } as CSSStyleDeclaration);
+    const hovWidth = `calc(100vw - 2em - ${span_l}px - ${spanStyle.paddingLeft})`;
+    (hov_inn.lastElementChild as HTMLElement).style.maxWidth = hovWidth;
     //ドラッグ用のイベント等設定
     this.setDragElm(hov_inn, span);
     document.body.appendChild(hov_div);
@@ -723,17 +722,11 @@ export class TymTreeComponent implements OnInit {
     //ホイール操作時にホバーを消す
     hov_inn.addEventListener('wheel', e => this.hover_off_delay());
     //クリック時に開閉およびフォーカス設定
-    hov_inn.addEventListener('click', e => {
-      return this.click_event(e, span);
-    });
+    hov_inn.addEventListener('click', e => this.click_event(e, span));
     //ダブルクリック時に開閉
-    hov_inn.addEventListener('dblclick', e => {
-      return this.dblclick_event(e, span);
-    });
+    hov_inn.addEventListener('dblclick', e => this.dblclick_event(e, span));
     //コンテキスト時に開閉
-    hov_inn.addEventListener('contextmenu', e => {
-      return this.context_event(e, span);
-    });
+    hov_inn.addEventListener('contextmenu', e => this.context_event(e, span));
   }
 
   /**
@@ -753,7 +746,7 @@ export class TymTreeComponent implements OnInit {
   /**
    * 対象エレメントのインデックス・テキスト情報を取得する
    * @param span 対象のエレメント
-   * @returns エレメントのインデックス・テキスト情報
+   * @returns エレメントのインデックス・テキスト・リーフ情報
    */
   private index_array(span: HTMLElement): [number[], string[], any] {
     let idxs: number[] = [];
@@ -815,7 +808,6 @@ export class TymTreeComponent implements OnInit {
    * @param o インデックス用
    */
   private create_leaf(parent: HTMLElement, l: string | TYM_TREE | TYM_LEAF, level: number, o: any) {
-    // const isStr = (typeof l == 'string');
     const [_text, _array, _image, _leaf] = (typeof l == 'string')
       ? [l, , ,] : (Array.isArray(l)) ? [, l, ,] : [l.text, , l.image, l];
     const create_subtree_event = (ch: Function | TYM_TREE, sp: HTMLElement) => {
@@ -1025,16 +1017,23 @@ export class TymTreeComponent implements OnInit {
   public removeLeaf(indexs: number[] = []) {
     if (indexs.length > 0) {
       const [_span, _div] = this.getIdxElm(indexs);
-      this.remove_children(_div);
-      _div?.parentElement?.removeChild(_div);
-      const _parent = _span?.parentElement;
-      _parent?.removeChild(_span!);
-      if (_parent?.childElementCount == 0) {
-        const span = _parent.previousElementSibling as HTMLElement;
-        _parent.parentElement?.removeChild(_parent);
-        this.swap_open_close(span, 'opn', 'cls');
+      if (_span) {
+        this.remove_children(_div);
+        _div?.parentElement?.removeChild(_div);
+        const _parent = _span.parentElement as HTMLElement;
+        _parent.removeChild(_span);
+        if (_parent.childElementCount == 0) {
+          const span = _parent.previousElementSibling as HTMLElement;
+          _parent.parentElement?.removeChild(_parent);
+          this.swap_open_close(span, 'opn', 'cls');
+        } else {
+          const spanElms = Array.from(_parent.querySelectorAll(':scope>span'));
+          spanElms.forEach((elm, idx) => {
+            (elm as HTMLElement).dataset.index = idx.toString();
+          })
+        }
+        this.clear_elm_list();
       }
-      this.clear_elm_list();
     }
   }
 
@@ -1052,34 +1051,6 @@ export class TymTreeComponent implements OnInit {
       }
     }
   }
-
-  /**
-   * 指定した，階層ごとのインデックス番号の子リーフとして追加する
-   * @param indexs 階層ごとのインデックス番号
-   * @param tree 追加するリーフ情報
-   */
-  // public insertLeaf(indexs: number[] = [], tree: TYM_TREE) {
-  //   let _div;
-  //   if (indexs.length == 0) {
-  //     _div = this.divElm;
-  //   } else {
-  //     let _span;
-  //     [_span, _div] = this.getIdxElm(indexs);
-  //     if (_span) {
-  //       if (!_div) {
-  //         const _nextspan = _span.nextElementSibling as HTMLElement;
-  //         const _div_wk = this.create_div_elm();
-  //         _span.parentElement?.insertBefore(_div_wk, _nextspan);
-  //         _div = _div_wk;
-  //       }
-  //     }
-  //   }
-  //   if (_div) {
-  //     const spanElms = Array.from(_div.querySelectorAll(':scope>span'));
-  //     this.create_leaf(_div, tree, indexs.length, { idx: spanElms.length });
-  //     this.clear_elm_list();
-  //   }
-  // }
 
   //-------------------------------------------------------------------
   // 公開スタティック関数

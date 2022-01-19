@@ -50,7 +50,7 @@ import { TymTreeModule } from "tym-tree";
   :
 ```
 
-コンポーネントの機能を利用する。
+コンポーネントの機能を利用できるようにします。
 
 ``` typescript :app.component.ts
   :
