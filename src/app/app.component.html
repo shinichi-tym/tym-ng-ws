@@ -346,7 +346,7 @@ effectAllowed:[none,copy,move,copyMove], dropEffect:[none,copy,move]
     <td width="50%">
       <ngx-tym-tree
         [tree]="tree1"
-        [option]="{no_open_close_image: true}"></ngx-tym-tree>
+        [option]="{no_open_close_image: true, open_level: 0}"></ngx-tym-tree>
     </td>
   </tr>
   <!----->
@@ -357,12 +357,12 @@ effectAllowed:[none,copy,move,copyMove], dropEffect:[none,copy,move]
     <td>
       <ngx-tym-tree
         [tree]="tree1"
-        [option]="{images: 'far fa-folder-open'}"></ngx-tym-tree>
+        [option]="{open_level: 1, images: 'far fa-folder-open'}"></ngx-tym-tree>
     </td>
     <td>
       <ngx-tym-tree
         [tree]="tree1"
-        [option]="{images: 'far fa-folder-open', no_open_close_image: true}"></ngx-tym-tree>
+        [option]="{images: 'far fa-folder-open', open_level: 1, no_open_close_image: true}"></ngx-tym-tree>
     </td>
   </tr>
 </table>
@@ -380,12 +380,12 @@ effectAllowed:[none,copy,move,copyMove], dropEffect:[none,copy,move]
     <td width="50%">
       <ngx-tym-tree
         [tree]="tree1"
-        [option]="{images: {open: 'far fa-folder-open', close: 'far fa-folder'}}"></ngx-tym-tree>
+        [option]="{open_level: 1, images: {open: 'far fa-folder-open', close: 'far fa-folder'}}"></ngx-tym-tree>
     </td>
     <td width="50%">
       <ngx-tym-tree
         [tree]="tree1"
-        [option]="{images: {open: 'far fa-folder-open', close: 'far fa-folder'}, no_open_close_image: true}">
+        [option]="{open_level: 1, images: {open: 'far fa-folder-open', close: 'far fa-folder'}, no_open_close_image: true}">
       </ngx-tym-tree>
     </td>
   </tr>
@@ -398,12 +398,12 @@ effectAllowed:[none,copy,move,copyMove], dropEffect:[none,copy,move]
     <td>
       <ngx-tym-tree
         [tree]="tree1"
-        [option]="{images: {open: 'far fa-folder-open', close: 'far fa-folder', none: 'far fa-file'}}"></ngx-tym-tree>
+        [option]="{open_level: 1, images: {open: 'far fa-folder-open', close: 'far fa-folder', none: 'far fa-file'}}"></ngx-tym-tree>
     </td>
     <td>
       <ngx-tym-tree
         [tree]="tree1"
-        [option]="{images: {open: 'far fa-folder-open', close: 'far fa-folder', none: 'far fa-file'}, no_open_close_image: true}">
+        [option]="{open_level: 1, images: {open: 'far fa-folder-open', close: 'far fa-folder', none: 'far fa-file'}, no_open_close_image: true}">
       </ngx-tym-tree>
     </td>
   </tr>
@@ -517,7 +517,6 @@ uptext:<input type="text" #treetext size="10" value="up text"><br>
         [dddef]="{dragType:'move',dropType:'none'}"
         [chkbox]="chkbox"
         [lastsp]="lastsp"
-        [autors]="autors.value=='autors'"
       ></ngx-tym-table>
 
     </div>

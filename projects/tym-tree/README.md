@@ -169,6 +169,8 @@ export type TYM_TREE = (string | TYM_LEAF | TYM_TREE)[];
 export interface TYM_TREE_OPTION {
   /** 子リーフ取得用関数 (TYM_LEAF.childrenは無視する) */
   children?: (indexs: number[], texts: string[]) => Promise<TYM_TREE>;
+  /** 初期表示時の開く階層 ( 0 ～ 5 ) */
+  open_level?: number;
   /** 開閉用のマークを非表示する場合にtrueを指定する */
   no_open_close_image?: boolean;
   /**
@@ -370,6 +372,16 @@ doDragOver = dragEnterOrOver;
 ```
 
 <br>
+
+> ### 初期表示時の開く階層
+
+<br>
+
+- `option.open_level` に 1 ～ 5 を設定することで初期表示時に指定分の階層を開きます。
+
+<br>
+
+---
 
 > ### 開閉イメージ非表示
 

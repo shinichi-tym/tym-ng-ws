@@ -32,6 +32,8 @@ export type TYM_TREE = (string | TYM_LEAF | TYM_TREE)[];
 export interface TYM_TREE_OPTION {
   /** 子リーフ取得用関数 (TYM_LEAF.childrenは無視する) */
   children?: (indexs: number[], texts: string[], leaf?: any) => Promise<TYM_TREE>;
+  /** 初期表示時の開く階層 (0～5) */
+  open_level?: number;
   /** 開閉用のマークを非表示する場合にtrueを指定する */
   no_open_close_image?: boolean;
   /**
@@ -165,6 +167,9 @@ export class TymTreeComponent implements OnInit {
   ngOnInit(): void {
     // オプション定義からデフォルト値マージ
     const opt = this.option;
+    if (opt.open_level) {
+      if (opt.open_level < 0 || 5 < opt.open_level) opt.open_level = 0;
+    }
     if (opt.images) {
       const images = opt.images;
       if (typeof images == 'string') {
@@ -194,7 +199,10 @@ export class TymTreeComponent implements OnInit {
     // 初期リーフ生成
     const divElm = this.thisElm.firstElementChild as HTMLDivElement;
     this.divElm = divElm;
+
+    this.hover_tm_dly = 1;
     this.create_child(divElm, this.tree, 0);
+    this.hover_tm_dly = null;
 
     //キーボードイベント操作
     divElm.addEventListener('keydown', this.key_event);
@@ -218,6 +226,7 @@ export class TymTreeComponent implements OnInit {
     // <SPAN> OP-CL <SPAN ICON></SPAN> <SPAN>TEXT</SPAN> </SPAN>
     const ev = (e: Event, f: Function) => {
       const span = e.target as HTMLElement;
+      if (span.classList.contains('lod')) return;
       const parent = span.parentElement as HTMLElement;
       f(e, (parent.tagName == 'SPAN') ? parent : span);
     }
@@ -684,7 +693,6 @@ export class TymTreeComponent implements OnInit {
     const { top: base_t, bottom: base_b } = this.thisElm.getBoundingClientRect();
     const { top: span_t, bottom: span_b, left: span_l, height: span_h } = span.getBoundingClientRect();
     const spanStyle = window.getComputedStyle(span);
-    console.log(spanStyle.paddingLeft);
     const { width: base_w } = this.divElm.getBoundingClientRect();
     if (Math.floor(base_t) > Math.floor(span_t) || Math.floor(base_b) < Math.floor(span_b)) return;
     const hov_div = this.create_div_elm();
@@ -703,7 +711,7 @@ export class TymTreeComponent implements OnInit {
       backgroundColor: spanStyle.getPropertyValue('--ho-co'),
       borderColor: spanStyle.getPropertyValue('--ho-bc'),
     } as CSSStyleDeclaration);
-    const hovWidth = `calc(100vw - 2em - ${span_l}px - ${spanStyle.paddingLeft})`;
+    const hovWidth = `calc(100vw - 2em - ${span.lastElementChild?.getBoundingClientRect().left}px)`;
     (hov_inn.lastElementChild as HTMLElement).style.maxWidth = hovWidth;
     //ドラッグ用のイベント等設定
     this.setDragElm(hov_inn, span);
@@ -810,10 +818,13 @@ export class TymTreeComponent implements OnInit {
   private create_leaf(parent: HTMLElement, l: string | TYM_TREE | TYM_LEAF, level: number, o: any) {
     const [_text, _array, _image, _leaf] = (typeof l == 'string')
       ? [l, , ,] : (Array.isArray(l)) ? [, l, ,] : [l.text, , l.image, l];
-    const create_subtree_event = (ch: Function | TYM_TREE, sp: HTMLElement) => {
-      return (e: Event): Promise<any> | any => {
+    const setprogress = (elm: HTMLElement, ch: Function | TYM_TREE) => {
+      elm.onprogress = (e: Event): Promise<any> | any => {
         if (e.type == 'get') return _leaf;
-        return this.create_subtree(level, ch, sp, parent);
+        return this.create_subtree(level, ch, elm, parent);
+      }
+      if (level < this.option.open_level!) {
+        elm.dispatchEvent(new Event('progress'));
       }
     }
     // l is not string array
@@ -823,10 +834,10 @@ export class TymTreeComponent implements OnInit {
       // const option = this.option;
       const optChildren = this.option.children;
       if (typeof optChildren == 'function') {
-        span.onprogress = create_subtree_event(optChildren, span);
+        setprogress(span, optChildren);
       } else {
         if (_leaf) {
-          span.onprogress = create_subtree_event((_leaf as TYM_LEAF).children!, span);
+          setprogress(span, (_leaf as TYM_LEAF).children!);
         }
         if (!_leaf?.children) {
           this.swap_open_close(span, 'cls', 'noc');
@@ -839,7 +850,7 @@ export class TymTreeComponent implements OnInit {
       if (prev.classList.contains('noc')) {
         this.swap_open_close(prev, 'noc', 'cls');
       }
-      prev.onprogress = create_subtree_event(_array, prev);
+      setprogress(prev, _array);
     }
   }
 

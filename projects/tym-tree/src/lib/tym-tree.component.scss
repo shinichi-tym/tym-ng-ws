@@ -34,6 +34,8 @@ div {
   padding: 0;
   margin: 0;
   border: none;
+  vertical-align: middle;
+  * { vertical-align: middle };
 
   span {
     display: inline-block;
@@ -47,7 +49,6 @@ div {
     border-radius: 2px;
     padding: 2px;
     line-height: calc(1em + 4px);
-    height: calc(1em + 4px);
 
     &:focus-visible {
       outline: none;
@@ -97,8 +98,10 @@ div {
     left: 0;
     right: 0;
     bottom: 0;
+    vertical-align: middle;
+    * { vertical-align: middle; }
     >span {
-      box-sizing: content-box;
+      line-height: calc(1em + 4px);
       min-width: fit-content;
       >span:last-child {
         overflow: hidden;
