@@ -418,17 +418,7 @@ export class TymTableComponent implements AfterViewInit {
    * ビューを初期化した後の処理
    */
   ngAfterViewInit() {
-    const tblElm = this.thisElm.firstElementChild as HTMLTableElement;
-    const tbody = tblElm.lastElementChild as HTMLTableSectionElement;
-    if (this.autors) {
-      setTimeout(() => {
-        TymTableUtilities._allWiden(tblElm);
-      });
-    }
-    this.trElms = Array.from(tbody.children) as HTMLElement[];
-    this.tblElm = tblElm;
-    this.fcIdx = 0;
-    if (this.trElms.length > 0) this.trElms[0].tabIndex = 0; 
+    this.tblElm = this.thisElm.firstElementChild as HTMLTableElement;;
   }
 
   //-------------------------------------------------------------------
@@ -496,7 +486,7 @@ export class TymTableComponent implements AfterViewInit {
     this._rows_chkd[row] = event;
     this._allCheck = this._rows_chkd.every(checked => checked == true);
     this.fcIdx = row;
-    const elm = this.trElms[row]; 
+    const elm = this.trElms[row];
     elm.tabIndex = 0;
     elm.focus();
   }
@@ -636,12 +626,14 @@ export class TymTableComponent implements AfterViewInit {
     if (this.autors) {
       setTimeout(() => {
         TymTableUtilities._allWiden(this.tblElm);
-        const tbody = this.tblElm.lastElementChild as HTMLTableSectionElement;
-        this.trElms = Array.from(tbody.children) as HTMLElement[];
-        this.fcIdx = 0;
-        if (this.trElms.length > 0) this.trElms[0].tabIndex = 0; 
       });
     }
+    setTimeout(() => {
+      const tbody = this.tblElm.lastElementChild as HTMLTableSectionElement;
+      this.trElms = Array.from(tbody.children) as HTMLElement[];
+      this.fcIdx = 0;
+      if (this.trElms.length > 0) this.trElms[0].tabIndex = 0;
+    });
   }
 
   /**

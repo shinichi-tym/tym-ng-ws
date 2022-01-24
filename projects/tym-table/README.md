@@ -60,7 +60,7 @@ import { TymTableModule } from "tym-table";
 
 ``` typescript :app.component.ts
   :
-import { TymTableModule } from "tym-table";
+import { TymTableComponent } from "tym-table";
   :
   @ViewChild("tymTable")
   private tymTable?: TymTableComponent;
@@ -107,6 +107,8 @@ let data = [
 - [行フォーカス](#行フォーカス) (Row Focus)
 - [ソートイベント](#ソートイベント) (Sort Event)
 - [ドラッグアンドドロップ](#ドラッグアンドドロップ) (Drag And Drop)
+
+<br>
 
 - [公開関数](#公開関数) (Public Functions)
 
@@ -420,7 +422,7 @@ autors = true;
     drowData(); 
 
 - htmlタグで指定した `cols`, `data`, `odrmk` の値だけを変更した場合，変更が検出されない。  
-  この関数を呼び出すと再描画が行われます。
+  この関数を呼び出すと再描画が行われる。
 
 - [引数]
   - なし

@@ -72,6 +72,53 @@ export interface TYM_TREE_OPTION {
 
 }
 
+const OPN = 'opn';
+const CLS = 'cls';
+const NOC = 'noc';
+const LOD = 'lod';
+const DTG = 'dtg';
+const CUR = 'cur';
+const OFF = 'off';
+const SPC = 'spc';
+const HOV = 'hov';
+
+const NONE = 'none';
+
+const DRAGSTART = 'dragstart';
+const DRAGEND = 'dragend';
+const DRAGENTER = 'dragenter';
+const DRAGOVER = 'dragover';
+const DRAGLEAVE = 'dragleave';
+const DROP = 'drop';
+
+const MOUSEENTER = 'mouseenter';
+const MOUSELEAVE = 'mouseleave';
+const WHEEL = 'wheel';
+const CLICK = 'click';
+const DBLCLICK = 'dblclick';
+const CONTEXTMENU = 'contextmenu';
+const KEYDOWN = 'keydown';
+const FOCUS = 'focus';
+const FOCUSOUT = 'focusout';
+
+const isSpanTag = (elm: Element | null) => elm?.tagName == 'SPAN';
+const isDivTag = (elm: Element | null) => elm?.tagName == 'DIV';
+const dispatchProgress = (elm: Element | null) => elm?.dispatchEvent(new Event('progress'));
+const targetSpan = (e: Event): [HTMLElement, HTMLElement] => {
+  const target = e.target as HTMLElement;
+  const parent = parentElement(target) as HTMLElement;
+  return isSpanTag(parent) ? [target, parent] : [target, target];
+}
+const swap_open_close_str = (elm: HTMLElement) =>
+  elm.classList.contains(CLS) ? [CLS, OPN] : elm.classList.contains(OPN) ? [OPN, CLS] : [NOC, NOC];
+const remove_children = (_div: any) => {
+  while (_div?.firstChild) { _div.removeChild(_div.firstChild); }
+}
+const prevElement = (elm: HTMLElement | null) => elm?.previousElementSibling as HTMLElement | null;
+const nextElement = (elm: HTMLElement | null) => elm?.nextElementSibling as HTMLElement | null;
+const parentElement = (elm: HTMLElement | null) => elm?.parentElement as HTMLElement | null;
+const selScopeSpan = (elm: HTMLElement) => Array.from(elm.querySelectorAll(':scope>span'));
+
 @Component({
   selector: 'ngx-tym-tree',
   template: `<div class="d" tabIndex="0"></div>`,
@@ -129,8 +176,8 @@ export class TymTreeComponent implements OnInit {
   private doLeafClose = (indexs: number[], texts: string[], leaf?: any): void => { };
   private doDrawList = (indexs: number[], texts: string[], leaf?: any): void => { };
   private doContext = (indexs: number[], texts: string[], event: MouseEvent, leaf?: any) => { return true };
-  private dragType = 'none';
-  private dropType = 'none';
+  private dragType = NONE;
+  private dropType = NONE;
   private doDragStart = this._doDragStart;
   private doDragEnd = (event: DragEvent, indexs: number[], texts: string[], leaf?: any): void => { };
   private doDragEnter = this._doDragEnterOrOver;
@@ -172,15 +219,16 @@ export class TymTreeComponent implements OnInit {
     }
     if (opt.images) {
       const images = opt.images;
-      if (typeof images == 'string') {
-        this.i_opn = this.i_cls = this.i_noc = 'spc ' + images;
+      const SPCS = SPC + ' ';
+      if (typeof images === 'string') {
+        this.i_opn = this.i_cls = this.i_noc = SPCS + images;
       } else {
-        this.i_opn = 'spc ' + images.open;
-        this.i_cls = 'spc ' + images.close;
+        this.i_opn = SPCS + images.open;
+        this.i_cls = SPCS + images.close;
         if (images.none) {
-          this.i_noc = 'spc ' + images.none;
+          this.i_noc = SPCS + images.none;
         } else {
-          this.i_noc = 'spc';
+          this.i_noc = SPC;
         }
       }
     }
@@ -205,20 +253,20 @@ export class TymTreeComponent implements OnInit {
     this.hover_tm_dly = null;
 
     //キーボードイベント操作
-    divElm.addEventListener('keydown', this.key_event);
+    divElm.addEventListener(KEYDOWN, this.key_event);
 
     //ホイール操作時にホバーを消す
-    divElm.addEventListener('wheel', e => this.hover_off_delay());
+    divElm.addEventListener(WHEEL, e => this.hover_off_delay());
 
     //他からのTABキーによるフォーカスイン時にツリー内にフォーカスを設定する
-    divElm.addEventListener('focus', e => this.set_cur_focus());
+    divElm.addEventListener(FOCUS, e => this.set_cur_focus());
 
     //ツリー内からフォーカスアウト時の動作
-    divElm.addEventListener('focusout', e => {
+    divElm.addEventListener(FOCUSOUT, e => {
       const related = e.relatedTarget as HTMLElement;
-      const parent = related?.parentElement as HTMLElement;
+      const parent = parentElement(related) as HTMLElement;
       //ツリー内からフォーカスアウトするときにホバーを消す
-      if (!parent?.classList.contains('hov')) {
+      if (!parent?.classList.contains(HOV)) {
         this.hover_off();
       }
     });
@@ -226,34 +274,23 @@ export class TymTreeComponent implements OnInit {
     // <SPAN> OP-CL <SPAN ICON></SPAN> <SPAN>TEXT</SPAN> </SPAN>
     const ev = (e: Event, f: Function) => {
       const span = e.target as HTMLElement;
-      if (span.classList.contains('lod')) return;
-      const parent = span.parentElement as HTMLElement;
-      f(e, (parent.tagName == 'SPAN') ? parent : span);
+      if (span.classList.contains(LOD)) return;
+      const parent = parentElement(span) as HTMLElement;
+      f(e, isSpanTag(parent) ? parent : span);
     }
 
     //クリックイベントの動作
-    divElm.addEventListener('click', e => ev(e, this.click_event));
+    divElm.addEventListener(CLICK, e => ev(e, this.click_event));
 
     //ダブルクリックイベントの動作
-    divElm.addEventListener('dblclick', e => ev(e, this.dblclick_event));
+    divElm.addEventListener(DBLCLICK, e => ev(e, this.dblclick_event));
 
     //コンテキストメニューイベントの動作
-    divElm.addEventListener('contextmenu', e => ev(e, this.context_event));
+    divElm.addEventListener(CONTEXTMENU, e => ev(e, this.context_event));
 
     //ドロップ用のイベント等設定
     this.setDropElm(divElm);
 
-  }
-
-  /**
-   * ターゲットエレメントを求める
-   * @param e イベント
-   * @returns [target, span]
-   */
-  private targetSpan(e: Event) {
-    const target = e.target as HTMLElement;
-    const parent = target.parentElement as HTMLElement;
-    return (parent.tagName == 'SPAN') ? [target, parent] : [target, target];
   }
 
   //-------------------------------------------------------------------
@@ -264,15 +301,15 @@ export class TymTreeComponent implements OnInit {
    * @param span HTMLElement
    */
   private setDragElm(hovElm: HTMLElement, span: HTMLElement): void {
-    hovElm.draggable = (this.dragType != 'none');
+    hovElm.draggable = (this.dragType != NONE);
     const dragStart = (e: DragEvent) => this._dragStart(e, span);
     const dragEnd = (e: DragEvent) => this._dragEnd(e, span);
     if (hovElm.draggable) {
-      hovElm.addEventListener('dragstart', dragStart);
-      hovElm.addEventListener('dragend', dragEnd);
+      hovElm.addEventListener(DRAGSTART, dragStart);
+      hovElm.addEventListener(DRAGEND, dragEnd);
     } else {
-      hovElm.removeEventListener('dragend', dragEnd);
-      hovElm.removeEventListener('dragstart', dragStart);
+      hovElm.removeEventListener(DRAGEND, dragEnd);
+      hovElm.removeEventListener(DRAGSTART, dragStart);
     }
   }
 
@@ -281,17 +318,17 @@ export class TymTreeComponent implements OnInit {
    * @param thisElm HTMLElement
    */
   private setDropElm(thisElm: HTMLElement): void {
-    const droptarget = (this.dropType != 'none');
+    const droptarget = (this.dropType != NONE);
     if (droptarget) {
-      thisElm.addEventListener('dragenter', this._dragEnter);
-      thisElm.addEventListener('dragover', this._dragOver);
-      thisElm.addEventListener('dragleave', this._dragleave);
-      thisElm.addEventListener('drop', this._drop);
+      thisElm.addEventListener(DRAGENTER, this._dragEnter);
+      thisElm.addEventListener(DRAGOVER, this._dragOver);
+      thisElm.addEventListener(DRAGLEAVE, this._dragleave);
+      thisElm.addEventListener(DROP, this._drop);
     } else {
-      thisElm.removeEventListener('drop', this._drop);
-      thisElm.removeEventListener('dragover', this._dragleave);
-      thisElm.removeEventListener('dragover', this._dragOver);
-      thisElm.removeEventListener('dragenter', this._dragEnter);
+      thisElm.removeEventListener(DROP, this._drop);
+      thisElm.removeEventListener(DRAGLEAVE, this._dragleave);
+      thisElm.removeEventListener(DRAGOVER, this._dragOver);
+      thisElm.removeEventListener(DRAGENTER, this._dragEnter);
     }
   }
 
@@ -320,9 +357,12 @@ export class TymTreeComponent implements OnInit {
    * @param leaf リーフオブジェクト
    */
   private _doDragStart(event: DragEvent, indexs: number[], texts: string[], leaf: any): void {
-    event.dataTransfer?.setData('text/plain', indexs.toString());
-    event.dataTransfer?.setData('application/json', JSON.stringify({ indexs, texts }));
-    event.dataTransfer!.effectAllowed = this.dragType as any;
+    const dt = event.dataTransfer;
+    if (dt) {
+      dt.setData('text/plain', indexs.toString());
+      dt.setData('application/json', JSON.stringify({ indexs, texts }));
+      dt.effectAllowed = this.dragType as any;
+    }
   };
 
   /**
@@ -340,7 +380,7 @@ export class TymTreeComponent implements OnInit {
    * @param event DragEvent
    */
   private _dragEnter = (event: DragEvent): void => {
-    const [, span] = this.targetSpan(event);
+    const [, span] = targetSpan(event);
     const [idxs, txts, leaf] = this.index_array(span);
     this.doDragEnter(event, idxs, txts, leaf);
   }
@@ -350,9 +390,9 @@ export class TymTreeComponent implements OnInit {
    * @param event DragEvent
    */
   private _dragOver = (event: DragEvent): void => {
-    const [, span] = this.targetSpan(event);
+    const [, span] = targetSpan(event);
     const [idxs, txts, leaf] = this.index_array(span);
-    span.classList.add('dtg');
+    span.classList.add(DTG);
     this.doDragOver!(event, idxs, txts, leaf);
   }
 
@@ -365,14 +405,17 @@ export class TymTreeComponent implements OnInit {
    */
   private _doDragEnterOrOver(event: DragEvent, indexs: number[], texts: string[], leaf?: any): void {
     event.preventDefault();
-    if (this.dropType != event.dataTransfer?.effectAllowed) {
-      if (event.dataTransfer?.effectAllowed == 'copyMove') {
-        event.dataTransfer!.dropEffect = this.dropType as any;
+    const dt = event.dataTransfer;
+    if (dt) {
+      if (this.dropType != dt.effectAllowed) {
+        if (dt.effectAllowed == 'copyMove') {
+          dt.dropEffect = this.dropType as any;
+        } else {
+          dt.dropEffect = NONE;
+        }
       } else {
-        event.dataTransfer!.dropEffect = 'none';
+        dt.dropEffect = this.dropType as any;
       }
-    } else {
-      event.dataTransfer!.dropEffect = this.dropType as any;
     }
   }
 
@@ -381,8 +424,8 @@ export class TymTreeComponent implements OnInit {
    * @param event DragEvent
    */
   private _dragleave = (event: DragEvent): void => {
-    const [, span] = this.targetSpan(event);
-    span.classList.remove('dtg');
+    const [, span] = targetSpan(event);
+    span.classList.remove(DTG);
   }
 
   /**
@@ -390,9 +433,9 @@ export class TymTreeComponent implements OnInit {
    * @param event DragEvent
    */
   private _drop = (event: DragEvent): void => {
-    const [, span] = this.targetSpan(event);
+    const [, span] = targetSpan(event);
     const [idxs, txts, leaf] = this.index_array(span);
-    span.classList.remove('dtg');
+    span.classList.remove(DTG);
     this.doDrop!(event, idxs, txts, leaf);
   }
 
@@ -415,29 +458,29 @@ export class TymTreeComponent implements OnInit {
         break;
       case 'ArrowLeft':
         //ツリーを閉じる
-        if (this.open_close_by_keybd(elm, 'cls')) {
+        if (this.open_close_by_keybd(elm, CLS)) {
           this.hover_on(elm);
           const [idxs, txts, leaf] = this.index_array(elm);
           this.doLeafClose(idxs, txts, leaf);
         } else {
           //既に閉じられていた場合は上位階層へ
-          const parentDivElm = elm.parentElement as HTMLDivElement;
+          const parentDivElm = parentElement(elm) as HTMLDivElement;
           //最上位でなければ実行
           if (!parentDivElm.classList.contains('d')) {
-            const prevSpanElm = parentDivElm.previousElementSibling as HTMLSpanElement;
+            const prevSpanElm = prevElement(parentDivElm) as HTMLSpanElement;
             this.set_focus_by_elm(prevSpanElm);
           }
         }
         break;
       case 'ArrowRight':
         //ツリーを開く
-        if (this.open_close_by_keybd(elm, 'opn')) {
+        if (this.open_close_by_keybd(elm, OPN)) {
           this.hover_on(elm);
           const [idxs, txts, leaf] = this.index_array(elm);
           this.doLeafOpen(idxs, txts, leaf);
         } else {
           //既に開かれていた場合は下位階層へ
-          const nextDivElm = elm.nextElementSibling;
+          const nextDivElm = nextElement(elm);
           const childSpanElm = nextDivElm?.firstElementChild as HTMLSpanElement | null;
           //下位にエレメントがあれば実行
           if (childSpanElm != null) {
@@ -447,7 +490,7 @@ export class TymTreeComponent implements OnInit {
         break;
       case ' ':
         //スペースキーによりツリー＆リスト再取得
-        elm.dispatchEvent(new Event('progress'));
+        dispatchProgress(elm);
         const [idxs, txts, leaf] = this.index_array(elm);
         setTimeout(() => this.doDrawList(idxs, txts, leaf));
         break;
@@ -476,9 +519,9 @@ export class TymTreeComponent implements OnInit {
     if (e.detail == 1) {
       if (this.is_open_close_area(e)) {
         const aft = this.open_close_by_click(span);
-        if (aft == 'opn') {
-          if (span.nextElementSibling?.tagName != 'DIV') {
-            span.dispatchEvent(new Event('progress'));
+        if (aft == OPN) {
+          if (!isDivTag(span)) {
+            dispatchProgress(span);
           }
         }
       } else {
@@ -498,7 +541,7 @@ export class TymTreeComponent implements OnInit {
     span.focus();
     this.hover_off();
     const aft = this.open_close_by_click(span);
-    if (aft != 'cls') span.dispatchEvent(new Event('progress'));
+    if (aft != CLS) dispatchProgress(span);
   }
 
   /**
@@ -523,15 +566,6 @@ export class TymTreeComponent implements OnInit {
   // エレメント作成・削除用
   private create_span_elm = () => this.renderer.createElement('span') as HTMLSpanElement;
   private create_div_elm = () => this.renderer.createElement('div') as HTMLDivElement;
-  private remove_children = (_div: any) => { while (_div?.firstChild) { _div.removeChild(_div.firstChild); } }
-
-  /**
-   * リーフ開閉状態文字列(クラス文字列)切り替え
-   * @param elm 対象のエレメント
-   * @returns リーフ状態文字列
-   */
-  private swap_open_close_str = (elm: HTMLElement) =>
-    elm.classList.contains('cls') ? ['cls', 'opn'] : elm.classList.contains('opn') ? ['opn', 'cls'] : ['noc', 'noc'];
 
   //-------------------------------------------------------------------
 
@@ -546,7 +580,7 @@ export class TymTreeComponent implements OnInit {
     // リーフデータにimage設定が無い場合 アイコンの開閉を切り替える
     if (!(span.dataset.image)) {
       const _span = span.firstElementChild as HTMLElement;
-      const _icon = (aft == 'opn') ? this.i_opn : (aft == 'cls') ? this.i_cls : this.i_noc;
+      const _icon = (aft == OPN) ? this.i_opn : (aft == CLS) ? this.i_cls : this.i_noc;
       _span.classList.value = _icon;
     }
   }
@@ -558,13 +592,13 @@ export class TymTreeComponent implements OnInit {
    * @returns {true:実行, false:未実行}
    */
   private open_close_by_keybd(span: HTMLElement, mode: string): boolean {
-    const [bef, aft] = this.swap_open_close_str(span);
+    const [bef, aft] = swap_open_close_str(span);
     if (mode == aft) {
       this.swap_open_close(span, bef, aft);
       this.clear_elm_list();
-      if (aft == 'opn') {
-        if (span.nextElementSibling?.tagName != 'DIV') {
-          span.dispatchEvent(new Event('progress'));
+      if (aft == OPN) {
+        if (!isDivTag(span)) {
+          dispatchProgress(span);
         }
       }
       return true;
@@ -579,7 +613,7 @@ export class TymTreeComponent implements OnInit {
    * @returns 実行後のクラス文字列
    */
   private open_close_by_click(span: HTMLElement): string {
-    const [bef, aft] = this.swap_open_close_str(span);
+    const [bef, aft] = swap_open_close_str(span);
     this.swap_open_close(span, bef, aft);
     this.clear_elm_list();
     return aft;
@@ -592,17 +626,17 @@ export class TymTreeComponent implements OnInit {
    */
   private is_open_close_area(event: MouseEvent): boolean {
     let ret = false;
-    const [target, span] = this.targetSpan(event);
+    const [target, span] = targetSpan(event);
     if (target == span) {
-      if (!span.classList.contains('off')) {
+      if (!span.classList.contains(OFF)) {
         const { paddingLeft: pads, backgroundPositionX: bgxs } = window.getComputedStyle(span);
         const [ofx, pad, bgx] = [event.offsetX, parseInt(pads), parseInt(bgxs)];
         if (bgx <= ofx && ofx <= pad) {
           ret = true;
         }
       }
-    } else if (target.classList.contains('spc')) {
-      if (span.classList.contains('off')) ret = true;
+    } else if (target.classList.contains(SPC)) {
+      if (span.classList.contains(OFF)) ret = true;
     }
     return ret;
   }
@@ -623,17 +657,17 @@ export class TymTreeComponent implements OnInit {
     const spantx = this.create_span_elm();
     if (image) {
       // リーフデータにimage設定がある場合
-      spanic.classList.value = 'spc ' + image;
+      spanic.classList.value = SPC + ' ' + image;
       span.dataset.image = 't';
     } else {
       spanic.classList.value = this.i_cls;
     }
     spantx.innerText = text;
     span.tabIndex = -1;
-    span.classList.value = 'cls';
+    span.classList.value = CLS;
     let pad = level + 1;
     if (this.option.no_open_close_image) {
-      span.classList.add('off');
+      span.classList.add(OFF);
       pad--;
     }
     span.style.paddingLeft = `${pad}em`;
@@ -643,7 +677,7 @@ export class TymTreeComponent implements OnInit {
     span.appendChild(spantx);
 
     //エレメントのホバー時にホバーエレメントを作成する
-    span.addEventListener('mouseenter', e => {
+    span.addEventListener(MOUSEENTER, e => {
       this.hover_on(span);
     });
     return span;
@@ -669,7 +703,7 @@ export class TymTreeComponent implements OnInit {
   /**
    * ホバーエレメントの削除(削除後再表示の遅延あり)
    */
-   private hover_off_delay() {
+  private hover_off_delay() {
     this.hover_off();
     clearTimeout(this.hover_tm_dly);
     this.hover_tm_dly = setTimeout(() => {
@@ -698,7 +732,7 @@ export class TymTreeComponent implements OnInit {
     const hov_div = this.create_div_elm();
     const hov_inn = span.cloneNode(true) as HTMLSpanElement;
     hov_div.appendChild(hov_inn);
-    hov_div.classList.add('hov');
+    hov_div.classList.add(HOV);
     Object.assign(hov_div.style, {
       transform: `translate(${span_l}px, ${span_t}px)`,
       height: `${span_h}px`,
@@ -726,15 +760,15 @@ export class TymTreeComponent implements OnInit {
     }, 1500);
 
     //マウスが離れたときにホバーを消す
-    hov_inn.addEventListener('mouseleave', e => this.hover_off());
+    hov_inn.addEventListener(MOUSELEAVE, e => this.hover_off());
     //ホイール操作時にホバーを消す
-    hov_inn.addEventListener('wheel', e => this.hover_off_delay());
+    hov_inn.addEventListener(WHEEL, e => this.hover_off_delay());
     //クリック時に開閉およびフォーカス設定
-    hov_inn.addEventListener('click', e => this.click_event(e, span));
+    hov_inn.addEventListener(CLICK, e => this.click_event(e, span));
     //ダブルクリック時に開閉
-    hov_inn.addEventListener('dblclick', e => this.dblclick_event(e, span));
+    hov_inn.addEventListener(DBLCLICK, e => this.dblclick_event(e, span));
     //コンテキスト時に開閉
-    hov_inn.addEventListener('contextmenu', e => this.context_event(e, span));
+    hov_inn.addEventListener(CONTEXTMENU, e => this.context_event(e, span));
   }
 
   /**
@@ -744,7 +778,7 @@ export class TymTreeComponent implements OnInit {
    */
   private create_loading(level: number): HTMLSpanElement {
     const span = this.create_span_elm();
-    span.classList.value = 'lod';
+    span.classList.value = LOD;
     span.innerText = 'loading...';
     span.style.paddingLeft = `${level + 1}em`;
     span.style.backgroundPositionX = `${level}em`;
@@ -759,8 +793,8 @@ export class TymTreeComponent implements OnInit {
   private index_array(span: HTMLElement): [number[], string[], any] {
     let idxs: number[] = [];
     let txts: string[] = [];
-    for (let elm = span; !elm.classList.contains('d'); elm = elm.parentElement!) {
-      const _elm = (elm.tagName == 'SPAN') ? elm : elm.previousElementSibling as HTMLElement;
+    for (let elm = span; !elm.classList.contains('d'); elm = parentElement(elm)!) {
+      const _elm = isSpanTag(elm) ? elm : prevElement(elm) as HTMLElement;
       idxs.push(parseInt(_elm.dataset.index!));
       txts.push((_elm.lastElementChild as HTMLElement).innerText);
     }
@@ -777,12 +811,12 @@ export class TymTreeComponent implements OnInit {
    */
   private async create_subtree(level: number, children: Function | TYM_TREE, span: HTMLElement, parent: HTMLElement) {
     this.hover_off();
-    this.swap_open_close(span, 'cls', 'opn');
-    this.swap_open_close(span, 'noc', 'opn');
+    this.swap_open_close(span, CLS, OPN);
+    this.swap_open_close(span, NOC, OPN);
     // リストを作成するdivエレメントを求める
-    let _div = span.nextElementSibling as HTMLElement;
-    if (_div?.tagName == 'DIV') {
-      this.remove_children(_div);
+    let _div = nextElement(span) as HTMLElement;
+    if (isDivTag(_div)) {
+      remove_children(_div);
     } else {
       const _div_wk = this.create_div_elm();
       parent.insertBefore(_div_wk, _div);
@@ -794,15 +828,15 @@ export class TymTreeComponent implements OnInit {
 
     // リスト取得関数を呼び出す
     const [idxs, txts, leaf] = this.index_array(span);
-    let tree = (typeof children == 'function') ? await children(idxs, txts, leaf) : children;
+    let tree = (typeof children === 'function') ? await children(idxs, txts, leaf) : children;
 
     // 取得したリストからエレメントを作成する
     if (tree?.length > 0) {
       this.create_child(_div, tree, level + 1);
-      this.swap_open_close(span, 'noc', 'opn');
+      this.swap_open_close(span, NOC, OPN);
     } else {
       _div.removeChild(_div.firstChild!);
-      this.swap_open_close(span, 'opn', 'noc');
+      this.swap_open_close(span, OPN, NOC);
     }
     this.hover_on(span);
     this.clear_elm_list();
@@ -816,7 +850,7 @@ export class TymTreeComponent implements OnInit {
    * @param o インデックス用
    */
   private create_leaf(parent: HTMLElement, l: string | TYM_TREE | TYM_LEAF, level: number, o: any) {
-    const [_text, _array, _image, _leaf] = (typeof l == 'string')
+    const [_text, _array, _image, _leaf] = (typeof l === 'string')
       ? [l, , ,] : (Array.isArray(l)) ? [, l, ,] : [l.text, , l.image, l];
     const setprogress = (elm: HTMLElement, ch: Function | TYM_TREE) => {
       elm.onprogress = (e: Event): Promise<any> | any => {
@@ -824,31 +858,30 @@ export class TymTreeComponent implements OnInit {
         return this.create_subtree(level, ch, elm, parent);
       }
       if (level < this.option.open_level!) {
-        elm.dispatchEvent(new Event('progress'));
+        dispatchProgress(elm);
       }
     }
     // l is not string array
     if (_text) {
       const span = this.create_span(level, o.idx++, _text, _image);
       parent.appendChild(span);
-      // const option = this.option;
       const optChildren = this.option.children;
-      if (typeof optChildren == 'function') {
+      if (typeof optChildren === 'function') {
         setprogress(span, optChildren);
       } else {
         if (_leaf) {
           setprogress(span, (_leaf as TYM_LEAF).children!);
         }
         if (!_leaf?.children) {
-          this.swap_open_close(span, 'cls', 'noc');
+          this.swap_open_close(span, CLS, NOC);
         }
       }
     }
     // l is string array
     if (_array) {
       const prev = parent.lastElementChild as HTMLSpanElement;
-      if (prev.classList.contains('noc')) {
-        this.swap_open_close(prev, 'noc', 'cls');
+      if (prev.classList.contains(NOC)) {
+        this.swap_open_close(prev, NOC, CLS);
       }
       setprogress(prev, _array);
     }
@@ -861,12 +894,12 @@ export class TymTreeComponent implements OnInit {
    * @param level エレメントの階層番号
    */
   private create_child(parent: HTMLElement, children: TYM_TREE, level: number) {
-    this.remove_children(parent);
+    remove_children(parent);
     const o = { idx: 0 };
     children.forEach(l => this.create_leaf(parent, l, level, o));
     if (children.length == 0) {
       const option = this.option;
-      if (typeof option.children == 'function') {
+      if (typeof option.children === 'function') {
         const children = option.children;
         // ローディングエレメントを作成
         parent.appendChild(this.create_loading(level));
@@ -920,8 +953,8 @@ export class TymTreeComponent implements OnInit {
    * @param idx 設定するフォーカスの位置
    */
   private set_focus(elm: HTMLElement, idx: number) {
-    this.cur_elm?.classList.remove('cur');
-    elm.classList.add('cur');
+    this.cur_elm?.classList.remove(CUR);
+    elm.classList.add(CUR);
     elm.focus();
     this.cur_elm = elm;
     this.divElm.dataset.idx = idx.toString();
@@ -956,11 +989,11 @@ export class TymTreeComponent implements OnInit {
   public async openTree(indexs: number[], force: boolean = false): Promise<boolean> {
     const ot = async (divElm: HTMLElement, level: number): Promise<boolean> => {
       const n = indexs[level];
-      const spanElms = Array.from(divElm.querySelectorAll(':scope>span'));
+      const spanElms = selScopeSpan(divElm);
       if (n >= spanElms.length) return Promise.resolve(false);
       const span = spanElms[n] as HTMLElement;
       //ツリーを開く
-      if (force || span.nextElementSibling?.tagName != 'DIV') {
+      if (force || !isDivTag(nextElement(span))) {
         if (span.onprogress) {
           await span.onprogress(new ProgressEvent(''));
         } else {
@@ -968,8 +1001,8 @@ export class TymTreeComponent implements OnInit {
           return Promise.resolve(false);
         }
       }
-      const div = span.nextElementSibling as HTMLElement;
-      this.open_close_by_keybd(span, 'opn');
+      const div = nextElement(span) as HTMLElement;
+      this.open_close_by_keybd(span, OPN);
       level++;
       if (level < indexs.length) {
         return ot(div, level);
@@ -991,15 +1024,15 @@ export class TymTreeComponent implements OnInit {
   private getIdxElm(indexs: number[]): [HTMLElement | null, HTMLElement | null] {
     const tg = (divElm: HTMLElement, level: number): [HTMLElement | null, HTMLElement | null] => {
       const n = indexs[level++];
-      const spanElms = Array.from(divElm.querySelectorAll(':scope>span'));
+      const spanElms = selScopeSpan(divElm);
       if (n >= spanElms.length) return [null, null];
       //ターゲットエレメント
       const span = spanElms[n] as HTMLElement;
-      if (span.nextElementSibling?.tagName != 'DIV') {
+      if (!isDivTag(nextElement(span))) {
         return (level < indexs.length) ? [null, null] : [span, null];
       }
       //チャイルドエレメント
-      const div = span.nextElementSibling as HTMLElement;
+      const div = nextElement(span) as HTMLElement;
       // level++;
       return (level < indexs.length) ? tg(div, level) : [span, div];
     }
@@ -1016,8 +1049,8 @@ export class TymTreeComponent implements OnInit {
       this.clear_elm_list();
     } else {
       const [_span, _div] = this.getIdxElm(indexs);
-      this.remove_children(_div);
-      _span?.dispatchEvent(new Event('progress'));
+      remove_children(_div);
+      dispatchProgress(_span);
     }
   }
 
@@ -1029,16 +1062,16 @@ export class TymTreeComponent implements OnInit {
     if (indexs.length > 0) {
       const [_span, _div] = this.getIdxElm(indexs);
       if (_span) {
-        this.remove_children(_div);
+        remove_children(_div);
         _div?.parentElement?.removeChild(_div);
         const _parent = _span.parentElement as HTMLElement;
         _parent.removeChild(_span);
         if (_parent.childElementCount == 0) {
-          const span = _parent.previousElementSibling as HTMLElement;
+          const span = prevElement(_parent) as HTMLElement;
           _parent.parentElement?.removeChild(_parent);
-          this.swap_open_close(span, 'opn', 'cls');
+          this.swap_open_close(span, OPN, CLS);
         } else {
-          const spanElms = Array.from(_parent.querySelectorAll(':scope>span'));
+          const spanElms = selScopeSpan(_parent);
           spanElms.forEach((elm, idx) => {
             (elm as HTMLElement).dataset.index = idx.toString();
           })
@@ -1081,13 +1114,13 @@ export class TymTreeComponent implements OnInit {
         if (Array.isArray(l)) n++;
         return (i == n);
       });
-      const t = (typeof (_tree[n]) == 'string' && Array.isArray(_tree[n + 1])) ? _tree[n + 1] : _tree[n];
+      const t = (typeof (_tree[n]) === 'string' && Array.isArray(_tree[n + 1])) ? _tree[n + 1] : _tree[n];
       level++;
       if (level < indexs.length) {
-        if (typeof t == 'string') return [null, -1];
+        if (typeof t === 'string') return [null, -1];
         if (Array.isArray(t)) {
           return ot(t, level);
-        } else if (typeof t == 'string') {
+        } else if (typeof t === 'string') {
           return [null, -1];
         } else {
           return (Array.isArray(t.children)) ? ot(t.children, level) : [null, -1];

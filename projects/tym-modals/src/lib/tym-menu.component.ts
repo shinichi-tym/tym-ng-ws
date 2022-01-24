@@ -1,12 +1,18 @@
 /*!
  * tym-modals.js
- * Copyright (c) 2021 shinichi tayama
+ * Copyright (c) 2021, 2022 shinichi tayama
  * Released under the MIT license.
  * see https://opensource.org/licenses/MIT
  */
 
 import { Inject, InjectionToken, StaticProvider } from '@angular/core';
 import { Component, AfterViewInit, HostListener, ElementRef } from '@angular/core';
+
+const OPN = 'opn';
+const CLS = 'cls';
+const NOD = 'nod';
+const SPC = ' spc';
+const SPSPC = 'sp' + SPC;
 
 export type MenuDefs = { [gid: string]: { [id: string]: string | [string, string] } };
 export type MenuItems = [...[string, boolean][]][];
@@ -117,11 +123,8 @@ export class TymMenuComponent implements AfterViewInit {
     [thisElmStyle.top, thisElmStyle.left] = [`${vals.screenY}px`, `${vals.screenX}px`];
 
     const resize = () => {
-      const thisRect = thisElm.getBoundingClientRect();
-      const divRect = divElm.getBoundingClientRect();
-      const [div_h, div_w] = [divRect.height, divRect.width];
-      const [this_h, this_w] = [thisRect.height, thisRect.width];
-      const [this_t, this_l] = [thisRect.top, thisRect.left];
+      const { height: div_h, width: div_w } = divElm.getBoundingClientRect();
+      const { height: this_h, width: this_w, top: this_t, left: this_l } = thisElm.getBoundingClientRect();
       if ((this_t + this_h) > div_h) {
         thisElmStyle.top = `${div_h - this_h}px`;
       }
@@ -164,16 +167,16 @@ export class TymMenuComponent implements AfterViewInit {
         const classList = liElm.classList;
         if (item.gid == liElm.dataset.gid) {
           if (index == top) {
-            if (classList.contains('cls')) {
-              classList.replace('cls', 'opn');
+            if (classList.contains(CLS)) {
+              classList.replace(CLS, OPN);
             } else {
-              classList.replace('opn', 'cls');
+              classList.replace(OPN, CLS);
             }
           } else {
-            if (classList.contains('nod')) {
-              classList.remove('nod')
+            if (classList.contains(NOD)) {
+              classList.remove(NOD)
             } else {
-              classList.add('nod')
+              classList.add(NOD)
             }
           }
         }
@@ -206,7 +209,6 @@ export class TymMenuComponent implements AfterViewInit {
         if (typeof menuDef[k][i] !== 'string') useItemIcon = true;
       })
     });
-    const spc = (useItemIcon) ? 'spc ' : '';
 
     // アイコングループ表示用のデータを作成する
     iconItem.forEach((ii, ix) => {
@@ -230,11 +232,11 @@ export class TymMenuComponent implements AfterViewInit {
           gni = menuDef[gid][''];
           [gnm, gic] = (typeof gni === 'string') ? [gni, ''] : gni;
           if (useItemIcon) {
-            gic += (gic == '') ? 'sp spc' : ' spc';
+            gic += (gic == '') ? SPSPC : SPC;
           }
           if (gfg) {
             // group:sub menu
-            items.push({ cls: 'cls', gid: gid, id: '', nm: gnm, ic: gic });
+            items.push({ cls: CLS, gid: gid, id: '', nm: gnm, ic: gic });
           } else if (ixs > 0) {
             // group:separator
             items.push({ cls: 'hr', gid: gid, id: '', nm: '', ic: '' });
@@ -246,9 +248,9 @@ export class TymMenuComponent implements AfterViewInit {
           const [id, fg] = im;
           const ni = menuDef[gid][id];
           let [nm, ic] = (typeof ni === 'string') ? [ni, ''] : ni;
-          const cls = `itm${(gfg) ? ' nod idt' : ''}${(fg) ? '' : ' dis'}`;
+          const cls = `itm${(gfg) ? ` ${NOD} idt` : ''}${(fg) ? '' : ' dis'}`;
           if (useItemIcon) {
-            ic += (ic == '') ? 'sp spc' : ' spc';
+            ic += (ic == '') ? SPSPC : SPC;
           }
           items.push({ cls: cls, gid: gid, id: id, nm: nm, ic: ic, fg: fg, act: menuAction });
         }

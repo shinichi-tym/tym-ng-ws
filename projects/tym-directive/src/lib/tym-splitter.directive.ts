@@ -1,6 +1,6 @@
 /*!
  * tym-directive.js
- * Copyright (c) 2021 shinichi tayama
+ * Copyright (c) 2021, 2022 shinichi tayama
  * Released under the MIT license.
  * see https://opensource.org/licenses/MIT
  */
@@ -35,11 +35,11 @@ export class TymSplitterDirective implements OnInit {
   public ngOnInit() {
     const thisElm: HTMLElement = this.elementRef.nativeElement;
     const parentElm: HTMLElement = thisElm.parentElement as any;
-    const parentStyle = window.getComputedStyle(parentElm);
+    const { paddingTop, paddingBottom, paddingLeft } = window.getComputedStyle(parentElm);
     const nextElm: HTMLElement = thisElm.nextElementSibling as any;
     const prevElm: HTMLElement = thisElm.previousElementSibling as any;
     const prevStyle = window.getComputedStyle(prevElm);
-    const height = `calc(${parentElm.clientHeight}px - ${parentStyle.paddingTop} - ${parentStyle.paddingBottom} )`;
+    const height = `calc(${parentElm.clientHeight}px - ${paddingTop} - ${paddingBottom} )`;
 
     const thisElmStyle = thisElm.style;
     const prevElmStyle = prevElm.style;
@@ -55,7 +55,7 @@ export class TymSplitterDirective implements OnInit {
     thisElmStyle.width = `${splitterSize + 2}px`;
     thisElmStyle.height = height;
     thisElmStyle.position = 'absolute';
-    thisElmStyle.left = `calc(${prevStyle.width} + ${parentStyle.paddingLeft})`;
+    thisElmStyle.left = `calc(${prevStyle.width} + ${paddingLeft})`;
     thisElmStyle.background = splitterBackground;
     thisElmStyle.border = `solid 1px ${splitterBorderColor}`;
     thisElmStyle.borderRadius = `${splitterRadius}px`;
@@ -86,7 +86,7 @@ export class TymSplitterDirective implements OnInit {
 
     const childObserver = new MutationObserver(() => {
       const psw = `calc(${childStyle.width} - ${splitterSize}px)`;
-      const tsl = `calc(${childStyle.width} + ${parentStyle.paddingLeft} - ${splitterSize}px)`;
+      const tsl = `calc(${childStyle.width} + ${paddingLeft} - ${splitterSize}px)`;
       const csl = `calc(-${childStyle.width} + ${splitterSize}px)`;
       const csc = `inset(0 0 0 calc(${prevStyle.width} + 1px))`;
       const nsm = `calc(${childStyle.width} + 4px`;
@@ -99,7 +99,7 @@ export class TymSplitterDirective implements OnInit {
     childObserver.observe(childElm, { attributes: true, attributeFilter: ["style"] });
 
     const parentObserver = new MutationObserver(() => {
-      const height = `calc(${parentElm.clientHeight}px - ${parentStyle.paddingTop} - ${parentStyle.paddingBottom} )`
+      const height = `calc(${parentElm.clientHeight}px - ${paddingTop} - ${paddingBottom} )`
       prevElmStyle.height = height;
       thisElmStyle.height = height;
       childElmStyle.height = `${parentElm.clientHeight * .5}px`;

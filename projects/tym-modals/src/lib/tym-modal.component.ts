@@ -9,6 +9,10 @@ import { Component, OnInit, AfterViewInit, ElementRef, Renderer2 } from '@angula
 import { ViewChild, ViewContainerRef } from '@angular/core';
 import { TymModalService } from './tym-modal.service';
 
+const FOCUSIN = 'focusin';
+const KEYUP = 'keyup';
+const KEYDOWN = 'keydown';
+
 @Component({
   selector: 'npx-tym-modals,ngx-tym-modals',
   template:
@@ -67,41 +71,44 @@ export class TymModalComponent implements OnInit, AfterViewInit {
     const observer = new MutationObserver(() => {
       if (divElm.childElementCount > 1) {
         this.display = ''; // show modal
-        document.addEventListener('keyup', keyup, false);
+        document.addEventListener(KEYUP, keyup, false);
       } else {
         this.display = 'none'; // hide modal
-        document.removeEventListener('keyup', keyup, false);
+        document.removeEventListener(KEYUP, keyup, false);
       }
     });
     observer.observe(divElm, { childList: true });
   }
+
+  private createElm = (t: string) => this.renderer.createElement(t) as HTMLElement;
+  private createSpanElm = () => this.createElm('span');
 
   /**
    * ビューを初期化した後の処理
    */
   ngAfterViewInit() {
     const vcr = this.vcr;
-    const cvr = this.renderer.createElement('div') as HTMLElement;
+    const cvr = this.createElm('div');
     cvr.tabIndex = 0;
-    const fin = this.renderer.createElement('span') as HTMLElement;
+    const fin = this.createSpanElm();
     fin.tabIndex = 1;
-    const fot = this.renderer.createElement('span') as HTMLElement;
+    const fot = this.createSpanElm();
     fot.tabIndex = 0;
-    const span = this.renderer.createElement('span') as HTMLElement;
+    const span = this.createSpanElm();
     span.tabIndex = 0;
 
     cvr.classList.value = 'cv';
-    cvr.addEventListener('keydown', e => {
+    cvr.addEventListener(KEYDOWN, e => {
       if (e.key == 'Tab' && e.shiftKey) span.focus();
     });
 
     const fcs = () => cvr.focus();
-    fin.addEventListener('focusin', fcs);
-    fot.addEventListener('focusin', fcs);
-    span.addEventListener('focusin', e => {
+    fin.addEventListener(FOCUSIN, fcs);
+    fot.addEventListener(FOCUSIN, fcs);
+    span.addEventListener(FOCUSIN, e => {
       if (e.relatedTarget != cvr) cvr.focus();
     });
-    span.addEventListener('keydown', fcs)
+    span.addEventListener(KEYDOWN, fcs)
 
     this.thisElm.appendChild(span);
     const modal = this.modal;
