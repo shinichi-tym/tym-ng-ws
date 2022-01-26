@@ -62,7 +62,7 @@
 <hr><!-- ---------------------------------------------------------- -->
 
 <div style="margin-left:3em;">effectAllowed:move, dropEffect:move</div>
-<div id="tymTable">
+<div class="tblbase tymTable">
   <ngx-tym-table #tymTable
     [custom]="custom"
     [afnc]="afnc"
@@ -76,7 +76,7 @@
   ></ngx-tym-table>
 </div>
 
-<div id="tymTable2">
+<div class="tblbase tymTable2">
   <ngx-tym-table
     [custom]="custom1" [cols]="cols1" [data]="data1" [odrmk]="odrmk1" [autors]="true"></ngx-tym-table>
   <br>
@@ -196,21 +196,21 @@ effectAllowed:[none,copy,move,copyMove], dropEffect:[none,copy,move]
 <h2>tym-table-view</h2>
 
 <h3>no style</h3>
-<div id="tymTable3">
+<div class="tblbase tymTable3">
   <tym-table-view
     [cols]="cols3"
     [data]="data3"
   ></tym-table-view>
 </div>
 <h3>add style</h3>
-<div class="tymTable4">
+<div class="tblbase tymTable4">
   <tym-table-view
     [cols]="cols3"
     [data]="data3"
   ></tym-table-view>
 </div>
 <h3>no last space</h3>
-<div class="tymTable4">
+<div class="tblbase tymTable4">
   <tym-table-view
     [cols]="cols3"
     [data]="data3"
@@ -297,6 +297,24 @@ effectAllowed:[none,copy,move,copyMove], dropEffect:[none,copy,move]
 <input type="button" (click)="commdel=true" value="commdel=true">
 <input type="button" (click)="commdel=false" value="commdel=false">{{commdel}}
 <input type="button" (click)="TymCommPost('idd','!!!')" value="post">
+
+<hr><!-- ---------------------------------------------------------- -->
+<h2>tym-tree-view</h2>
+
+<div class="tymSplitter">
+  <div style="width:300px;border:solid 1px #aaa;overflow-y:auto;">
+    TREE
+    <tym-tree-view [tree]="treeview1" [leaf]="treeviewsel"></tym-tree-view>
+  </div>
+  <div tym-splitter></div>
+  <div style=" border:solid 1px #aaa;overflow-y:auto;">
+    TREE
+    <tym-tree-view [tree]="treeview2" [leaf]="treeviewsel"></tym-tree-view>
+  </div>
+</div>
+<div>select : <span [innerText]="treeviewret"></span></div>
+
+<br>
 
 <h1 id="tym-modals">tym-modals</h1>
 

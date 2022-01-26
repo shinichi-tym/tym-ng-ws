@@ -27,7 +27,7 @@ export class TymTableViewComponent implements AfterViewInit {
    * コンストラクタ
    *
    * @param {ElementRef} elementRef このコンポーネントがセットされたDOMへの参照
-   * @memberof TymResizeDirective
+   * @memberof TymTableViewComponent
    */
   constructor(private elementRef: ElementRef) { }
 

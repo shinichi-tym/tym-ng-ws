@@ -138,6 +138,44 @@ export class AppComponent {
   @Output() Log = console.log;
   @Output() commdel = true;
   /////////////////////////////////////////////////////////////////////
+  @Output() treeview1 = [
+    'leaf-text1',
+    'leaf-text2',
+    [
+      'leaf-text3',
+      'leaf-text4',
+      [
+        'leaf-text5',
+        'leaf-text-long-long-data',
+      ],
+      'leaf-text6',
+    ],
+    'leaf-text7',
+  ];
+  @Output() treeview2 = [
+    'LEAF-TEXT1',
+    [
+      'LEAF-TEXT2',
+      [
+        'LEAF-TEXT3',
+        [
+          'LEAF-TEXT4',
+        ]
+      ]
+    ],
+    'LEAF-TEXT5',
+    [
+      'LEAF-TEXT6',
+      'LEAF-TEXT7',
+      [
+        'LEAF-TEXT8',
+        'LEAF-TEXT-LONG-LONG-DATA',
+      ]
+    ],
+  ];
+  @Output() treeviewsel = (texts: string[]) => this.treeviewret = texts.join('/');
+  @Output() treeviewret: string = "-";
+  /////////////////////////////////////////////////////////////////////
   @Output() tree1: TYM_TREE = [
     'leaf-text',
     'leaf-text',

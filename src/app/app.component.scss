@@ -8,20 +8,18 @@ form>input {
 form>input[type="text"] {
   width: 6em;
 }
-#tymTable {
+.tblbase {
   width: 650px;
-  height: 250px;
   left: 50px;
   overflow: auto;
   position: relative;
+}
+.tymTable {
+  height: 250px;
   resize: both;
 }
-#tymTable2 {
-  width: 650px;
+.tymTable2 {
   height: 250px;
-  left: 50px;
-  overflow: auto;
-  position: relative;
 }
 .tymTablex {
   overflow: auto;
@@ -31,19 +29,11 @@ form>input[type="text"] {
 .tymTablex td {
   padding: .5em;
 }
-#tymTable3 {
-  width: 650px;
+.tymTable3 {
   height: 150px;
-  left: 50px;
-  overflow: auto;
-  position: relative;
 }
 .tymTable4 {
-  width: 650px;
   height: 120px;
-  left: 50px;
-  overflow: auto;
-  position: relative;
 }
 .tymSplitter {
   width: 650px;

@@ -1,0 +1,52 @@
+/*!
+ * tym-directive.js
+ * Copyright (c) 2022 shinichi tayama
+ * Released under the MIT license.
+ * see https://opensource.org/licenses/MIT
+ */
+
+$bg0:2px 0/cover transparent no-repeat;
+$bg1:"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 16'><path d='";
+$bg2:"' stroke='%23aaaaaa' fill='transparent'/></svg>";
+
+tym-tree-view {
+  display: block;
+  font-family: system-ui;
+  --lh: 1.6em;
+}
+
+tym-tree-view>div {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  border: solid 1px transparent;
+  border-radius: 2px;
+  height: var(--lh);
+  line-height: var(--lh);
+  outline: none;
+  white-space: nowrap;
+  min-width: fit-content;
+  user-select: none;
+  &:focus {
+    border-color: #888;
+    background-color: #cef;
+  }
+  &:hover {
+    border-color: #444;
+    background-color: #eff;
+  }
+  div {
+    display: inline-block;
+    width: .8em;
+    margin-right: 2px;
+    &.b1 {
+      background: $bg0 url($bg1 + "M2 0 L2 16" + $bg2);
+    }
+    &.b2 {
+      background: $bg0 url($bg1 + "M2 0 L2 16 M2 8 L12 8" + $bg2);
+    }
+    &.b3 {
+      background: $bg0 url($bg1 + "M2 0 L2 8 L12 8" + $bg2);
+    }
+  }
+}

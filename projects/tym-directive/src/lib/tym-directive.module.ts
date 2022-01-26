@@ -12,13 +12,15 @@ import { TymCommDirective } from './tym-comm.directive';
 import { TymResizeDirective } from './tym-resize.directive';
 import { TymTableViewComponent } from './tym-table-view.component';
 import { TymSplitterDirective } from './tym-splitter.directive';
+import { TymTreeViewComponent } from "./tym-tree-view.component";
 
 @NgModule({
   declarations: [
     TymCommDirective,
     TymResizeDirective,
     TymTableViewComponent,
-    TymSplitterDirective
+    TymSplitterDirective,
+    TymTreeViewComponent
   ],
   imports: [
     CommonModule,
@@ -28,7 +30,8 @@ import { TymSplitterDirective } from './tym-splitter.directive';
     TymCommDirective,
     TymResizeDirective,
     TymTableViewComponent,
-    TymSplitterDirective
+    TymSplitterDirective,
+    TymTreeViewComponent
   ]
 })
 export class TymDirectiveModule { }

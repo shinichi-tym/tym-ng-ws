@@ -25,6 +25,7 @@ npm install tym-directive
 1. [簡易テーブル表示](#簡易テーブル表示)
 1. [スプリッター](#スプリッター)
 1. [簡易イベント通知](#簡易イベント通知)
+1. [簡易ツリー表示](#簡易ツリー表示)
 1. please wait...
 
 <br> 
@@ -246,6 +247,58 @@ TymComm.delElmLisrnerSet(id: string, lsn: Function)
 TymComm.post(id: string, data: any)
 ```
 <br>
+
+---
+
+<br>
+
+> ## 簡易ツリー表示
+
+<br>
+
+単純な文字列ツリー構造データを，簡易にツリー表示します。
+選択内容の通知が可能です。
+
+- 使い方:
+
+``` html
+<div style="width:300px;border:solid 1px #aaa;overflow-y:auto;">
+  TREE
+  <tym-tree-view
+    [tree]="treeview"
+    [leaf]="treeviewse"
+  ></tym-tree-view>
+</div>
+<!-- 不要であれば leaf は省略できます -->
+```
+
+- 表示するためのデータを用意します。
+
+``` typescript
+let treeview = [
+  'leaf-text1',
+  'leaf-text2',
+  'leaf-text2',   // <= ここの子データとして
+  [               // <= ここのデータが表示されます
+    'leaf-text3',
+    'leaf-text4',
+    [
+      'leaf-text5',
+      'leaf-text-long-long-data',
+    ],
+    'leaf-text6',
+  ],
+  'leaf-text7',
+];
+
+const treeviewse = (texts: string[]) => console.log(texts.join('/'));
+``` 
+
+- 表示イメージ
+
+![表示イメージ](/tym-tree-view-demo.png)
+
+<br/>
 
 ---
 ### `comments`
