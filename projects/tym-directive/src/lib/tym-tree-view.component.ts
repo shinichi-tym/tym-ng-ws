@@ -28,6 +28,19 @@ type LEAF = {
   ix: string[];
 }
 
+const gettexts = (leafs: LEAF[], index: number): string[] => {
+  let ret: string[] = [];
+  let lvl = leafs[index].ix.length;
+  ret.push(leafs[index].tx);
+  for (let i = index - 1; i >= 0; i--) {
+    if (leafs[i].ix.length < lvl) {
+      lvl = leafs[i].ix.length;
+      ret.push(leafs[i].tx);
+    }
+  }
+  return ret.reverse();
+}
+
 @Component({
   selector: 'tym-tree-view',
   templateUrl: './tym-tree-view.component.html',
@@ -37,7 +50,8 @@ type LEAF = {
 export class TymTreeViewComponent {
 
   @Output() leafs: LEAF[] = [];
-  @Output() leafclick: (index: number) => void = (index: number) => { console.log(index) };
+  @Output() leafclick: (index: number) => void = this._leafclick;
+  @Output() leafmenu: (index: number, event: MouseEvent) => boolean = this._leafcontext;
 
   @Input() set tree(tree: TREE[]) {
     const leafs = this.leafs;
@@ -75,17 +89,25 @@ export class TymTreeViewComponent {
   @Input() set leaf(callback: (texts: string[]) => void) {
     const leafs = this.leafs;
     this.leafclick = (index: number) => {
-      let ret: string[] = [];
-      let lvl = leafs[index].ix.length;
-      ret.push(leafs[index].tx);
-      for (let i = index - 1; i >= 0; i--) {
-        if (leafs[i].ix.length < lvl) {
-          lvl = leafs[i].ix.length;
-          ret.push(leafs[i].tx);
-        }
-      }
-      callback(ret.reverse());
+      this._leafclick(index);
+      callback(gettexts(this.leafs, index));
     }
+  }
+  private _leafclick(index: number) {
+    const thisElm = this.elementRef.nativeElement as HTMLElement;
+    thisElm.querySelector('.cur')?.classList.remove('cur');
+    (thisElm.childNodes[index] as HTMLElement).classList.add('cur');
+  }
+
+  @Input() set menu(callback: (texts: string[], event: MouseEvent) => boolean) {
+    this.leafmenu = (index: number, event: MouseEvent): boolean => {
+      this._leafcontext(index, event);
+      return callback(gettexts(this.leafs, index), event);
+    }
+  }
+  private _leafcontext(index: number, event: MouseEvent): boolean {
+    this._leafclick(index);
+    return true;
   }
 
   /**

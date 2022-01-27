@@ -256,8 +256,8 @@ TymComm.post(id: string, data: any)
 
 <br>
 
-単純な文字列ツリー構造データを，簡易にツリー表示します。
-選択内容の通知が可能です。
+単純な文字列ツリー構造データを，簡易にツリー表示します。  
+選択内容の通知が可能です。コンテキストメニューが可能です。
 
 - 使い方:
 
@@ -266,7 +266,8 @@ TymComm.post(id: string, data: any)
   TREE
   <tym-tree-view
     [tree]="treeview"
-    [leaf]="treeviewse"
+    [leaf]="treeviewsele"
+    [menu]="treeviewmenu"
   ></tym-tree-view>
 </div>
 <!-- 不要であれば leaf は省略できます -->
@@ -291,7 +292,11 @@ let treeview = [
   'leaf-text7',
 ];
 
-const treeviewse = (texts: string[]) => console.log(texts.join('/'));
+const treeviewsele = (texts: string[]) => console.log(texts.join('/'));
+const treeviewmenu = (texts: string[], event: MouseEvent): boolean => {
+  console.log(texts.join('/'), event);
+  return false;
+}
 ``` 
 
 - 表示イメージ

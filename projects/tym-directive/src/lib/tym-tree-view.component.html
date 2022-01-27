@@ -1,1 +1,1 @@
-<div *ngFor="let leaf of leafs;index as i" tabindex="-1" (click)="leafclick(i)"><div *ngFor="let ix of leaf.ix" [class]="ix">&nbsp;</div><span [innerText]="leaf.tx"></span></div>
+<div *ngFor="let leaf of leafs;index as i" tabindex="-1" (click)="leafclick(i)" (contextmenu)="leafmenu(i,$event)"><div *ngFor="let ix of leaf.ix" [class]="ix">&nbsp;</div><span [innerText]="leaf.tx"></span></div>

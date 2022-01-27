@@ -173,7 +173,12 @@ export class AppComponent {
       ]
     ],
   ];
-  @Output() treeviewsel = (texts: string[]) => this.treeviewret = texts.join('/');
+  @Output() treeviewsele = (texts: string[]) => this.treeviewret = texts.join('/');
+  @Output() treeviewmenu = (texts: string[], event: MouseEvent) => {
+    console.log(texts.join('/'), event);
+    this.menu1(event);
+    return false;
+  }
   @Output() treeviewret: string = "-";
   /////////////////////////////////////////////////////////////////////
   @Output() tree1: TYM_TREE = [

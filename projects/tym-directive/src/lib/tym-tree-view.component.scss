@@ -35,6 +35,9 @@ tym-tree-view>div {
     border-color: #444;
     background-color: #eff;
   }
+  &.cur {
+    border-color: #888;
+  }
   div {
     display: inline-block;
     width: .8em;
