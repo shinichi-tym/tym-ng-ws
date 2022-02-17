@@ -1,0 +1,20 @@
+{
+  "name": "tym-table-editor",
+  "version": "0.7.1",
+  "description": "'tym-table-editor' is a simple table editor component.",
+  "keywords": ["angular", "table", "grid", "spreadsheet", "editor"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/shinichi-tym/tym-ng-ws.git"
+  },
+  "author": "Shinichi Tayama <shinichi.tym@gmail.com> (https://github.com/shinichi-tym/)",
+  "homepage": "https://github.com/shinichi-tym/",
+  "license" : "MIT",
+  "peerDependencies": {
+    "@angular/common": "^12.1.0",
+    "@angular/core": "^12.1.0"
+  },
+  "dependencies": {
+    "tslib": "^2.2.0"
+  }
+}

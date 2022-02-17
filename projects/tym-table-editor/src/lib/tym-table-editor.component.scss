@@ -1,0 +1,90 @@
+/*!
+ * tym-directive.js
+ * Copyright (c) 2022 shinichi tayama
+ * Released under the MIT license.
+ * see https://opensource.org/licenses/MIT
+ */
+
+:host {
+  display: block;
+}
+
+table {
+  border-collapse: separate;
+  border-spacing: 0;
+  table-layout: fixed;
+}
+th, td {
+  border-style: solid;
+  border-color: #ccc;
+  border-width: 0 1px 1px 0;
+  user-select: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  &:first-child {
+    border-left-width: 1px;
+  }
+}
+// tbody tr:nth-child(even)>* {
+//   background: #eee;
+// }
+// tbody tr:nth-child(odd)>* {
+//   background: #fff;
+// }
+// thead {
+//   position: -webkit-sticky;
+//   position: sticky;
+//   top: 0;
+// }
+th {
+  position: -webkit-sticky;
+  position: sticky;
+  font: 700 8pt/10pt system-ui;
+  background-color: #ccc;
+  border: outset 2px #eee;
+  cursor: pointer;
+  padding: 0;
+}
+tbody>tr:first-child th {
+  top: 0;
+  resize: horizontal;
+  min-width: 4em;
+  width: 8em;
+}
+tbody tr:not(:first-child) {
+  height: 2em;
+}
+tbody th:first-child {
+  left: 0;
+  resize: vertical;
+}
+tbody>tr:first-child th:first-child {
+  resize: none;
+  width: 1.25em;
+  min-width: 1.25em;
+  z-index: 1;
+  left: 0;
+}
+td {
+  background-color: #fff;
+  box-shadow: .5px .5px 0px #888 inset;
+  padding: .2em .5em;
+  white-space: nowrap;
+  &.msel{
+    outline: dashed 2px #000;
+    outline-offset: -1px;
+    background-color: #eee;
+    white-space: normal;
+  }
+  &.crn{
+    outline: solid 2px #000;
+    outline-offset: -2px;
+    background-color: #fff;
+    white-space: normal;
+  }
+  &[contentEditable]{
+    background-color: #bfc;
+    white-space: normal;
+    word-break: break-all;
+  }
+}

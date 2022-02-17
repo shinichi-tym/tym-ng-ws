@@ -7,6 +7,7 @@ import { TymTableModule } from "tym-table";
 import { TymDirectiveModule } from "tym-directive";
 import { TymModalModule } from "tym-modals";
 import { TymTreeModule } from "tym-tree";
+import { TymTableEditorModule } from "tym-table-editor";
 
 @NgModule({
   declarations: [
@@ -14,7 +15,7 @@ import { TymTreeModule } from "tym-tree";
   ],
   imports: [
     BrowserModule, FormsModule,
-    TymTableModule, TymDirectiveModule, TymModalModule, TymTreeModule
+    TymTableModule, TymDirectiveModule, TymModalModule, TymTreeModule, TymTableEditorModule
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -33,6 +33,10 @@
         "dist/tym-table/tym-table",
         "dist/tym-table"
       ],
+      "tym-table-editor": [
+        "dist/tym-table-editor/tym-table-editor",
+        "dist/tym-table-editor"
+      ],
       "tym-tree": [
         "dist/tym-tree/tym-tree",
         "dist/tym-tree"

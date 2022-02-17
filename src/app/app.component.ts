@@ -7,6 +7,7 @@ import { TymComm, TYM_COMM_LISTENER } from 'tym-directive';
 import { TymModalService } from "tym-modals";
 import { TymDialogComponent, TymMenuComponent, MenuItems, IconItems } from "tym-modals";
 import { TymTreeComponent, TYM_TREE, TYM_LEAF, TYM_TREE_OPTION } from "tym-tree";
+import { TymTableEditorComponent } from "tym-table-editor";
 
 @Component({
   selector: 'app-root',
@@ -893,5 +894,16 @@ export class AppComponent {
     parentElm.style.border = "solid 1px red";
     parentElm.style.width = thisElm.clientWidth * 1.5 + "px";
     parentElm.style.height = thisElm.clientHeight * 1.5 + "px";
+  }
+
+  @ViewChild("tymTableEditor")
+  private tymTableEditor?: TymTableEditorComponent;
+
+  @Output() editor_out() {
+    console.log('editor_out');
+    const fnc = (row: number, col: number, val: string, eol?: boolean) => {
+      console.log(`row=${row},col=${col},val=${val},eol=${eol}`)
+    }
+    this.tymTableEditor?.getCells(3, 3, fnc);
   }
 }

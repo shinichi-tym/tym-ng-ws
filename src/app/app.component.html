@@ -314,7 +314,19 @@ effectAllowed:[none,copy,move,copyMove], dropEffect:[none,copy,move]
 </div>
 <div>select : <span [innerText]="treeviewret"></span></div>
 
+<hr><!-- ---------------------------------------------------------- -->
+<h2>tym-table-editor</h2>
+
+<div class="tblbase tymTable">
+<ngx-tym-table-editor #tymTableEditor
+  style="width: 110%"
+  [data]="[['data 1','data 2',''],['data 3','','data data data data data 4'],['','','data data data data data 5']]"
+></ngx-tym-table-editor>
+</div>
+
 <br>
+
+<input type="button" (click)="editor_out()" value="editor_out">
 
 <h1 id="tym-modals">tym-modals</h1>
 

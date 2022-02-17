@@ -15,6 +15,7 @@
 1. [tym-directive](/projects/tym-directive/README.md)
 1. [tym-modals](/projects/tym-modals/README.md)
 1. [tym-tree](/projects/tym-tree/README.md)
+1. [tym-table-editor](/projects/tym-table-editor/README.md)
 1. please wait...
 
 <br/>
@@ -40,6 +41,10 @@
 - `tym-tree`
 
 ![表示サンプル](/tym-tree-demo1.png)
+
+- `tym-table-editor`
+
+![表示サンプル](/tym-table-editor-demo.png)
 
 <br>
 

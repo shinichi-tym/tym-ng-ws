@@ -8,7 +8,6 @@
 
 ![表示サンプル](/tym-table-demo.png)
 
-
 ![表示サンプル](/tym-table-demo2.png)
 
 動作イメージ (Demo screen)
@@ -136,7 +135,7 @@ let data = [
     [chkbox]="chkbox"
     [latstp]="latstp"
     [autors]="autors"
-><ngx-tym-table>
+></ngx-tym-table>
 ```
 - `custom: TYM_CUSTOM`
 ``` typescript

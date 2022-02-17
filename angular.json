@@ -229,6 +229,37 @@
           }
         }
       }
+    },
+    "tym-table-editor": {
+      "projectType": "library",
+      "root": "projects/tym-table-editor",
+      "sourceRoot": "projects/tym-table-editor/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "project": "projects/tym-table-editor/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/tym-table-editor/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/tym-table-editor/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/tym-table-editor/src/test.ts",
+            "tsConfig": "projects/tym-table-editor/tsconfig.spec.json",
+            "karmaConfig": "projects/tym-table-editor/karma.conf.js"
+          }
+        }
+      }
     }
   },
   "defaultProject": "tym-ng-ws"
