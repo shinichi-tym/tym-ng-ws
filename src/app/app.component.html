@@ -232,7 +232,7 @@ effectAllowed:[none,copy,move,copyMove], dropEffect:[none,copy,move]
 <h2>tym-splitter</h2>
 
 <div class="tymSplitter">
-  <div style="width:200px; border:solid 1px #aaa; height:100%;overflow-y:auto">
+  <div style="width:40%; border:solid 1px #aaa; height:100%;overflow-y:auto">
     <ngx-tym-tree
       style="padding:8px;"
       [tree]="tree1"
@@ -250,7 +250,7 @@ effectAllowed:[none,copy,move,copyMove], dropEffect:[none,copy,move]
 
 <div class="tymSplitter">
   <ngx-tym-tree
-    style="width:200px; border:solid 1px #aaa;"
+    style="width:40%; border:solid 1px #aaa;"
     [tree]="tree1"
   ></ngx-tym-tree>
   <div tym-splitter></div>
@@ -302,7 +302,7 @@ effectAllowed:[none,copy,move,copyMove], dropEffect:[none,copy,move]
 <h2>tym-tree-view</h2>
 
 <div class="tymSplitter">
-  <div style="width:300px;border:solid 1px #aaa;overflow-y:auto;">
+  <div style="width:40%;border:solid 1px #aaa;overflow-y:auto;">
     TREE
     <tym-tree-view [tree]="treeview1" [leaf]="treeviewsele"></tym-tree-view>
   </div>
@@ -313,20 +313,6 @@ effectAllowed:[none,copy,move,copyMove], dropEffect:[none,copy,move]
   </div>
 </div>
 <div>select : <span [innerText]="treeviewret"></span></div>
-
-<hr><!-- ---------------------------------------------------------- -->
-<h2>tym-table-editor</h2>
-
-<div class="tblbase tymTable">
-<ngx-tym-table-editor #tymTableEditor
-  style="width: 110%"
-  [data]="[['data 1','data 2',''],['data 3','','data data data data data 4'],['','','data data data data data 5']]"
-></ngx-tym-table-editor>
-</div>
-
-<br>
-
-<input type="button" (click)="editor_out()" value="editor_out">
 
 <h1 id="tym-modals">tym-modals</h1>
 
@@ -531,7 +517,7 @@ uptext:<input type="text" #treetext size="10" value="up text"><br>
 <div>left dragType:'none',dropType:'move', right dragType:'move',dropType:'none'</div>
 <div class="tymSplitter">
   <ngx-tym-tree #tree_d0
-    style="width:200px; border:solid 1px #aaa;"
+    style="width:40%; border:solid 1px #aaa;"
     [tree]="tree_d"
     [option]="option_d"
   ></ngx-tym-tree>
@@ -556,16 +542,16 @@ uptext:<input type="text" #treetext size="10" value="up text"><br>
 <br>
 
 <div>left dragType:'move',dropType:'none', right dragType:'none',dropType:'move'</div>
-<div class="tymSplitter" style="width:fit-content">
+<div class="tymSplitter">
   <ngx-tym-tree #tree_d1
-    style="width:300px; border:solid 1px #aaa;"
+    style="width:40%; border:solid 1px #aaa;"
     [tree]="tree_d"
     [option]="{dragType:'move',dropType:'none'}"
   ></ngx-tym-tree>
   <div tym-splitter></div>
   <!-- <div style="border:solid 1px #aaa; height:100%; padding:8px;"> -->
     <ngx-tym-tree #tree_d2
-      style="width:300px; border:solid 1px #aaa;"
+      style="border:solid 1px #aaa;"
       [tree]="tree_d"
       [option]="option_d2"
     ></ngx-tym-tree>
@@ -574,6 +560,23 @@ uptext:<input type="text" #treetext size="10" value="up text"><br>
 <input type="button" value="clear_tree(redraw)" (click)="clear_tree2()">
 
 <br>
+
+<h1 id="tym-table-editor">tym-table-editor</h1>
+
+<hr><!-- ---------------------------------------------------------- -->
+<h2>tym-table-editor</h2>
+
+<div class="tblbase tymTable">
+<ngx-tym-table-editor #tymTableEditor
+  style="width: 110%"
+  [data]="[['data 1','data 2',''],['data 3','','data data data data data 4'],['','','data data data data data 5']]"
+></ngx-tym-table-editor>
+</div>
+
+<br>
+
+<input type="button" (click)="editor_out()" value="editor_out">
+
 <br>
 <br>
 <br>

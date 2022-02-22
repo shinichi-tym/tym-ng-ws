@@ -8,6 +8,8 @@
 import { Component, AfterViewInit, ElementRef, Renderer2, Input, Output } from '@angular/core';
 
 const num2 = (n: number) => ('00' + (n + 1)).slice(-2);
+type HIST = { r: number, c: number, b: string, a: string };
+type HISTS = [HIST];
 
 @Component({
   selector: 'ngx-tym-table-editor',
@@ -20,10 +22,15 @@ export class TymTableEditorComponent implements AfterViewInit {
   private editElm: HTMLElement | null = null; // edited td cell
   private crntElm: HTMLElement | null = null; // current td cell
 
-  private history!: [{ b: [{ x: number, y: number, v: string }], a: [{ x: number, y: number, v: string }] }];
+  private history: HISTS[] = [];
+  private history_pos: number = -1;
+  private history_dwn: boolean = false;
 
   @Input() row: number = 30;
   @Input() col: number = 20;
+  @Input() def: {
+    align?: 'left' | 'center' | 'right';
+  }[] = [];
   @Input() data: any[][] = [['']];
 
   /**
@@ -165,16 +172,6 @@ export class TymTableEditorComponent implements AfterViewInit {
     tableElm.style.width = 'fit-content';
 
     //---------------------------------------------------------------
-    // edit blue event
-    const editBlue = () => {
-      const editElm = this.editElm;
-      if (editElm) {
-        editElm.removeEventListener('blur', editBlue);
-        editElm.removeAttribute('contentEditable');
-      }
-      this.editElm = null;
-    }
-    //---------------------------------------------------------------
     // clear selection range
     const clearRange = (clear?: boolean) => {
       execRange((elm) => elm.classList.remove('msel'));
@@ -199,6 +196,7 @@ export class TymTableEditorComponent implements AfterViewInit {
             ? { r1: 1, c1: thColIx, r2: maxrow, c2: thColIx }
             : { r1: thRowIx, c1: 1, r2: thRowIx, c2: maxcol };
           mousemv = (isHead) ? 2 : 3;
+          setCurrent(cell(selects.r1,selects.c1));
         } else {
           // 1st click => change current
           setCurrent(td);
@@ -213,9 +211,8 @@ export class TymTableEditorComponent implements AfterViewInit {
           drawRange();
         } else {
           // duble click => change edit mode
-          td.contentEditable = 'true';
-          td.addEventListener('blur', editBlue);
-          this.editElm = td;
+          toEdit(td);
+          e.preventDefault();
         }
       }
     });
@@ -268,14 +265,12 @@ export class TymTableEditorComponent implements AfterViewInit {
       const thisRow = thisCell.parentElement as HTMLTableRowElement;
       const thisRowIx: number = thisRow.rowIndex;
       const thisColIx: number = thisCell.cellIndex;
-      const rowFirstIx = 1;
-      const rowLastIx = maxrow;
-      const colFirstIx = 1;
-      const colLastIx = maxcol;
+      const rangeAll = { r1: 1, c1: 1, r2: maxrow, c2: maxcol };
       //-------------------------------------------------------------
-      const arrow = (b1: boolean, opt: ScrollToOptions, rowix: number, colix: number): HTMLTableCellElement => {
+      /** 矢印によるフォーカスの移動                                 */
+      const arrow = (opt: ScrollToOptions, rowix: number, colix: number): HTMLTableCellElement => {
         const td = cell(rowix, colix);
-        if (b1) scrollElm.scroll(opt);
+        if (opt != {}) scrollElm.scroll(opt);
         td.blur();
         td.focus();
         setCurrent(td);
@@ -283,27 +278,63 @@ export class TymTableEditorComponent implements AfterViewInit {
         return td;
       }
       //-------------------------------------------------------------
-      const updown = (up: boolean): HTMLTableCellElement => {
-        let rowFroLIx, scroll, rowIx;
+      /** 上下左右端用のスクロール指示情報取得                       */
+      const getScroll = (row: number, col: number) => {
+        let scroll: { left?: number, top?: number } = {}
+        const { r1, c1, r2, c2 } = rangeAll;
+        if (col == c1) scroll.left = 0;
+        if (col == c2) scroll.left = 9999;
+        if (row == r1) scroll.top = 0;
+        if (row == r2) scroll.top = 9999;
+        return scroll;
+      }
+      //-------------------------------------------------------------
+      /** 矢印によるフォーカスの上下移動                             */
+      const updown = (up: boolean, range: boolean = false): HTMLTableCellElement => {
+        const r = (range && selects.c2 >= 0) ? selects : rangeAll;
+        let colIx = thisColIx, rowIx = thisRowIx;
         if (up) {
-          [rowFroLIx, scroll, rowIx] = [rowFirstIx, 0, thisRowIx - ((thisRowIx > rowFirstIx) ? 1 : 0)];
+          if (rowIx > r.r1) {
+            rowIx--;
+          } else {
+            rowIx = r.r2;
+            colIx = (colIx > r.c1) ? colIx - 1 : r.c2;
+          }
         } else {
-          [rowFroLIx, scroll, rowIx] = [rowLastIx, 9999, thisRowIx + ((thisRowIx < rowLastIx) ? 1 : 0)];
+          if (rowIx < r.r2) {
+            rowIx++;
+          } else {
+            rowIx = r.r1;
+            colIx = (colIx < r.c2) ? colIx + 1 : r.c1;
+          }
         }
-        return arrow(rowFroLIx == rowIx, { top: scroll }, rowIx, thisColIx)
+        return arrow(getScroll(rowIx, colIx), rowIx, colIx);
       }
       //-------------------------------------------------------------
-      const leftright = (left: boolean): HTMLTableCellElement => {
-        let colFroLIx, scroll, colIx;
+      /** 矢印によるフォーカスの左右移動                             */
+      const leftright = (left: boolean, range: boolean = false): HTMLTableCellElement => {
+        const r = (range && selects.c2 >= 0) ? selects : rangeAll;
+        let colIx = thisColIx, rowIx = thisRowIx;
         if (left) {
-          [colFroLIx, scroll, colIx] = [colFirstIx, 0, thisColIx + ((thisColIx > colFirstIx) ? -1 : 0)];
+          if (colIx > r.c1) {
+            colIx--;
+          } else {
+            colIx = r.c2;
+            rowIx = (rowIx > r.r1) ? rowIx - 1 : r.r2;
+          }
         } else {
-          [colFroLIx, scroll, colIx] = [colLastIx, 9999, thisColIx + ((thisColIx < colLastIx) ? 1 : 0)];
+          if (colIx < r.c2) {
+            colIx++;
+          } else {
+            colIx = r.c1;
+            rowIx = (rowIx < r.r2) ? rowIx + 1 : r.r1;
+          }
         }
-        return arrow(colFroLIx == colIx, { left: scroll }, thisRowIx, colIx)
+        return arrow(getScroll(rowIx, colIx), rowIx, colIx)
       }
       //-------------------------------------------------------------
-      const arrowmove = (isShift: boolean, movefunc: (dir: boolean) => HTMLTableCellElement, dir: boolean) => {
+      /** 矢印によるフォーカスの移動                                 */
+      const arrowmove = (isShift: boolean, movefunc: (dir: boolean, range?: boolean) => HTMLTableCellElement, dir: boolean) => {
         if (isShift) {
           clearRange();
           if (selects.c1 < 0) {
@@ -318,6 +349,7 @@ export class TymTableEditorComponent implements AfterViewInit {
         }
       }
       //-------------------------------------------------------------
+      /** クリップボードへの(\r\n,/\t区切りテキストの)設定           */
       const getTexts = (): string => {
         let v = '';
         if (selects.c2 >= 0) {
@@ -328,6 +360,7 @@ export class TymTableEditorComponent implements AfterViewInit {
         return v;
       }
       //-------------------------------------------------------------
+      /** クリップボードからの(\r\n,/\t区切りテキストの)貼り付け      */
       const setTexts = (v: string): void => {
         const crntElm = this.crntElm;
         if (!crntElm) return;
@@ -339,21 +372,29 @@ export class TymTableEditorComponent implements AfterViewInit {
         let cols = rows.shift()?.split('\t');
         const colmax = cols!.length;
         setRangeLast2(r + rowmax - 1, c + colmax - 1);
+        let hists: any = [];
         execRange((elm, eol) => {
           const v = cols?.shift();
-          if (v != undefined) elm.innerText = v;
+          if (v != undefined) {
+            const [r, c] = getCellXY(elm);
+            hists.push({ r: r, c: c, b: elm.innerText, a: v });
+            elm.innerText = v;
+          }
           if (eol) cols = rows.shift()?.split('\t');
           elm.classList.add('msel')
         });
+        // 編集履歴に追加
+        addhists(hists);
       }
       //-------------------------------------------------------------
+      // 編集モード時のキー処理
       if (this.editElm) {
         switch (e.key) {
           case 'Tab':
-            leftright(e.shiftKey);
+            leftright(e.shiftKey, true);
             break;
           case 'Enter':
-            updown(e.shiftKey);
+            updown(e.shiftKey, true);
             break;
           case 'Escape':
             thisCell.innerText = beforeValue;
@@ -364,7 +405,11 @@ export class TymTableEditorComponent implements AfterViewInit {
           default:
             break;
         }
-      } else {
+      }
+      //-------------------------------------------------------------
+      // 表示モード時のキー処理
+      else
+      {
         switch (e.key) {
           case 'ArrowDown':
             arrowmove(e.shiftKey, updown, false);
@@ -379,10 +424,10 @@ export class TymTableEditorComponent implements AfterViewInit {
             arrowmove(e.shiftKey, leftright, true);
             break;
           case 'Tab':
-            leftright(e.shiftKey); // todo:範囲移動
+            leftright(e.shiftKey, true);
             break;
           case 'Enter':
-            updown(e.shiftKey);  // todo:範囲移動
+            updown(e.shiftKey, true);
             break;
           case 'F2':
             toEdit(thisCell);
@@ -431,20 +476,15 @@ export class TymTableEditorComponent implements AfterViewInit {
           case 'z':
           case 'Z':
             if (e.ctrlKey) {
-              if (e.shiftKey) {
-                // redo: Ctrl+Shift+z
-                console.log('Ctrl+Shift+z');
-              } else {
-                // undo: Ctrl+z
-                console.log('Ctrl+z');
-              }
+              // true(redo: Ctrl+Shift+z), false(undo: Ctrl+z)
+              undoredo(e.shiftKey);
               e.preventDefault();
             }
             break;
           case 'y':
             if (e.ctrlKey) {
               // redo: Ctrl+y
-              console.log('Ctrl+y');
+              undoredo(true);
               e.preventDefault();
             }
             break;
@@ -452,23 +492,93 @@ export class TymTableEditorComponent implements AfterViewInit {
       }
     });
 
-    //---------------------------------------------------------------
-    // 
+    /****************************************************************
+     * Escapeキー戻値用
+     */
     let beforeValue: string;
-    //---------------------------------------------------------------
-    // 
-    const toEdit = (td: HTMLTableCellElement) => {
-      td.contentEditable = 'true';
-      beforeValue = td.innerText;
-      const [sel, rng] = [window.getSelection(), document.createRange()];
-      rng.selectNodeContents(td);
-      sel?.removeAllRanges()
-      sel?.addRange(rng)
-      td.addEventListener('blur', editBlue);
-      this.editElm = td;
+
+    /****************************************************************
+     * フォーカスアウトイベント処理，表示モードにする
+     */
+    const editBlue = () => {
+      const editElm = this.editElm;
+      if (editElm) {
+        editElm.removeEventListener('blur', editBlue);
+        editElm.removeAttribute('contentEditable');
+        if (editElm?.innerText != beforeValue) {
+          const [r, c] = getCellXY(editElm);
+          const hist = { r: r, c: c, b: beforeValue, a: editElm?.innerText };
+          addhists([hist]);
+        }
+      }
+      this.editElm = null;
     }
-    //---------------------------------------------------------------
-    // 
+
+    /****************************************************************
+     * 対象セルを編集モードにする
+     * @param td 対象エレメント
+     */
+    const toEdit = (td: HTMLTableCellElement) => {
+      beforeValue = td.innerText;
+      td.contentEditable = 'true';
+      const newtd = td.parentElement?.insertBefore(td.cloneNode(true), td) as HTMLElement;
+      setCurrent(newtd);
+      newtd.addEventListener('blur', editBlue);
+      const [sel, rng] = [window.getSelection(), document.createRange()];
+      rng.selectNodeContents(newtd);
+      sel?.removeAllRanges();
+      sel?.addRange(rng)
+      td.remove();
+      this.editElm = newtd;
+    }
+
+    /****************************************************************
+     * 編集履歴：履歴追加
+     * @param hists 履歴情報
+     */
+    const addhists = (hists: HISTS) => {
+      if (this.history.length - 1 == this.history_pos) {
+        this.history.push(hists);
+        this.history_pos++;
+      } else {
+        this.history.splice(this.history_pos, 99999, hists);
+      }
+      this.history_dwn = true;
+    }
+
+    /****************************************************************
+     * 編集履歴：アンドゥ＆リドゥ処理
+     * @param redo true:リドゥ, false:アンドゥ
+     */
+    const undoredo = (redo: boolean) => {
+      let pos = this.history_pos;
+      if (redo != this.history_dwn) {
+        this.history_dwn = redo;
+      } else {
+        pos += (redo ? this.history.length - 1 > pos : pos > 0) ? (redo ? 1 : -1) : 0;
+      }
+      const hist = this.history[pos];
+      this.history_pos = pos;
+      hist?.forEach(v => {
+        const td = cell(v.r, v.c);
+        td.innerText = (redo) ? v.a : v.b;
+      });
+      const [v1, v2] = [hist![0], hist![hist!.length - 1]];
+      const td = cell(v1.r, v1.c);
+      clearRange();
+      if (hist!.length > 1) {
+        setRangeFirst2(v1.r, v1.c);
+        setRangeLast2(v2.r, v2.c);
+        drawRange();
+      }
+      td.focus();
+      setCurrent(td);
+    }
+
+    /****************************************************************
+     * カラムリサイズ
+     * @param thElm 対象エレメント
+     */
     const widen = (thElm: HTMLTableCellElement) => {
       const scrollLeft = scrollElm.scrollLeft; // スクロール状態を保持
       const cntnrRect = scrollElm.firstElementChild!.getBoundingClientRect();
@@ -487,19 +597,23 @@ export class TymTableEditorComponent implements AfterViewInit {
     }
   }
 
-  /**
+  //-----------------------------------------------------------------
+  // 公開関数
+  //-----------------------------------------------------------------
+
+  /******************************************************************
    * セルの文字列を取得する
-   * @param row 取得する行数
-   * @param col 取得する列数
+   * @param rownum 取得する行数
+   * @param colnum 取得する列数
    * @param fnc 取得用コールバック関数
    */
-  public getCells(row: number, col: number, fnc: (row: number, col: number, val: string, eol: boolean) => void) {
+  public getCells(rownum: number, colnum: number, fnc: (row: number, col: number, val: string, eol: boolean) => void) {
     const tableElm = this.thisElm.firstElementChild as HTMLElement;
     const tbodyElm = tableElm.firstElementChild as HTMLElement;
-    for (let _row = 1; _row <= row; _row++) {
-      for (let _col = 1; _col <= col; _col++) {
+    for (let _row = 1; _row <= rownum; _row++) {
+      for (let _col = 1; _col <= colnum; _col++) {
         const td = tbodyElm.children[_row].children[_col] as HTMLTableCellElement;
-        fnc(_row, _col, td.innerText, col == _col);
+        fnc(_row, _col, td.innerText, colnum == _col);
       }
     }
   }

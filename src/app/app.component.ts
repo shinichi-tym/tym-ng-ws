@@ -212,7 +212,6 @@ export class AppComponent {
     { text: 'leaf-text3', image: 'far fa-file-powerpoint' },
   ];
   private children = (idxs: number[], txts: string[]): Promise<any[]> => {
-    console.log(idxs, txts);
     let tree: any[] = [];
     const r = Math.floor(Math.random() * 10);
     for (let i = 0; i < r; i++) {
@@ -901,9 +900,16 @@ export class AppComponent {
 
   @Output() editor_out() {
     console.log('editor_out');
+    let data: string[][] = [], rows: string[] = [];
     const fnc = (row: number, col: number, val: string, eol?: boolean) => {
-      console.log(`row=${row},col=${col},val=${val},eol=${eol}`)
+      console.log(`row=${row},col=${col},val=${val},eol=${eol}`);
+      rows.push(val);
+      if (eol) {
+        data.push([...rows]);
+        rows = [];
+      }
     }
     this.tymTableEditor?.getCells(3, 3, fnc);
+    console.log(data);
   }
 }

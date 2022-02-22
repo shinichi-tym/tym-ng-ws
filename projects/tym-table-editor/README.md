@@ -97,7 +97,7 @@ let data = [
 
 <br>
 
-- [公開関数](#公開関数) (Public Functions) *`please wait...`*
+- [公開関数](#公開関数) (Public Functions)
 
 <br>
 
@@ -121,10 +121,13 @@ let data = [
 ```
 
 - `row: number`
+  - 表示する行数, 省略時は30行
 
 - `col: number`
+  - 表示する列数, 省略時は20列
 
 - `data: string[][]`
+  - 表示するデータ
 
 <br>
 
@@ -142,8 +145,8 @@ let data = [
 - `Shift`キー無し, 上下左右キーで選択範囲が解除されます。
 - `Tab`, `Shift+Tab`キーでフォーカス位置を左右に移動できます。
 - `Enter`, `Shift+Enter`キーでフォーカス位置を上下に移動できます。
-- `Tab`, `Shift+Tab`キーでは, 選択範囲内を移動します。 *`please wait...`*
-- `Enter`, `Shift+Enter`キーでは, 選択範囲内を移動します。 *`please wait...`*
+- `Tab`, `Shift+Tab`キーでは, 選択範囲内を移動します。
+- `Enter`, `Shift+Enter`キーでは, 選択範囲内を移動します。
 - `F2`キーで **編集モード** になります。
 - `Backspace`キーで文字を消去し **編集モード** になります。
 - `Delete`キーでフォーカス位置または選択範囲内の文字を消去します。
@@ -152,8 +155,8 @@ let data = [
 - `Ctrl+c`, `Ctrl+Insert`キーでフォーカス位置または選択範囲内の文字をコピーします。
 - `Ctrl+v`, `Shift+Insert`キーでフォーカス位置に文字列を貼り付けます。  
   文字列は, 単純文字列またはタブ文字/改行文字区切りの文字群。
-- `Ctrl+z`キーで変更を元に戻します。 *`please wait...`*
-- `Ctrl+y`, `Ctrl+Shift+z`キーで元に戻した変更をやり直します。 *`please wait...`*
+- `Ctrl+z`キーで変更を元に戻します。
+- `Ctrl+y`, `Ctrl+Shift+z`キーで元に戻した変更をやり直します。
 - その他のキーで **編集モード** になり, 入力した文字に置き換えます。
 
 [編集モード]
@@ -161,8 +164,8 @@ let data = [
 - `Tab`, `Shift+Tab`キーで, 入力文字を確定し, フォーカス位置を左右に移動できます。
 - `Enter`, `Shift+Enter`キーで **表示モード** になります。
 - `Enter`, `Shift+Enter`キーで, 入力文字を確定し, フォーカス位置を上下に移動できます。
-- `Tab`, `Shift+Tab`キーでは, 選択範囲内を移動します。 *`please wait...`*
-- `Enter`, `Shift+Enter`キーでは, 選択範囲内を移動します。 *`please wait...`*
+- `Tab`, `Shift+Tab`キーでは, 選択範囲内を移動します。
+- `Enter`, `Shift+Enter`キーでは, 選択範囲内を移動します。
 - `Escape`キーで編集を中止し, **表示モード** になります。
 
 <br>
@@ -223,18 +226,27 @@ let data = [
 
 <br>
 
-    const fnc = (row: number, col: number, val: string, eol?: boolean) => {
-      console.log(`row=${row},col=${col},val=${val},eol=${eol}`)
-    }
-    getCells(row, col, fnc);
+``` typescript
+let data: string[][] = [], rows: string[] = [];
+const fnc = (row: number, col: number, val: string, eol?: boolean) => {
+  console.log(`row=${row},col=${col},val=${val},eol=${eol}`);
+  rows.push(val);
+  if (eol) {
+    data.push([...rows]);
+    rows = [];
+  }
+}
+this.tymTableEditor?.getCells(rownum, colnum, fnc);
+console.log(data);
+```
 
 - 指定した行数, 列数分の文字列を取得する。
 - 指定した 行数 x 列数 回コールバック関数を呼び出す。
 
 - [引数]
-  - row: number
+  - rownum: number
     - 取得する行数
-  - col: number
+  - colnum: number
     - 取得する列数
   - fnc: function
     - 取得用コールバック関数
