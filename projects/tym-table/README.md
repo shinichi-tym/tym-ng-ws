@@ -35,7 +35,7 @@ npm install tym-table
 表示される場所に htmlタグ を用意し，その中に`<ngx-tym-table>`タグを作成します。
 
 ``` html
-<div stylle="width:300px;height:200px;overflow:auto;">
+<div style="width:300px;height:200px;overflow:auto;">
     <ngx-tym-table #tymTable
         [cols]="cols"
         [data]="data"

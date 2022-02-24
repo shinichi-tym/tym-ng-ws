@@ -7,7 +7,7 @@ import { TymComm, TYM_COMM_LISTENER } from 'tym-directive';
 import { TymModalService } from "tym-modals";
 import { TymDialogComponent, TymMenuComponent, MenuItems, IconItems } from "tym-modals";
 import { TymTreeComponent, TYM_TREE, TYM_LEAF, TYM_TREE_OPTION } from "tym-tree";
-import { TymTableEditorComponent } from "tym-table-editor";
+import { TymTableEditorComponent, TYM_EDITOR_DEF } from "tym-table-editor";
 
 @Component({
   selector: 'app-root',
@@ -898,6 +898,27 @@ export class AppComponent {
   @ViewChild("tymTableEditor")
   private tymTableEditor?: TymTableEditorComponent;
 
+  @Output() defs: TYM_EDITOR_DEF[] = [
+    { col: 1, align: 'left' },
+    { col: 2, align: 'center' },
+    {
+      col: 3, align: 'right', type: 'number', viewfnc: (val: string, type?: string, col?: number) => {
+        console.log(type, col, val);
+        return (val) ? parseInt(val).toLocaleString() : '';
+      }
+    },
+    {
+      col: 4, type: 'xyz', viewfnc: (val: string, type?: string, col?: number) => {
+        console.log(type, col, val);
+        return (val) ? '<' + val + '>' : '';
+      }
+    }
+  ];
+  @Output() editordata = [
+    [ 'data 1', 'data 2', 123,     ''],
+    [ '3',      '4',      12345,   'data data data data 4'],
+    [ '',       '',       1234567, 'data data data data 5']
+    ];
   @Output() editor_out() {
     console.log('editor_out');
     let data: string[][] = [], rows: string[] = [];

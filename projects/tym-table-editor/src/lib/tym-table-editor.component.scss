@@ -25,17 +25,6 @@ th, td {
     border-left-width: 1px;
   }
 }
-// tbody tr:nth-child(even)>* {
-//   background: #eee;
-// }
-// tbody tr:nth-child(odd)>* {
-//   background: #fff;
-// }
-// thead {
-//   position: -webkit-sticky;
-//   position: sticky;
-//   top: 0;
-// }
 th {
   position: -webkit-sticky;
   position: sticky;
@@ -70,21 +59,21 @@ td {
   box-shadow: .5px .5px 0px #888 inset;
   padding: .2em .5em;
   white-space: nowrap;
+  &.msel, &.crn, &[contentEditable]{
+    white-space: normal;
+    word-break: break-all;
+  }
   &.msel{
     outline: dashed 2px #000;
     outline-offset: -1px;
     background-color: #eee;
-    white-space: normal;
   }
   &.crn{
     outline: solid 2px #000;
     outline-offset: -2px;
     background-color: #fff;
-    white-space: normal;
   }
   &[contentEditable]{
     background-color: #bfc;
-    white-space: normal;
-    word-break: break-all;
   }
 }

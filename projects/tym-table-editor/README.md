@@ -10,7 +10,7 @@
 
 動作イメージ (Demo screen)
 
-[https://shinichi-tym.github.io/tym-ng-ws-demo/index.html#tym-table-ediror]
+[https://shinichi-tym.github.io/tym-ng-ws-demo/index.html#tym-table-editor]
 
 ## インストール `(Installation)`
 <br>
@@ -33,7 +33,7 @@ npm install tym-table-editor
 表示される場所に htmlタグ を用意し，その中に`<ngx-tym-table-editor>`タグを作成します。
 
 ``` html
-<div stylle="width:300px;height:200px;overflow:auto;">
+<div style="width:90%;height:400px;overflow:auto;">
     <ngx-tym-table-editor #tymTableEditor
         [data]="data"
     ><ngx-tym-table-editor>
@@ -57,6 +57,7 @@ import { TymTableEditorModule } from "tym-table-editor";
 ``` typescript :app.component.ts
   :
 import { TymTableEditorComponent } from "tym-table-editor";
+import { TYM_EDITOR_DEF } from "tym-table-editor";
   :
   @ViewChild("tymTableEditor")
   private tymTableEditor?: TymTableEditorComponent;
@@ -69,9 +70,9 @@ import { TymTableEditorComponent } from "tym-table-editor";
 
 ``` typescript
 let data = [
-  [ 980, 627, 614460 ],
-  [ 1980, 1219, 2413620 ],
-  [ 2980, 116, 345680 ]
+  [ 'data 1', 'data 2', 123,     ''],
+  [ '3',      '4',      12345,   'data data data data 4'],
+  [ '',       '',       1234567, 'data data data data 5']
 ]; 
 ``` 
 
@@ -90,8 +91,8 @@ let data = [
 - [セルサイズ自動変更](#セルサイズ自動変更) (Cell Size Auto Change)
 - [セルサイズ変更](#セルサイズ変更) (Cell Size Change)
 - [セル選択](#セル選択) (Cell Selection)
-- [セル形式] (Cell Type) *`please wait...`*
-- [表示文字編集機能] (String Formatter) *`please wait...`*
+- [セル形式](#セル形式) (Cell Type)
+- [表示文字編集機能](#表示文字編集機能) (String Formatter)
 - [文字編集機能切替] (Switching String Editor) *`please wait...`*
 - *`please wait...`*
 
@@ -116,6 +117,7 @@ let data = [
 <ngx-tym-table-editor #tymTableEditor
     [row]="row"
     [col]="col"
+    [defs]="defs"
     [data]="data"
 ></ngx-tym-table-editor>
 ```
@@ -125,6 +127,23 @@ let data = [
 
 - `col: number`
   - 表示する列数, 省略時は20列
+
+- `defs: TYM_EDITOR_DEF[]`
+``` typescript
+/* 定義 */
+export type TYM_EDITOR_DEF = {
+  /** 対象列番号(1～) */
+  col: number;
+  /** 対象例タイプ */
+  type?: string;
+  /** 対象列揃え指定 {'left' | 'center' | 'right'}, , 規定値: 'left' */
+  align?: 'left' | 'center' | 'right';
+  /** 値を表示文字に変換する関数, 規定値: なし */
+  viewfnc?: (val: string, type?: string, col?: number) => string;
+  /** 値を編集する関数, 規定値: なし  *`please wait...`* */
+  editfnc?: (val: string, type?: string, col?: number) => Promise<string>;
+}
+```
 
 - `data: string[][]`
   - 表示するデータ
@@ -211,6 +230,46 @@ let data = [
 - 行ヘッダー, 列ヘッダーをクリックすると行/列が選択されます。
 - 行ヘッダー, 列ヘッダーをドラッグすると複数の行/列が選択されます。
 
+
+<br>
+
+---
+
+<br>
+
+> ### セル形式
+
+<br>
+
+- `defs[n].type`にセル(列)の形式を指定できます。
+- セル形式は, 処理に影響をあたえません。
+- セル形式は, 表示文字編集機能, 文字編集機能切替 の引数となります。
+- `defs[n].align`にセルの値揃えを指定できます。
+
+<br>
+
+---
+
+<br>
+
+> ### 表示文字編集機能
+
+<br>
+
+- `defs[n].viewfnc`に表示文字編集する関数を指定できます。
+
+``` typescript
+let def: TYM_EDITOR_DEF = {
+  col: 3,
+  align: 'right',
+  type: 'number',
+  viewfnc: (val: string, type?: string, col?: number) => {
+    console.log(type, col, val);
+    return (val) ? parseInt(val).toLocaleString() : '';
+  }
+}
+let defs = [def];
+```
 
 <br>
 
