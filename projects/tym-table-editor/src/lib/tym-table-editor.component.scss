@@ -60,7 +60,7 @@ td {
   padding: .2em .5em;
   white-space: nowrap;
   &.msel, &.crn, &[contentEditable]{
-    white-space: nowrap;
+    white-space: normal;
     word-break: break-all;
   }
   &.msel{
@@ -75,5 +75,10 @@ td {
   }
   &[contentEditable]{
     background-color: #bfc;
+  }
+}
+tbody.widen td {
+  &.msel, &.crn, &[contentEditable] {
+    white-space: nowrap;
   }
 }

@@ -678,9 +678,11 @@ export class TymTableEditorComponent implements AfterViewInit {
         + `${realStyle.paddingLeft} + ${realStyle.paddingRight} + `
         + `${realStyle.marginLeft} + ${realStyle.marginRight}`;
       thElm.style.width = '4em';// 一時的にセルのサイズを縮める
+      tbodyElm.classList.add('widen');
       // 全ての行をチェックし最大widthを求める (tbody > tr > td)
       let maxWidth = Array.from(cellElms).reduce((a, b) => a.scrollWidth > b.scrollWidth ? a : b).scrollWidth;
       thElm.style.width = `calc(${Math.min(maxWidth, (cntnrRect.width * .7))}px + ${padSize})`;
+      tbodyElm.classList.remove('widen');
       scrollElm.scrollLeft = scrollLeft; // スクロール状態を回復
     }
   }
