@@ -3,4 +3,5 @@
  */
 
 export * from './lib/tym-table-editor.component';
+export * from './lib/tym-table-input.component';
 export * from './lib/tym-table-editor.module';

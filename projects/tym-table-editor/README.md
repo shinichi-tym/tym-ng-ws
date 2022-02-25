@@ -66,6 +66,29 @@ import { TYM_EDITOR_DEF } from "tym-table-editor";
   this.tymTableEditor?getCells(...);
 ```
 
+TymModalService / TymTableInputComponent を利用できるようにします。
+
+``` typescript :app.component.ts
+  :
+import { TymTableInputComponent } from "tym-table-editor";
+import { TymModalService } from "tym-modals";
+  :
+  constructor(
+    private modal: TymModalService 
+  :
+  // TymTableInputComponent を利用し日付(<input type=date>)を入力できるようにする
+  let def: TYM_EDITOR_DEF = {
+    col: 1,
+    editfnc: async (elm: HTMLElement, val: string, type?: string, col?: number) => {
+      const provider = TymTableInputComponent.provider('date', val, elm);
+      const componentRef = await this.modal.open(
+        TymTableInputComponent, provider, false, () => { });
+      const component = componentRef.instance as TymTableInputComponent;
+      return (component.vals.isEscape) ? val : component.vals.ret;
+    }
+  }
+```
+
 表示するためのデータを用意します。
 
 ``` typescript
@@ -93,7 +116,8 @@ let data = [
 - [セル選択](#セル選択) (Cell Selection)
 - [セル形式](#セル形式) (Cell Type)
 - [表示文字編集機能](#表示文字編集機能) (String Formatter)
-- [文字編集機能切替] (Switching String Editor) *`please wait...`*
+- [文字編集機能切替](#文字編集機能切替) (Switching String Editor)
+- [コンテキストイベント](#コンテキストイベント) (Contextmenu event) *`please wait...`*
 - *`please wait...`*
 
 <br>
@@ -123,10 +147,10 @@ let data = [
 ```
 
 - `row: number`
-  - 表示する行数, 省略時は30行
+  - 表示する行数, 省略時は30行 (supports 1～99)
 
 - `col: number`
-  - 表示する列数, 省略時は20列
+  - 表示する列数, 省略時は20列 (supports 1～99)
 
 - `defs: TYM_EDITOR_DEF[]`
 ``` typescript
@@ -257,8 +281,19 @@ export type TYM_EDITOR_DEF = {
 <br>
 
 - `defs[n].viewfnc`に表示文字編集する関数を指定できます。
+- [引数]
+  - val: string
+    - 対象セルのオリジナルの文字
+  - type: string
+    - `defs[n].type`に指定した文字
+  - col: number
+    - 対象セルの列番号
+
+- [戻値]
+  - 編集後の文字
 
 ``` typescript
+// 例
 let def: TYM_EDITOR_DEF = {
   col: 3,
   align: 'right',
@@ -266,6 +301,42 @@ let def: TYM_EDITOR_DEF = {
   viewfnc: (val: string, type?: string, col?: number) => {
     console.log(type, col, val);
     return (val) ? parseInt(val).toLocaleString() : '';
+  }
+}
+let defs = [def];
+```
+
+<br>
+
+> ### 文字編集機能切替
+
+<br>
+
+- `defs[n].editfnc`に文字編集する関数を指定できます。
+- [引数]
+  - elm: HTMLElement
+    - 対象セルのエレメント
+  - val: string
+    - 対象セルのオリジナルの文字
+  - type: string
+    - `defs[n].type`に指定した文字
+  - col: number
+    - 対象セルの列番号
+
+- [戻値]
+  - 編集後の文字
+
+``` typescript
+// TymModalService / TymTableInputComponent を利用した例
+let def: TYM_EDITOR_DEF = {
+  col: 3,
+  align: 'right',
+  type: 'number',
+  editfnc: async (elm: HTMLElement, val: string, type?: string, col?: number): Promise<string> => {
+    const provider = TymTableInputComponent.provider(type || 'text', val, elm);
+    const componentRef = await this.modal.open(TymTableInputComponent, provider, false, () => { });
+    const component = componentRef.instance as TymTableInputComponent;
+    return (component.vals.isEscape) ? val : component.vals.ret;
   }
 }
 let defs = [def];

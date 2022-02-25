@@ -1,5 +1,5 @@
 /*!
- * tym-directive.js
+ * tym-table-editor.js
  * Copyright (c) 2022 shinichi tayama
  * Released under the MIT license.
  * see https://opensource.org/licenses/MIT
@@ -60,7 +60,7 @@ td {
   padding: .2em .5em;
   white-space: nowrap;
   &.msel, &.crn, &[contentEditable]{
-    white-space: normal;
+    white-space: nowrap;
     word-break: break-all;
   }
   &.msel{

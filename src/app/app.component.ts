@@ -7,7 +7,7 @@ import { TymComm, TYM_COMM_LISTENER } from 'tym-directive';
 import { TymModalService } from "tym-modals";
 import { TymDialogComponent, TymMenuComponent, MenuItems, IconItems } from "tym-modals";
 import { TymTreeComponent, TYM_TREE, TYM_LEAF, TYM_TREE_OPTION } from "tym-tree";
-import { TymTableEditorComponent, TYM_EDITOR_DEF } from "tym-table-editor";
+import { TymTableEditorComponent, TymTableInputComponent, TYM_EDITOR_DEF } from "tym-table-editor";
 
 @Component({
   selector: 'app-root',
@@ -898,6 +898,13 @@ export class AppComponent {
   @ViewChild("tymTableEditor")
   private tymTableEditor?: TymTableEditorComponent;
 
+  private editinput = async (elm: HTMLElement, val: string, type?: string, col?: number): Promise<string> => {
+    const provider = TymTableInputComponent.provider(type || 'text', val, elm);
+    const componentRef = await this.modal.open(TymTableInputComponent, provider, false, () => { });
+    const component = componentRef.instance as TymTableInputComponent;
+    return (component.vals.isEscape) ? val : component.vals.ret;
+  }
+
   @Output() defs: TYM_EDITOR_DEF[] = [
     { col: 1, align: 'left' },
     { col: 2, align: 'center' },
@@ -912,13 +919,20 @@ export class AppComponent {
         console.log(type, col, val);
         return (val) ? '<' + val + '>' : '';
       }
-    }
+    },
+    { col: 5, align: 'right', type: 'number', editfnc: this.editinput },
+    { col: 6, align: 'center', type: 'date', editfnc: this.editinput },
+    { col: 7, align: 'center', type: 'datetime-local', editfnc: this.editinput },
+    { col: 8, align: 'center', type: 'time', editfnc: this.editinput },
+    { col: 9, align: 'left', type: 'tel', editfnc: this.editinput },
+    { col: 10, align: 'left', type: 'email', editfnc: this.editinput },
+    { col: 11, align: 'right', type: 'range', editfnc: this.editinput },
   ];
   @Output() editordata = [
-    [ 'data 1', 'data 2', 123,     ''],
-    [ '3',      '4',      12345,   'data data data data 4'],
-    [ '',       '',       1234567, 'data data data data 5']
-    ];
+    ['data 1', 'data 2', 123,     '', 'number', 'date', 'datetime-local', 'time', 'tel', 'email', 'range'],
+    ['3',      '4',      12345,   'data data data data 4'],
+    ['',       '',       1234567, 'data data data data 5']
+  ];
   @Output() editor_out() {
     console.log('editor_out');
     let data: string[][] = [], rows: string[] = [];

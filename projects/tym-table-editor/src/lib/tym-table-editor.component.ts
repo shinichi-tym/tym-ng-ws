@@ -1,5 +1,5 @@
 /*!
- * tym-directive.js
+ * tym-table-editor.js
  * Copyright (c) 2022 shinichi tayama
  * Released under the MIT license.
  * see https://opensource.org/licenses/MIT
@@ -20,7 +20,7 @@ export type TYM_EDITOR_DEF = {
   /** 値を表示文字に変換する関数 */
   viewfnc?: (val: string, type?: string, col?: number) => string;
   /** 値を編集する関数 *`please wait...`* */
-  editfnc?: (val: string, type?: string, col?: number) => Promise<string>;
+  editfnc?: (elm: HTMLElement, val: string, type?: string, col?: number) => Promise<string>;
 }
 
 @Component({
@@ -70,6 +70,7 @@ export class TymTableEditorComponent implements AfterViewInit {
     const maxcol = this.col;
     const nosels = { r1: -1, c1: -1, r2: -1, c2: -1 };
     const viewfncs = new Map<number, (val: string) => string>();
+    const editfncs = new Map<number, (elm: HTMLElement, val: string) => Promise<string>>();
     /**  0:not move, 1:cell, 2:col, 3:row */
     let mousemv: number = 0;
     let selects: { r1: number, c1: number, r2: number, c2: number } = { ...nosels };
@@ -140,7 +141,7 @@ export class TymTableEditorComponent implements AfterViewInit {
       }
     }
     //---------------------------------------------------------------
-    // ..
+    // 表示に変換してセルに設定(変換ありの場合は実値をdataset-valに保存)
     const setText = (elm: HTMLElement, col: number, val: string) => {
       const viewfnc = viewfncs.get(col);
       if (viewfnc) {
@@ -151,7 +152,7 @@ export class TymTableEditorComponent implements AfterViewInit {
       }
     }
     //---------------------------------------------------------------
-    // ..
+    // 実値を取得(変換ありの場合はdataset-valから取得)
     const text = (elm: HTMLElement): string =>
       (elm.dataset.val) ? elm.dataset.val : elm.innerText;
 
@@ -187,6 +188,9 @@ export class TymTableEditorComponent implements AfterViewInit {
         if (def.viewfnc) {
           viewfncs.set(def.col, (val: string) => def.viewfnc!(val, def.type, def.col))
         }
+        if (def.editfnc) {
+          editfncs.set(def.col, (elm: HTMLElement, val: string) => def.editfnc!(elm, val, def.type, def.col))
+        }
       });
     }
 
@@ -198,7 +202,7 @@ export class TymTableEditorComponent implements AfterViewInit {
       setRangeLast2(data.length, data[0].length);
       let r = 0, c = 0;
       execRange((elm, eol) => {
-        setText(elm, c + 1, data[r][c]);
+        setText(elm, c + 1, data[r][c] || '');
         if (eol) c = 0, r++; else c++
       });
     }
@@ -571,13 +575,13 @@ export class TymTableEditorComponent implements AfterViewInit {
     const editBlue = () => {
       const editElm = this.editElm;
       if (editElm) {
-        const thisValue = editElm.innerText;
+        const thisValue = text(editElm);
         editElm.removeEventListener('blur', editBlue);
         editElm.removeAttribute('contentEditable');
+        const [r, c] = getCellXY(editElm);
+        setText(editElm, c, thisValue);
         if (thisValue != beforeValue && beforeValue != null) {
-          const [r, c] = getCellXY(editElm);
           const hist = { r: r, c: c, b: beforeValue, a: thisValue };
-          setText(editElm, c, thisValue);
           addhists([hist]);
         }
       }
@@ -590,19 +594,31 @@ export class TymTableEditorComponent implements AfterViewInit {
      * @param td 対象エレメント
      */
     const toEdit = (td: HTMLTableCellElement) => {
+      const [r, c] = getCellXY(td);
+      const editfnc = editfncs.get(c);
       beforeValue = text(td);
-      td.innerText = beforeValue;
-      td.contentEditable = 'true';
-      const newtd = td.parentElement?.insertBefore(td.cloneNode(true), td) as HTMLElement;
-      setCurrent(newtd);
-      newtd.addEventListener('blur', editBlue);
-      const [sel, rng] = [window.getSelection(), document.createRange()];
-      rng.selectNodeContents(newtd);
-      sel?.removeAllRanges();
-      sel?.addRange(rng)
-      td.remove();
-      this.editElm = newtd;
-      return newtd;
+      if (editfnc) {
+        // 編集機能あり
+        editfnc(td, beforeValue).then(v => {
+          setText(td, c, v);
+          addhists([{ r: r, c: c, b: beforeValue!, a: v }]);
+        });
+        return td;
+      } else {
+        // 編集機能なし
+        td.innerText = beforeValue;
+        td.contentEditable = 'true';
+        const newtd = td.parentElement?.insertBefore(td.cloneNode(true), td) as HTMLElement;
+        setCurrent(newtd);
+        newtd.addEventListener('blur', editBlue);
+        const [sel, rng] = [window.getSelection(), document.createRange()];
+        rng.selectNodeContents(newtd);
+        sel?.removeAllRanges();
+        sel?.addRange(rng)
+        td.remove();
+        this.editElm = newtd;
+        return newtd;
+      }
     }
 
     /****************************************************************
