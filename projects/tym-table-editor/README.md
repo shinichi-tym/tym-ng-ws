@@ -164,8 +164,8 @@ export type TYM_EDITOR_DEF = {
   align?: 'left' | 'center' | 'right';
   /** 値を表示文字に変換する関数, 規定値: なし */
   viewfnc?: (val: string, type?: string, col?: number) => string;
-  /** 値を編集する関数, 規定値: なし  *`please wait...`* */
-  editfnc?: (val: string, type?: string, col?: number) => Promise<string>;
+  /** 値を編集する関数, 規定値: なし */
+  editfnc?: (elm: HTMLElement, val: string, type?: string, col?: number) => Promise<string | null>;
 }
 ```
 
@@ -332,11 +332,11 @@ let def: TYM_EDITOR_DEF = {
   col: 3,
   align: 'right',
   type: 'number',
-  editfnc: async (elm: HTMLElement, val: string, type?: string, col?: number): Promise<string> => {
+  editfnc: async (elm: HTMLElement, val: string, type?: string, col?: number): Promise<string | null> => {
     const provider = TymTableInputComponent.provider(type || 'text', val, elm);
     const componentRef = await this.modal.open(TymTableInputComponent, provider, false, () => { });
     const component = componentRef.instance as TymTableInputComponent;
-    return (component.vals.isEscape) ? val : component.vals.ret;
+    return (component.vals.isEscape) ? null : component.vals.ret;
   }
 }
 let defs = [def];
@@ -396,6 +396,30 @@ console.log(data);
     - false : 行中の最後以外のセル
 
 - [コールバック関数戻値]
+  - なし
+
+<br>
+
+> #### テーブルにデータを設定する関数
+
+<br>
+
+``` typescript
+let data: any[][] = [
+  [ 'data 1', 'data 2', 123,     ''],
+  [ '3',      '4',      12345,   'data data data data 4'],
+  [ '',       '',       1234567, 'data data data data 5']
+]; 
+this.tymTableEditor?.setData(data);
+```
+
+- 指定したデータをテーブルに設定する。
+
+- [引数]
+  - data: any[][]
+    - 設定するデータ
+
+- [戻値]
   - なし
 
 <br>

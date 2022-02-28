@@ -898,11 +898,11 @@ export class AppComponent {
   @ViewChild("tymTableEditor")
   private tymTableEditor?: TymTableEditorComponent;
 
-  private editinput = async (elm: HTMLElement, val: string, type?: string, col?: number): Promise<string> => {
+  private editinput = async (elm: HTMLElement, val: string, type?: string, col?: number): Promise<string | null> => {
     const provider = TymTableInputComponent.provider(type || 'text', val, elm);
     const componentRef = await this.modal.open(TymTableInputComponent, provider, false, () => { });
     const component = componentRef.instance as TymTableInputComponent;
-    return (component.vals.isEscape) ? val : component.vals.ret;
+    return (component.vals.isEscape) ? null : component.vals.ret;
   }
 
   @Output() defs: TYM_EDITOR_DEF[] = [
@@ -910,13 +910,11 @@ export class AppComponent {
     { col: 2, align: 'center' },
     {
       col: 3, align: 'right', type: 'number', viewfnc: (val: string, type?: string, col?: number) => {
-        console.log(type, col, val);
         return (val) ? parseInt(val).toLocaleString() : '';
       }
     },
     {
       col: 4, type: 'xyz', viewfnc: (val: string, type?: string, col?: number) => {
-        console.log(type, col, val);
         return (val) ? '<' + val + '>' : '';
       }
     },
@@ -946,5 +944,18 @@ export class AppComponent {
     }
     this.tymTableEditor?.getCells(3, 3, fnc);
     console.log(data);
+  }
+  @Output() set_data() {
+    let data: string[][] = [], rows: string[] = [];
+    const r = Math.floor(Math.random() * 50 + 1);
+    const c = Math.floor(Math.random() * 50 + 1);
+    for (let i = 0; i < r; i++) {
+      rows = [];
+      for (let j = 0; j < c; j++) {
+        rows.push(this._mkwords());
+      }
+      data.push([...rows]);
+    }
+    this.tymTableEditor?.setData(data);
   }
 }

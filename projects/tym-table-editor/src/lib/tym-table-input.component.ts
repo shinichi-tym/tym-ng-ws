@@ -66,6 +66,9 @@ export class TymTableInputComponent implements AfterViewInit, OnDestroy {
         divElm.dispatchEvent(new Event('click'));
         event.preventDefault();
       }
+      if (event.key == 'Tab') {
+        event.preventDefault();
+      }
     });
 
     const resize = () => {

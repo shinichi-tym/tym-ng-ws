@@ -1,6 +1,6 @@
 {
   "name": "tym-table-editor",
-  "version": "0.7.4",
+  "version": "0.7.5",
   "description": "'tym-table-editor' is a simple table editor component.",
   "keywords": ["angular", "table", "grid", "spreadsheet", "editor"],
   "repository": {

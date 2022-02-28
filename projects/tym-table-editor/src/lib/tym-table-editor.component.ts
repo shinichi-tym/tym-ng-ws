@@ -9,7 +9,7 @@ import { Component, AfterViewInit, ElementRef, Renderer2, Input } from '@angular
 
 const num2 = (n: number) => ('00' + (n + 1)).slice(-2);
 type HIST = { r: number, c: number, b: string, a: string };
-type HISTS = [HIST];
+type HISTS = HIST[];
 export type TYM_EDITOR_DEF = {
   /** 対象列番号(1～) */
   col: number;
@@ -20,7 +20,7 @@ export type TYM_EDITOR_DEF = {
   /** 値を表示文字に変換する関数 */
   viewfnc?: (val: string, type?: string, col?: number) => string;
   /** 値を編集する関数 *`please wait...`* */
-  editfnc?: (elm: HTMLElement, val: string, type?: string, col?: number) => Promise<string>;
+  editfnc?: (elm: HTMLElement, val: string, type?: string, col?: number) => Promise<string | null>;
 }
 
 @Component({
@@ -64,13 +64,14 @@ export class TymTableEditorComponent implements AfterViewInit {
     const thisElm = this.thisElm;
     const tableElm = thisElm.firstElementChild as HTMLElement;
     const tbodyElm = tableElm.firstElementChild as HTMLElement;
+    const contentName = tableElm.attributes[0].name;
     //---------------------------------------------------------------
     // ..
     const maxrow = this.row;
     const maxcol = this.col;
     const nosels = { r1: -1, c1: -1, r2: -1, c2: -1 };
     const viewfncs = new Map<number, (val: string) => string>();
-    const editfncs = new Map<number, (elm: HTMLElement, val: string) => Promise<string>>();
+    const editfncs = new Map<number, (elm: HTMLElement, val: string) => Promise<string | null>>();
     /**  0:not move, 1:cell, 2:col, 3:row */
     let mousemv: number = 0;
     let selects: { r1: number, c1: number, r2: number, c2: number } = { ...nosels };
@@ -141,7 +142,16 @@ export class TymTableEditorComponent implements AfterViewInit {
       }
     }
     //---------------------------------------------------------------
-    // 表示に変換してセルに設定(変換ありの場合は実値をdataset-valに保存)
+    // clear selection range
+    const clearRange = (clear?: boolean) => {
+      execRange((elm) => elm.classList.remove('msel'));
+      if (clear) selects = { ...nosels };
+    }
+    //---------------------------------------------------------------
+    // clear selection range
+    const drawRange = () => execRange((elm) => elm.classList.add('msel'));
+    //---------------------------------------------------------------
+    // set converted text to cell (if converted, save to dataset-val)
     const setText = (elm: HTMLElement, col: number, val: string) => {
       const viewfnc = viewfncs.get(col);
       if (viewfnc) {
@@ -152,9 +162,40 @@ export class TymTableEditorComponent implements AfterViewInit {
       }
     }
     //---------------------------------------------------------------
-    // 実値を取得(変換ありの場合はdataset-valから取得)
+    // get real text (if converted, restore from dataset-val)
     const text = (elm: HTMLElement): string =>
       (elm.dataset.val) ? elm.dataset.val : elm.innerText;
+    //---------------------------------------------------------------
+    // set data to table
+    const setData = (data: any[][], clear: boolean = true) => {
+      if (clear) {
+        clearData();
+      }
+      const maxcol = data.reduce((a, b) => a.length > b.length ? a : b);
+      setRangeFirst2(1, 1);
+      setRangeLast2(data.length, maxcol.length);
+      let r = 0, c = 0;
+      execRange((elm, eol) => {
+        setText(elm, c + 1, data[r][c] || '');
+        if (eol) c = 0, r++; else c++
+      });
+    }
+    this.setData = setData;
+    //---------------------------------------------------------------
+    // clear all data in table (including history)
+    const clearData = () => {
+      tbodyElm.childNodes.forEach(tr => {
+        const _tr = tr as HTMLTableRowElement;
+        if (_tr.rowIndex > 0) tr.childNodes.forEach(cell => {
+          const td = cell as HTMLTableCellElement;
+          if (td.cellIndex > 0) td.innerText = '';
+        });
+      });
+      this.history.length = 0;
+      this.history_pos = -1;
+      this.history_dwn = false;
+      clearRange(true);
+    }
 
     //---------------------------------------------------------------
     // create : table - tbody - [1st tr:header - th]
@@ -183,7 +224,7 @@ export class TymTableEditorComponent implements AfterViewInit {
             styleElm = createElm('style');
             thisElm.append(styleElm);
           }
-          styleElm.innerText += `td:nth-child(${def.col + 1}){text-align:${def.align};}`;
+          styleElm.innerText += `td[${contentName}]:nth-child(${def.col + 1}){text-align:${def.align};}`;
         }
         if (def.viewfnc) {
           viewfncs.set(def.col, (val: string) => def.viewfnc!(val, def.type, def.col))
@@ -196,16 +237,7 @@ export class TymTableEditorComponent implements AfterViewInit {
 
     //---------------------------------------------------------------
     // set cell data
-    {
-      const data = this.data || [['']];
-      setRangeFirst2(1, 1);
-      setRangeLast2(data.length, data[0].length);
-      let r = 0, c = 0;
-      execRange((elm, eol) => {
-        setText(elm, c + 1, data[r][c] || '');
-        if (eol) c = 0, r++; else c++
-      });
-    }
+    setData(this.data || [['']], false);
 
     //---------------------------------------------------------------
     // set width
@@ -217,16 +249,6 @@ export class TymTableEditorComponent implements AfterViewInit {
       }
     });
     tableElm.style.width = 'fit-content';
-
-    //---------------------------------------------------------------
-    // clear selection range
-    const clearRange = (clear?: boolean) => {
-      execRange((elm) => elm.classList.remove('msel'));
-      if (clear) selects = { ...nosels };
-    }
-    //---------------------------------------------------------------
-    // clear selection range
-    const drawRange = () => execRange((elm) => elm.classList.add('msel'));
 
     //---------------------------------------------------------------
     // mouse down event
@@ -302,7 +324,7 @@ export class TymTableEditorComponent implements AfterViewInit {
     tableElm.addEventListener('keypress', e => {
       const td = e.target as HTMLTableCellElement;
       if (!this.editElm) {
-        toEdit(td);
+        toEdit(td, e.key);
       }
     });
     //---------------------------------------------------------------
@@ -445,7 +467,7 @@ export class TymTableEditorComponent implements AfterViewInit {
       }
       //-------------------------------------------------------------
       /** 選択範囲を消す                                            */
-      const clearTexts = (): void => {
+      const deleteTexts = (): void => {
         let hists: any = [];
         execRange(elm => {
           const [r, c] = getCellXY(elm);
@@ -503,7 +525,7 @@ export class TymTableEditorComponent implements AfterViewInit {
             e.preventDefault();
             break;
           case 'Backspace':
-            const newtd = toEdit(thisCell);
+            const newtd = toEdit(thisCell, '');
             setText(newtd, thisColIx, '');
             e.preventDefault();
             break;
@@ -512,14 +534,14 @@ export class TymTableEditorComponent implements AfterViewInit {
               // cut
               navigator.clipboard.writeText(getTexts());
             }
-            clearTexts();
+            deleteTexts();
             e.preventDefault();
             break;
           case 'x':
             if (e.ctrlKey) {
               // cut
               navigator.clipboard.writeText(getTexts());
-              clearTexts();
+              deleteTexts();
               e.preventDefault();
             }
             break;
@@ -593,15 +615,17 @@ export class TymTableEditorComponent implements AfterViewInit {
      * 対象セルを編集モードにする
      * @param td 対象エレメント
      */
-    const toEdit = (td: HTMLTableCellElement) => {
+    const toEdit = (td: HTMLTableCellElement, val?: string) => {
       const [r, c] = getCellXY(td);
       const editfnc = editfncs.get(c);
       beforeValue = text(td);
       if (editfnc) {
         // 編集機能あり
-        editfnc(td, beforeValue).then(v => {
-          setText(td, c, v);
-          addhists([{ r: r, c: c, b: beforeValue!, a: v }]);
+        editfnc(td, val || beforeValue).then(v => {
+          if (v != null) {
+            setText(td, c, v);
+            addhists([{ r: r, c: c, b: beforeValue!, a: v }]);
+          }
         });
         return td;
       } else {
@@ -707,4 +731,11 @@ export class TymTableEditorComponent implements AfterViewInit {
       }
     }
   }
+
+  /******************************************************************
+   * テーブルにデータを設定する
+   * @param data 設定するデータ
+   */
+  public setData!: (data: any[][]) => void;
+
 }
