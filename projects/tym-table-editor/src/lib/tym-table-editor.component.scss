@@ -83,9 +83,9 @@ td {
       repeating-linear-gradient(90deg, var(--ani)),
       repeating-linear-gradient(180deg,var(--ani)),
       repeating-linear-gradient(270deg, var(--ani));
-    background-size: 2px 120%, 120% 2px, 2px 120%, 120% 2px;
+    background-size: 2px 200%, 200% 2px, 2px 200%, 200% 2px;
     background-repeat: no-repeat;
-    animation: boxBorderAnimation 1s infinite linear;
+    animation: boxBorderAnimation .5s infinite linear;
     @keyframes boxBorderAnimation {
       from {background-position: 0 0, -20px 0, 100% -20px, 0 100%}
       to {background-position: 0 -20px, 0 0, 100% 0, -20px 100%}

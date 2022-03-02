@@ -1,8 +1,8 @@
 {
   "name": "tym-table-editor",
-  "version": "0.7.5",
+  "version": "0.7.6",
   "description": "'tym-table-editor' is a simple table editor component.",
-  "keywords": ["angular", "table", "grid", "spreadsheet", "editor"],
+  "keywords": ["angular", "table", "grid", "spreadsheet", "editor", "undo", "redo"],
   "repository": {
     "type": "git",
     "url": "https://github.com/shinichi-tym/tym-ng-ws.git"

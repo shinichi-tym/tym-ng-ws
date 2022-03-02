@@ -567,17 +567,20 @@ uptext:<input type="text" #treetext size="10" value="up text"><br>
 
 <br>
 
-<div class="tblbase tymTable">
+<div class="tblbase tymTable" style="border:solid 1px">
 <ngx-tym-table-editor #tymTableEditor
   [defs]="defs"
-  [data]="editordata"
+  [data]="editordata()"
 ></ngx-tym-table-editor>
 </div>
 
 <br>
 
+<input type="button" (click)="reset_data()" value="reset_data">
 <input type="button" (click)="editor_out()" value="editor_out">
 <input type="button" (click)="set_data()" value="set_data">
+<input type="button" (click)="set_range()" value="set_range">
+<input type="button" (click)="clear_data()" value="clear_data">
 
 <br>
 <br>

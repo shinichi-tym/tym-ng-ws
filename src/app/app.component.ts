@@ -926,11 +926,16 @@ export class AppComponent {
     { col: 10, align: 'left', type: 'email', editfnc: this.editinput },
     { col: 11, align: 'right', type: 'range', editfnc: this.editinput },
   ];
-  @Output() editordata = [
-    ['data 1', 'data 2', 123,     '', 'number', 'date', 'datetime-local', 'time', 'tel', 'email', 'range'],
-    ['3',      '4',      12345,   'data data data data 4'],
-    ['',       '',       1234567, 'data data data data 5']
-  ];
+  @Output() editordata = () => {
+    return [
+      ['data 1', 'data 2', 123,     '', 'number', 'date', 'datetime-local', 'time', 'tel', 'email', 'range'],
+      ['3',      '4',      12345,   'data data data data 4'],
+      ['',       '',       1234567, 'data data data data 5']
+    ];
+  }
+  @Output() reset_data() {
+    this.tymTableEditor?.setData(this.editordata());
+  }
   @Output() editor_out() {
     console.log('editor_out');
     let data: string[][] = [], rows: string[] = [];
@@ -947,8 +952,8 @@ export class AppComponent {
   }
   @Output() set_data() {
     let data: string[][] = [], rows: string[] = [];
-    const r = Math.floor(Math.random() * 50 + 1);
-    const c = Math.floor(Math.random() * 50 + 1);
+    const r = Math.floor(Math.random() * 130 + 1);
+    const c = Math.floor(Math.random() * 130 + 1);
     for (let i = 0; i < r; i++) {
       rows = [];
       for (let j = 0; j < c; j++) {
@@ -957,5 +962,25 @@ export class AppComponent {
       data.push([...rows]);
     }
     this.tymTableEditor?.setData(data);
+    console.log(this.tymTableEditor?.getData(r, c));
+  }
+  @Output() set_range() {
+    let data: string[][] = [], rows: string[] = [];
+    const rn = Math.floor(Math.random() * 5 + 1);
+    const cn = Math.floor(Math.random() * 5 + 1);
+    const r = Math.floor(Math.random() * 5 + 1);
+    const c = Math.floor(Math.random() * 5 + 1);
+    for (let i = 0; i < rn; i++) {
+      rows = [];
+      for (let j = 0; j < cn; j++) {
+        rows.push(this._mkwords());
+      }
+      data.push([...rows]);
+    }
+    this.tymTableEditor?.setData(data, r, c);
+    console.log(this.tymTableEditor?.getData(r, c, r + rn - 1, c + cn - 1));
+  }
+  @Output() clear_data() {
+    this.tymTableEditor?.setData([['']]);
   }
 }

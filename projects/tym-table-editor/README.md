@@ -143,6 +143,7 @@ let data = [
     [col]="col"
     [defs]="defs"
     [data]="data"
+    [menu]="menu"
 ></ngx-tym-table-editor>
 ```
 
@@ -172,6 +173,9 @@ export type TYM_EDITOR_DEF = {
 - `data: string[][]`
   - 表示するデータ
 
+- `menu: (e: MouseEvent, row1: number, col1: number, row2: number, col2: number): boolean`
+  - コンテキストメニューイベント処理 *`please wait...`*
+
 <br>
 
 ---
@@ -200,6 +204,7 @@ export type TYM_EDITOR_DEF = {
   文字列は, 単純文字列またはタブ文字/改行文字区切りの文字群。
 - `Ctrl+z`キーで変更を元に戻します。
 - `Ctrl+y`, `Ctrl+Shift+z`キーで元に戻した変更をやり直します。
+- `Escape`キー 2回 でクリップボードを消去します。
 - その他のキーで **編集モード** になり, 入力した文字に置き換えます。
 
 [編集モード]
@@ -411,16 +416,54 @@ let data: any[][] = [
   [ '',       '',       1234567, 'data data data data 5']
 ]; 
 this.tymTableEditor?.setData(data);
+this.tymTableEditor?.setData(data, row1, col1);
 ```
 
 - 指定したデータをテーブルに設定する。
+- `row1, col1`を指定すると, 指定位置から設定する。
 
 - [引数]
   - data: any[][]
     - 設定するデータ
+  - row1: number
+    - 取得する開始行数
+  - col1: number
+    - 取得する開始列数
 
 - [戻値]
   - なし
+
+<br>
+
+> #### テーブルからデータを取得する関数
+
+<br>
+
+``` typescript
+let data  = this.tymTableEditor?.getData(rownum, colnum);
+let range = this.tymTableEditor?.getData(row1, col1, row2, col2);
+```
+
+- `rownum, colnum`を指定すると, 先頭から指定した範囲のデータを取得する。
+- `row1, col1, row2, col2`を指定すると, 指定した範囲のデータを取得する。
+
+- [引数]
+  - rownum: number
+    - 取得する行数
+  - colnum: number
+    - 取得する列数
+  - row1: number
+    - 取得する開始行数
+  - col1: number
+    - 取得する開始列数
+  - row2: number
+    - 取得する終了行数
+  - col2: number
+    - 取得する終了列数
+
+- [戻値]
+  - data: any[][]
+    - 取得したデータ
 
 <br>
 
