@@ -910,7 +910,7 @@ export class AppComponent {
     { col: 2, align: 'center' },
     {
       col: 3, align: 'right', type: 'number', viewfnc: (val: string, type?: string, col?: number) => {
-        return (val) ? parseInt(val).toLocaleString() : '';
+        return Number.isInteger(val) ? parseInt(val).toLocaleString() : val;
       }
     },
     {
@@ -950,6 +950,60 @@ export class AppComponent {
     this.tymTableEditor?.getCells(3, 3, fnc);
     console.log(data);
   }
+  @Output() editor_menu = (event: MouseEvent, row1: number, col1: number, row2: number, col2: number) => {
+    const menu: MenuItems = [
+      [['row', false],
+       ['insert', true], ['remove', true]],
+      [['cell', false],
+       ['copy', false], ['paste', false], ['clear', true]],
+    ];
+    TymMenuComponent.MENU_DEFS = {
+      'row': {
+        '': '行',
+        'insert': '行挿入',
+        'remove': '行削除'
+      },
+      'cell': {
+        '': 'セル',
+        'copy': 'コピー',
+        'paste': '貼り付け',
+        'clear': '消去'
+      },
+    };
+    const provider = TymMenuComponent.provider(
+      menu,
+      (gid: string, id: string) => {
+        switch (gid) {
+          case 'row':
+            switch (id) {
+              case 'insert':
+                this.tymTableEditor?.insertRow(row1);
+                break;
+              case 'remove':
+                this.tymTableEditor?.removeRow(row1);
+                break;
+            }
+            break;
+          case 'cell':
+            switch (id) {
+              case 'copy':
+                break;
+              case 'paste':
+                break;
+              case 'clear':
+                this.tymTableEditor?.setData(
+                  Array(row2 - row1 + 1).fill(Array(col2 - col1 + 1).fill('')), row1, col1);
+                break;
+            }
+            break;
+        }
+      },
+      event.clientX, event.clientY
+    );
+    this.modal.open(TymMenuComponent, provider, false);
+    event.stopPropagation();
+    return true;
+  }
   @Output() set_data() {
     let data: string[][] = [], rows: string[] = [];
     const r = Math.floor(Math.random() * 130 + 1);
@@ -965,22 +1019,28 @@ export class AppComponent {
     console.log(this.tymTableEditor?.getData(r, c));
   }
   @Output() set_range() {
-    let data: string[][] = [], rows: string[] = [];
+    let data: string[][] = [], cols: string[] = [];
     const rn = Math.floor(Math.random() * 5 + 1);
     const cn = Math.floor(Math.random() * 5 + 1);
     const r = Math.floor(Math.random() * 5 + 1);
     const c = Math.floor(Math.random() * 5 + 1);
     for (let i = 0; i < rn; i++) {
-      rows = [];
+      cols = [];
       for (let j = 0; j < cn; j++) {
-        rows.push(this._mkwords());
+        cols.push(this._mkwords());
       }
-      data.push([...rows]);
+      data.push([...cols]);
     }
     this.tymTableEditor?.setData(data, r, c);
     console.log(this.tymTableEditor?.getData(r, c, r + rn - 1, c + cn - 1));
   }
   @Output() clear_data() {
     this.tymTableEditor?.setData([['']]);
+  }
+  @Output() insert_row() {
+    this.tymTableEditor?.insertRow(2);
+  }
+  @Output() remove_row() {
+    this.tymTableEditor?.removeRow(2);
   }
 }

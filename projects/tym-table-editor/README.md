@@ -63,7 +63,7 @@ import { TYM_EDITOR_DEF } from "tym-table-editor";
   private tymTableEditor?: TymTableEditorComponent;
   :
   // 
-  this.tymTableEditor?getCells(...);
+  this.tymTableEditor?.getCells(...);
 ```
 
 TymModalService / TymTableInputComponent を利用できるようにします。
@@ -117,7 +117,7 @@ let data = [
 - [セル形式](#セル形式) (Cell Type)
 - [表示文字編集機能](#表示文字編集機能) (String Formatter)
 - [文字編集機能切替](#文字編集機能切替) (Switching String Editor)
-- [コンテキストイベント](#コンテキストイベント) (Contextmenu event) *`please wait...`*
+- [コンテキストイベント](#コンテキストイベント) (Contextmenu event)
 - *`please wait...`*
 
 <br>
@@ -134,7 +134,7 @@ let data = [
 
 <br>
 
-- row, col, data 値を指定すると，その値に従ってテーブルを表示します。
+- `row, col, data` 値を指定すると，その値に従ってテーブルを表示します。
 
 - [定義]
 ``` html
@@ -173,8 +173,8 @@ export type TYM_EDITOR_DEF = {
 - `data: string[][]`
   - 表示するデータ
 
-- `menu: (e: MouseEvent, row1: number, col1: number, row2: number, col2: number): boolean`
-  - コンテキストメニューイベント処理 *`please wait...`*
+- `menu: (event: MouseEvent, row1: number, col1: number, row2: number, col2: number): boolean`
+  - コンテキストメニューイベント関数
 
 <br>
 
@@ -240,7 +240,7 @@ export type TYM_EDITOR_DEF = {
 
 <br>
 
-- 行ヘッダー, 列ヘッダーをマウスでリサイズできます。
+- 行ヘッダー, 列ヘッダーをマウスでリサイズできます(not firefox)。
 - 列ヘッダーをダブルクリックすると, 文字の長さによって, セルの幅を広げます(上限あり)。
 
 <br>
@@ -287,15 +287,16 @@ export type TYM_EDITOR_DEF = {
 
 - `defs[n].viewfnc`に表示文字編集する関数を指定できます。
 - [引数]
-  - val: string
+  - `val: string`
     - 対象セルのオリジナルの文字
-  - type: string
+  - `type: string`
     - `defs[n].type`に指定した文字
-  - col: number
+  - `col: number`
     - 対象セルの列番号
 
 - [戻値]
-  - 編集後の文字
+  - `val: string`
+    - 編集後の文字
 
 ``` typescript
 // 例
@@ -305,7 +306,7 @@ let def: TYM_EDITOR_DEF = {
   type: 'number',
   viewfnc: (val: string, type?: string, col?: number) => {
     console.log(type, col, val);
-    return (val) ? parseInt(val).toLocaleString() : '';
+    return  Number.isInteger(val) ? parseInt(val).toLocaleString() : val;
   }
 }
 let defs = [def];
@@ -319,17 +320,18 @@ let defs = [def];
 
 - `defs[n].editfnc`に文字編集する関数を指定できます。
 - [引数]
-  - elm: HTMLElement
+  - `elm: HTMLElement`
     - 対象セルのエレメント
-  - val: string
+  - `val: string`
     - 対象セルのオリジナルの文字
-  - type: string
+  - `type: string`
     - `defs[n].type`に指定した文字
-  - col: number
+  - `col: number`
     - 対象セルの列番号
 
 - [戻値]
-  - 編集後の文字
+  - `val: string | null`
+    - 編集後の文字, `null`の場合は反映されません  
 
 ``` typescript
 // TymModalService / TymTableInputComponent を利用した例
@@ -349,11 +351,68 @@ let defs = [def];
 
 <br>
 
+> ### コンテキストイベント
+
+<br>
+
+- `menu` に イベント関数を設定します。右クリックすると実行されます。
+- [引数]
+  - `event: MouseEvent`
+    - 対象セルのエレメント
+  - `row1, col1: number`
+    - 対象セルのオリジナルの文字
+  - `row2, col2: number`
+    - 対象セルのオリジナルの文字
+
+- [戻値]
+  - `true  :` イベント有効
+  - `false :` イベント無効
+
+``` typescript
+// TymMenuComponent を利用した例
+import { TymMenuComponent } from "tym-modals";
+  :
+editor_menu = (event: MouseEvent, row1: number, col1: number, row2: number, col2: number) => {
+  TymMenuComponent.MENU_DEFS = {
+    'row': {
+      '': '行',
+      'insert': '行挿入',
+      'remove': '行削除'
+    },
+  };
+  const provider = TymMenuComponent.provider(
+    [[['row', false], ['insert', true], ['remove', true]]],
+    (gid: string, id: string) => {
+      if (id == 'insert') this.tymTableEditor?.insertRow(row1);
+      if (id == 'remove') this.tymTableEditor?.removeRow(row1);
+    },
+    event.clientX, event.clientY
+  );
+  this.modal.open(TymMenuComponent, provider, false);
+  event.stopPropagation();
+  return true;
+}
+```
+
+<br>
+
 ---
 
 <br>
 
 > ### 公開関数
+
+<br>
+
+- [セルの文字列を取得する関数](#セルの文字列を取得する関数) (getCells)
+- [テーブルにデータを設定する関数](#テーブルにデータを設定する関数) (setData)
+- [テーブルからデータを取得する関数](#テーブルからデータを取得する関数) (getData)
+- [テーブルに行を挿入する](#テーブルに行を挿入する) (insertRow)
+- [テーブルから行を削除する](#テーブルから行を削除する) (removeRow)
+- [テーブルに列の挿入する] *`please wait...`*
+- [テーブルに列の削除する] *`please wait...`*
+- [テキストをコピーする] *`please wait...`*
+- [テキストを貼り付ける] *`please wait...`*
 
 <br>
 
@@ -379,26 +438,26 @@ console.log(data);
 - 指定した 行数 x 列数 回コールバック関数を呼び出す。
 
 - [引数]
-  - rownum: number
+  - `rownum: number`
     - 取得する行数
-  - colnum: number
+  - `colnum: number`
     - 取得する列数
-  - fnc: function
+  - `fnc: function`
     - 取得用コールバック関数
 
 - [戻値]
   - なし
 
 - [コールバック関数引数]
-  - row: number
-    - 行位置
-  - col: number
-    - 列位置
-  - val: string
+  - `row: number`
+    - 行番号
+  - `col: number`
+    - 列番号
+  - `val: string`
     - セル値
-  - eol: boolean
-    - true  : 行中の最後のセル
-    - false : 行中の最後以外のセル
+  - `eol: boolean`
+    - `true  :` 行中の最後のセル
+    - `false :` 行中の最後以外のセル
 
 - [コールバック関数戻値]
   - なし
@@ -423,12 +482,12 @@ this.tymTableEditor?.setData(data, row1, col1);
 - `row1, col1`を指定すると, 指定位置から設定する。
 
 - [引数]
-  - data: any[][]
+  - `data: any[][]`
     - 設定するデータ
-  - row1: number
-    - 取得する開始行数
-  - col1: number
-    - 取得する開始列数
+  - `row1: number`
+    - 取得する開始行番号
+  - `col1: number`
+    - 取得する開始列番号
 
 - [戻値]
   - なし
@@ -448,22 +507,80 @@ let range = this.tymTableEditor?.getData(row1, col1, row2, col2);
 - `row1, col1, row2, col2`を指定すると, 指定した範囲のデータを取得する。
 
 - [引数]
-  - rownum: number
+  - `rownum: number`
     - 取得する行数
-  - colnum: number
+  - `colnum: number`
     - 取得する列数
-  - row1: number
-    - 取得する開始行数
-  - col1: number
-    - 取得する開始列数
-  - row2: number
-    - 取得する終了行数
-  - col2: number
-    - 取得する終了列数
+  - `row1: number`
+    - 取得する開始行番号
+  - `col1: number`
+    - 取得する開始列番号
+  - `row2: number`
+    - 取得する終了行番号
+  - `col2: number`
+    - 取得する終了列番号
 
 - [戻値]
-  - data: any[][]
+  - `data: any[][]`
     - 取得したデータ
+
+<br>
+
+> #### テーブルに行を挿入する
+
+<br>
+
+``` typescript
+insertRow(row);
+```
+
+- 指定した行番号の行の前に行を挿入する。
+
+- [引数]
+  - `row: number`
+    - 挿入する行番号
+
+- [戻値]
+  なし
+
+<br>
+
+> #### テーブルから行を削除する
+
+<br>
+
+``` typescript
+removeRow(row);
+```
+
+- 指定した行番号の行を削除する。
+
+- [引数]
+  - `row: number`
+    - 削除する行番号
+
+- [戻値]
+  なし
+
+<br>
+
+> #### テーブルに列の挿入する
+ *`please wait...`*
+
+<br>
+
+> #### テーブルに列の削除する
+ *`please wait...`*
+
+<br>
+
+> #### テキストをコピーする
+*`please wait...`*
+
+<br>
+
+> #### テキストを貼り付ける
+*`please wait...`*
 
 <br>
 
