@@ -306,7 +306,7 @@ let def: TYM_EDITOR_DEF = {
   type: 'number',
   viewfnc: (val: string, type?: string, col?: number) => {
     console.log(type, col, val);
-    return  Number.isInteger(val) ? parseInt(val).toLocaleString() : val;
+    return /^[+,-]?([0-9]\d*|0)$/.test(val) ? parseInt(val).toLocaleString() : val;
   }
 }
 let defs = [def];
@@ -409,10 +409,13 @@ editor_menu = (event: MouseEvent, row1: number, col1: number, row2: number, col2
 - [テーブルからデータを取得する関数](#テーブルからデータを取得する関数) (getData)
 - [テーブルに行を挿入する](#テーブルに行を挿入する) (insertRow)
 - [テーブルから行を削除する](#テーブルから行を削除する) (removeRow)
-- [テーブルに列の挿入する] *`please wait...`*
-- [テーブルに列の削除する] *`please wait...`*
-- [テキストをコピーする] *`please wait...`*
-- [テキストを貼り付ける] *`please wait...`*
+- [テーブルに列の挿入する](#テーブルに列の挿入する) (insertCol)
+- [テーブルに列の削除する](#テーブルに列の削除する) (insertCol)
+- [テキストをコピーする](#テキストをコピーする) (copy)
+- [テキストを貼り付ける](#テキストを貼り付ける) (paste)
+- [テキストを消去する](#テキストを消去する) (delete)
+- [編集を元に戻す](#編集を元に戻す) (undo)
+- [編集をやり直す](#編集をやり直す) (redo)
 
 <br>
 
@@ -565,22 +568,134 @@ removeRow(row);
 <br>
 
 > #### テーブルに列の挿入する
- *`please wait...`*
+
+<br>
+
+``` typescript
+insertCol(col);
+let def = { col: col, align: 'right' }
+insertCol(col, def);
+```
+
+- 指定した列番号の列の前に列を挿入する。
+
+- [引数]
+  - `col: number`
+    - 挿入する列番号
+  - `def: TYM_EDITOR_DEF`
+    - 定義情報
+
+- [戻値]
+  なし
 
 <br>
 
 > #### テーブルに列の削除する
- *`please wait...`*
+
+<br>
+
+``` typescript
+removeCol(col);
+```
+
+- 指定した列番号の列を削除する。
+
+- [引数]
+  - `col: number`
+    - 削除する列番号
+
+- [戻値]
+  なし
 
 <br>
 
 > #### テキストをコピーする
-*`please wait...`*
+
+<br>
+
+``` typescript
+copy();
+```
+
+- 選択範囲のセルをコピーする。
+
+- [引数]
+  なし
+
+- [戻値]
+  なし
 
 <br>
 
 > #### テキストを貼り付ける
-*`please wait...`*
+
+<br>
+
+``` typescript
+paste();
+```
+
+- カレントセルから貼り付ける。
+
+- [引数]
+  なし
+
+- [戻値]
+  なし
+
+<br>
+
+> #### テキストを消去する
+
+<br>
+
+``` typescript
+delete();
+```
+
+- 選択範囲のテキストを消去する。
+
+- [引数]
+  なし
+
+- [戻値]
+  なし
+
+<br>
+
+> #### 編集を元に戻す
+
+<br>
+
+``` typescript
+undo();
+```
+
+- 編集内容をもとに戻す。
+
+- [引数]
+  なし
+
+- [戻値]
+  なし
+
+<br>
+
+> #### 編集をやり直す
+
+<br>
+
+``` typescript
+redo();
+```
+
+- 編集内容をやり直す。
+
+- [引数]
+  なし
+
+- [戻値]
+  なし
 
 <br>
 

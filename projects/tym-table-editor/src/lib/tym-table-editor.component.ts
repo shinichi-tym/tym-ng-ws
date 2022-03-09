@@ -8,7 +8,7 @@
 import { Component, AfterViewInit, ElementRef, Renderer2, Input } from '@angular/core';
 
 const num2 = (n: number) => ('00' + n).slice(-2);
-type HIST = { r: number, c: number, b: string, a: string };
+type HIST = { r: number, c: number, b: string, a: string, d?: TYM_EDITOR_DEF };
 type HISTS = HIST[];
 type RANGE = { r1: number, c1: number, r2: number, c2: number };
 export type TYM_EDITOR_DEF = {
@@ -66,8 +66,7 @@ export class TymTableEditorComponent implements AfterViewInit {
     const maxrow = this.row;
     const maxcol = this.col;
     const nosels = { r1: -1, c1: -1, r2: -1, c2: -1 };
-    const viewfncs = new Map<number, (val: string) => string>();
-    const editfncs = new Map<number, (elm: HTMLElement, val: string) => Promise<string | null>>();
+    const editordefs = new Map<number, TYM_EDITOR_DEF>();
     /**  0:not move, 1:cell, 2:col, 3:row */
     let mousemv: number = 0;
     let selects: RANGE = { ...nosels };
@@ -96,17 +95,59 @@ export class TymTableEditorComponent implements AfterViewInit {
     //---------------------------------------------------------------
     // create th element
     const createTh = (tx: string) => {
-      const th = createElm('th');
+      const th = createElm('th') as HTMLTableCellElement;
       th.innerText = tx;
       return th;
     }
     //---------------------------------------------------------------
     // create td element
     const createTd = () => {
-      const td = createElm('td');
+      const td = createElm('td') as HTMLTableCellElement;
       td.tabIndex = -1;
       return td;
     }
+    //---------------------------------------------------------------
+    // get TYM_EDITOR_DEF
+    const _getEditorDef = (th: HTMLTableCellElement) =>
+      th.onprogress!(new ProgressEvent('')) as TYM_EDITOR_DEF | undefined;
+    const getEditorDef = (td: HTMLTableCellElement) =>
+      _getEditorDef(headTrElm.children[td.cellIndex] as HTMLTableCellElement);
+    //---------------------------------------------------------------
+    // get editFunc
+    const getEditFunc = (td: HTMLTableCellElement) => {
+      const def = getEditorDef(td);
+      return (def?.editfnc)
+        ? (td: HTMLTableCellElement, val: string) => def.editfnc!(td, val, def.type)
+        : undefined;
+    }
+    //---------------------------------------------------------------
+    // get viewFunc
+    const getViewFunc = (td: HTMLTableCellElement) => {
+      const def = getEditorDef(td);
+      return (def?.viewfnc) ? (val: string) => def.viewfnc!(val, def.type) : undefined;
+    }
+    //---------------------------------------------------------------
+    // get align style
+    const getAlignStyle = (td: HTMLTableCellElement) => {
+      const align = getEditorDef(td)?.align;
+      return (align) ? `td[${contentName}]:nth-child(${td.cellIndex + 1}){text-align:${align};}` : '';
+    }
+    //---------------------------------------------------------------
+    // get style texts
+    const getStyleText = () =>
+      Array.from(headTrElm.children).map(th => getAlignStyle(th as HTMLTableCellElement)).join('');
+    //---------------------------------------------------------------
+    // create header th element
+    const createRowTh = (col: number, def?: TYM_EDITOR_DEF) => {
+      const tx = num2(col);
+      const th = createTh(tx);
+      th.onprogress = (e: Event) => {
+        const _editordef = { ...def }
+        return _editordef;
+      };
+      return th;
+    }
+
     //---------------------------------------------------------------
     // ..
     const classlist = (elm: HTMLElement) => elm.classList;
@@ -174,8 +215,8 @@ export class TymTableEditorComponent implements AfterViewInit {
      * @param col 列番号
      * @param val 値
      */
-    const setText = (elm: HTMLElement, col: number, val: string) => {
-      const viewfnc = viewfncs.get(col);
+    const setText = (elm: HTMLTableCellElement, col: number, val: string) => {
+      const viewfnc = getViewFunc(elm);
       elm.innerText = (viewfnc) ? viewfnc(elm.dataset.val = val) : val;
     }
     /****************************************************************
@@ -183,7 +224,7 @@ export class TymTableEditorComponent implements AfterViewInit {
      * @param elm 対象エレメント
      * @returns 値
      */
-    const text = (elm: HTMLElement): string => elm.dataset.val || elm.innerText;
+    const text = (elm: HTMLTableCellElement): string => elm.dataset.val || elm.innerText;
     /****************************************************************
      * set data to table
      * @param data データ
@@ -252,10 +293,18 @@ export class TymTableEditorComponent implements AfterViewInit {
     }
     //---------------------------------------------------------------
     // renumber row header
-    const renumber = () => {
+    const renumberRow = () => {
       for (let index = 1; index <= maxrow; index++) {
         const tr = tbodyElm.childNodes[index] as HTMLTableRowElement;
         const th = tr.firstElementChild as HTMLTableCellElement;
+        th.innerText = num2(index);
+      }
+    }
+    //---------------------------------------------------------------
+    // renumber col header
+    const renumberCol = () => {
+      for (let index = 1; index <= maxcol; index++) {
+        const th = headTrElm.childNodes[index] as HTMLTableCellElement;
         th.innerText = num2(index);
       }
     }
@@ -270,56 +319,125 @@ export class TymTableEditorComponent implements AfterViewInit {
       return tr;
     }
     //---------------------------------------------------------------
-    // insert row
-    const insertRow = (row: number) => {
+    // view insert / remove row
+    const viewInsertRemoveRow = (insRowNum: number, rmRowNum: number) => {
       clearSelRange(true);
       clearCpyRange();
-      const trElm = tbodyElm.childNodes[row];
-      tbodyElm.insertBefore(createrow(row), trElm);
-      tbodyElm.removeChild(tbodyElm.lastElementChild!);
+      const [insRow, rmRow] = [tbodyElm.childNodes[insRowNum], tbodyElm.childNodes[rmRowNum]];
+      tbodyElm.insertBefore(createrow(insRowNum), insRow);
+      tbodyElm.removeChild(rmRow!);
       if (crntElm && !crntElm?.isConnected) {
         crntElm = null;
       }
-      renumber();
+      renumberRow();
     }
+    //---------------------------------------------------------------
+    // history insert / remove row
+    const histInsertRemoveRow = (row: number, rmRowNum: number, ir: string) => {
+      const trElm = tbodyElm.childNodes[rmRowNum];
+      let hists: any = [{ r: row, c: 0, b: '', a: ir }]; // c:0,a:i/r => insert/remove row
+      for (let index = 1; index <= maxcol; index++) {
+        const v = text(trElm.childNodes[index] as HTMLTableCellElement);
+        if (v != '') hists.push({ r: rmRowNum, c: index, b: v, a: '' });
+      }
+      addhists(hists);
+    }
+    //---------------------------------------------------------------
+    // insert row
+    const insertRow = (row: number) => viewInsertRemoveRow(row, maxrow);
     /****************************************************************
      * set public function (insertRow)
      */
     this.insertRow = (row: number) => {
-      const trElm = tbodyElm.childNodes[maxrow];
-      let hists: any = [{ r: row, c: 0, b: '', a: 'i' }]; // c:0,a:i => insert row
-      for (let index = 1; index <= maxcol; index++) {
-        const v = text(trElm.childNodes[index] as HTMLElement);
-        if (v != '') hists.push({ r: maxrow, c: index, b: v, a: '' });
-      }
-      addhists(hists);
+      histInsertRemoveRow(row, maxrow, 'i');
       insertRow(row);
     }
     //---------------------------------------------------------------
     // remove row
-    const removeRow = (row: number) => {
-      clearSelRange(true);
-      clearCpyRange();
-      const trElm = tbodyElm.childNodes[row];
-      tbodyElm.removeChild(trElm);
-      tbodyElm.appendChild(createrow(row));
-      if (crntElm && !crntElm?.isConnected) {
-        crntElm = null;
-      }
-      renumber();
-    }
+    const removeRow = (row: number) => viewInsertRemoveRow(maxrow + 1, row);
     /****************************************************************
      * set public function (removeRow)
      */
     this.removeRow = (row: number) => {
-      const trElm = tbodyElm.childNodes[row];
-      let hists: any = [{ r: row, c: 0, b: '', a: 'r' }]; // c:0,a:r => remove row
-      for (let index = 1; index <= maxcol; index++) {
-        const v = text(trElm.childNodes[index] as HTMLElement);
-        if (v != '') hists.push({ r: row, c: index, b: v, a: '' });
+      histInsertRemoveRow(row, row, 'r');
+      removeRow(row);
+    }
+    //---------------------------------------------------------------
+    // view insert / remove col
+    const viewInsertRemoveCol = (insColNum: number, rmColNum: number, def?: TYM_EDITOR_DEF) => {
+      clearSelRange(true);
+      clearCpyRange();
+      const [insHeadCol, rmHeadCol] = [headTrElm.childNodes[insColNum], headTrElm.childNodes[rmColNum]];
+      headTrElm.insertBefore(createRowTh(insColNum, def), insHeadCol);
+      headTrElm.removeChild(rmHeadCol!);
+      for (let index = 1; index <= maxrow; index++) {
+        const tr = tbodyElm.childNodes[index] as HTMLTableRowElement;
+        const [insCol, rmCol] = [tr.childNodes[insColNum], tr.childNodes[rmColNum]];
+        tr.insertBefore(createTd(), insCol);
+        tr.removeChild(rmCol!);
+      }
+      if (crntElm && !crntElm?.isConnected) {
+        crntElm = null;
+      }
+      styleElement.innerText = getStyleText();
+      renumberCol();
+    }
+    //---------------------------------------------------------------
+    // history insert col
+    const histInsertRemoveCol = (col: number, rmColNum: number, ir: string) => {
+      const th = headTrElm.children[col] as HTMLTableCellElement;
+      const def = _getEditorDef(th);
+      let hists: any = [{ r: 0, c: col, b: '', a: ir, d: def }]; // r:0,a:i/r => insert/remove col
+      for (let index = 1; index <= maxrow; index++) {
+        const tr = tbodyElm.childNodes[index] as HTMLTableRowElement;
+        const v = text(tr.childNodes[rmColNum] as HTMLTableCellElement);
+        if (v != '') hists.push({ r: index, c: rmColNum, b: v, a: '' });
       }
       addhists(hists);
-      removeRow(row);
+    }
+    //---------------------------------------------------------------
+    // insert col
+    const insertCol = (col: number, def?: TYM_EDITOR_DEF) => viewInsertRemoveCol(col, maxcol, def);
+    //---------------------------------------------------------------
+    // remove col
+    const removeCol = (col: number) => viewInsertRemoveCol(maxcol + 1, col);
+    /****************************************************************
+     * set public function (insertCol)
+     */
+    this.insertCol = (col: number, def?: TYM_EDITOR_DEF) => {
+      histInsertRemoveCol(col, maxcol, 'i');
+      insertCol(col, def);
+    }
+    /****************************************************************
+     * set public function (removeCol)
+     */
+    this.removeCol = (col: number) => {
+      histInsertRemoveCol(col, col, 'r');
+      removeCol(col);
+    }
+    /****************************************************************
+     * set public function (copy)
+     */
+    this.copy = () => elm2clipboard();
+    /****************************************************************
+     * set public function (paste)
+     */
+    this.paste = () => clipboard2elm();
+    /****************************************************************
+     * set public function (delete)
+     */
+    this.delete = () => deleteTexts();
+    /****************************************************************
+     * set public function (undo)
+     */
+    this.undo = () => {
+      undoredo(false);
+    }
+    /****************************************************************
+     * set public function (redo)
+     */
+    this.redo = () => {
+      undoredo(true);
     }
 
     /****************************************************************
@@ -412,14 +530,32 @@ export class TymTableEditorComponent implements AfterViewInit {
         console.error('failed to writeText: ', err);
       }
     }
+    /****************************************************************
+     * 選択範囲を消す
+     */
+    const deleteTexts = (): void => {
+      let hists: any = [];
+      execRange(elm => {
+        const [r, c] = cellRowCol(elm);
+        hists.push({ r: r, c: c, b: text(elm), a: '' });
+        setText(elm, c, '');
+      });
+      // 編集履歴に追加
+      addhists(hists);
+    }
+
+    //---------------------------------------------------------------
+    // prepare def(TYM_EDITOR_DEF) data
+    this.defs.forEach(def => editordefs.set(def.col, def));
 
     //---------------------------------------------------------------
     // create : table - tbody - [1st tr:header - th]
     const headTrElm = tbodyElm.appendChild(createElm('tr'));
     {
       headTrElm.appendChild(createTh('')); // top&left
+      (headTrElm.lastElementChild as HTMLElement).onprogress = () => { };
       for (let index = 1; index <= maxcol; index++) {
-        headTrElm.appendChild(createTh(num2(index))); // top
+        headTrElm.appendChild(createRowTh(index, editordefs.get(index))); // top
       }
     }
 
@@ -432,28 +568,10 @@ export class TymTableEditorComponent implements AfterViewInit {
     }
 
     //---------------------------------------------------------------
-    // prepare def(TYM_EDITOR_DEF) data
-    // create : style(text align)
-    // create : viewfncs data
-    // create : editfncs data
-    if (this.defs.length >= 0) {
-      let styleElm: HTMLElement;
-      this.defs.forEach((def, idx) => {
-        if (def.align) {
-          if (!styleElm) {
-            styleElm = createElm('style');
-            thisElm.append(styleElm);
-          }
-          styleElm.innerText += `td[${contentName}]:nth-child(${def.col + 1}){text-align:${def.align};}`;
-        }
-        if (def.viewfnc) {
-          viewfncs.set(def.col, (val: string) => def.viewfnc!(val, def.type, def.col))
-        }
-        if (def.editfnc) {
-          editfncs.set(def.col, (elm: HTMLElement, val: string) => def.editfnc!(elm, val, def.type, def.col))
-        }
-      });
-    }
+    // create : style
+    const styleElement = createElm('style');
+    thisElm.append(styleElement);
+    styleElement.innerText = styleElement.innerText = getStyleText();
 
     //---------------------------------------------------------------
     // set cell data
@@ -551,7 +669,7 @@ export class TymTableEditorComponent implements AfterViewInit {
       if (mousemv == 2 && selects.c1 == c) drawSelRange();
       if (mousemv == 3 && selects.r1 == r) drawSelRange();
       mousemv = 0;
-      crntElm?.focus();
+      crntElm?.focus({ preventScroll: true });
     }
     tableElm.addEventListener('mouseup', event_mouseup);
     /****************************************************************
@@ -679,18 +797,6 @@ export class TymTableEditorComponent implements AfterViewInit {
           clearSelRange(true);
           movefunc(dir);
         }
-      }
-      //-------------------------------------------------------------
-      /** 選択範囲を消す                                            */
-      const deleteTexts = (): void => {
-        let hists: any = [];
-        execRange(elm => {
-          const [r, c] = cellRowCol(elm);
-          hists.push({ r: r, c: c, b: text(elm), a: '' });
-          setText(elm, c, '');
-        });
-        // 編集履歴に追加
-        addhists(hists);
       }
       //-------------------------------------------------------------
       // 編集モード時のキー処理
@@ -842,7 +948,7 @@ export class TymTableEditorComponent implements AfterViewInit {
     const toEdit = (td: HTMLTableCellElement, val?: string) => {
       clearCpyRange();
       const [r, c] = cellRowCol(td);
-      const editfnc = editfncs.get(c);
+      const editfnc = getEditFunc(td);
       beforeValue = text(td);
       if (editfnc) {
         // 編集機能あり
@@ -928,6 +1034,7 @@ export class TymTableEditorComponent implements AfterViewInit {
       history_pos = pos;
       const [v1, v2] = [hist[0], hist[hist.length - 1]];
       let index;
+      clearCpyRange();
       clearSelRange();
       if (v1.c == 0) {
         // c:0,a:r => remove row / c:0,a:i => insert row
@@ -939,6 +1046,16 @@ export class TymTableEditorComponent implements AfterViewInit {
         }
         index = (redo) ? hist.length : 1;
         undoredoRange(r, 1, r, maxcol);
+      } else if (v1.r == 0) {
+        // r:0,a:r => remove col / r:0,a:i => insert col
+        const { a, c, d } = v1;
+        if (a == 'i') {
+          if (redo) { insertCol(c, d); } else { removeCol(c); }
+        } else if (a == 'r') {
+          if (redo) { removeCol(c); } else { insertCol(c, d); }
+        }
+        index = (redo) ? hist.length : 1;
+        undoredoRange(1, c, maxrow, c);
       } else {
         index = 0;
         undoredoRange(v1.r, v1.c, v2.r, v2.c);
@@ -1055,4 +1172,43 @@ export class TymTableEditorComponent implements AfterViewInit {
    * @param row 削除する位置の行番号
    */
   public removeRow(row: number): void { }
+
+  /******************************************************************
+   * テーブルに列の挿入する
+   * @param col 挿入する位置の列番号
+   * @param def 定義
+   */
+  public insertCol(col: number, def?: TYM_EDITOR_DEF): void { }
+
+  /******************************************************************
+   * テーブルから列を削除する
+   * @param col 削除する位置の列番号
+   */
+  public removeCol(col: number): void { }
+
+  /******************************************************************
+   * 選択範囲のセルをコピーする
+   */
+  public copy(): void { }
+
+  /******************************************************************
+   * カレントセルから貼り付ける
+   */
+  public paste(): void { }
+
+  /******************************************************************
+   * 選択範囲のテキストを消去する
+   */
+  public delete(): void { }
+
+  /******************************************************************
+   * 編集を元に戻す
+   */
+  public undo(): void { }
+
+  /******************************************************************
+   * 編集をやり直す
+   */
+  public redo(): void { }
+
 }

@@ -161,17 +161,18 @@ export class TymMenuComponent implements AfterViewInit {
     } else {
       // group open and close action
       const ulElm = this.thisElm.firstElementChild as HTMLUListElement;
+      let grouptop = true;
       for (let index = 0; index < ulElm.children.length; index++) {
         const liElm = ulElm.children[index] as HTMLElement;
-        const top = this.vals.useIcons ? 2 : 0;
-        const classList = liElm.classList;
-        if (item.gid == liElm.dataset.gid) {
-          if (index == top) {
+        const { classList, dataset } = liElm;
+        if (item.gid == dataset.gid) {
+          if (grouptop) {
             if (classList.contains(CLS)) {
               classList.replace(CLS, OPN);
             } else {
               classList.replace(OPN, CLS);
             }
+            grouptop = false;
           } else {
             if (classList.contains(NOD)) {
               classList.remove(NOD)

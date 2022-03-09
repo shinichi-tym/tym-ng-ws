@@ -904,14 +904,29 @@ export class AppComponent {
     const component = componentRef.instance as TymTableInputComponent;
     return (component.vals.isEscape) ? null : component.vals.ret;
   }
+  private viewfnc = (val: string, type?: string, col?: number): string => {
+    let ret = val;
+    switch (type) {
+      case 'number':
+        ret = /^[+,-]?([0-9]\d*|0)$/.test(val) ? parseInt(val).toLocaleString() : val;
+        break;
+      case 'numberedit':
+        ret = /^[+,-]?([0-9]\d*|0)$/.test(val) ? parseInt(val).toLocaleString() : val;
+        break;
+      case 'date':
+        ret = ((new Date(val)).toISOString().split("T")[0]).replace(/-/g, '/');
+        break;
+      default:
+        break;
+    }
+    return ret;
+  }
 
   @Output() defs: TYM_EDITOR_DEF[] = [
     { col: 1, align: 'left' },
     { col: 2, align: 'center' },
     {
-      col: 3, align: 'right', type: 'number', viewfnc: (val: string, type?: string, col?: number) => {
-        return Number.isInteger(val) ? parseInt(val).toLocaleString() : val;
-      }
+      col: 3, align: 'right', type: 'number', viewfnc: this.viewfnc
     },
     {
       col: 4, type: 'xyz', viewfnc: (val: string, type?: string, col?: number) => {
@@ -951,11 +966,18 @@ export class AppComponent {
     console.log(data);
   }
   @Output() editor_menu = (event: MouseEvent, row1: number, col1: number, row2: number, col2: number) => {
+    console.log(event,row1,col1)
     const menu: MenuItems = [
-      [['row', false],
+      [['row', true],
        ['insert', true], ['remove', true]],
+      [['colins', true],
+       ['text', true], ['number', true], ['numberedit', true], ['date', true]],
+      [['colremove', false],
+       ['colremove', true]],
       [['cell', false],
-       ['copy', false], ['paste', false], ['clear', true]],
+       ['copy', true], ['paste', true], ['clear', true]],
+      [['other', false],
+       ['undo', true], ['redo', true]],
     ];
     TymMenuComponent.MENU_DEFS = {
       'row': {
@@ -963,11 +985,27 @@ export class AppComponent {
         'insert': '行挿入',
         'remove': '行削除'
       },
+      'colins': {
+        '': '列挿入',
+        'text': 'テキスト',
+        'number': '数値',
+        'numberedit': '数値(編集有)',
+        'date': '日付',
+      },
+      'colremove': {
+        '': '列削除',
+        'colremove': '列削除',
+      },
       'cell': {
         '': 'セル',
         'copy': 'コピー',
         'paste': '貼り付け',
-        'clear': '消去'
+        'clear': '消去',
+      },
+      'other': {
+        '': 'その他',
+        'undo': '元に戻す',
+        'redo': 'やり直す',
       },
     };
     const provider = TymMenuComponent.provider(
@@ -984,15 +1022,48 @@ export class AppComponent {
                 break;
             }
             break;
+          case 'colins':
+            switch (id) {
+              case 'text':
+                this.tymTableEditor?.insertCol(col1);
+                break;
+              case 'number':
+                this.tymTableEditor?.insertCol(col1,
+                  { col: col1, type: 'number', align: 'right', viewfnc: this.viewfnc });
+                break;
+              case 'numberedit':
+                this.tymTableEditor?.insertCol(col1,
+                  { col: col1, type: 'number', align: 'right', viewfnc: this.viewfnc, editfnc: this.editinput });
+                break;
+              case 'date':
+                this.tymTableEditor?.insertCol(col1,
+                  { col: col1, type: 'date', align: 'center', viewfnc: this.viewfnc, editfnc: this.editinput });
+                break;
+            }
+            break;
+          case 'colremove':
+            this.tymTableEditor?.removeCol(col1);
+            break;
           case 'cell':
             switch (id) {
               case 'copy':
+                this.tymTableEditor?.copy();
                 break;
               case 'paste':
+                this.tymTableEditor?.paste();
                 break;
               case 'clear':
-                this.tymTableEditor?.setData(
-                  Array(row2 - row1 + 1).fill(Array(col2 - col1 + 1).fill('')), row1, col1);
+                this.tymTableEditor?.delete();
+                break;
+            }
+            break;
+          case 'cell':
+            switch (id) {
+              case 'undo':
+                this.tymTableEditor?.undo();
+                break;
+              case 'redo':
+                this.tymTableEditor?.redo();
                 break;
             }
             break;
@@ -1043,4 +1114,12 @@ export class AppComponent {
   @Output() remove_row() {
     this.tymTableEditor?.removeRow(2);
   }
+  @Output() insert_col() { this.tymTableEditor?.insertCol(2); }
+  @Output() remove_col() { this.tymTableEditor?.removeCol(2); }
+  @Output() text_copy() { this.tymTableEditor?.copy(); }
+  @Output() text_paste() { this.tymTableEditor?.paste(); }
+  @Output() text_delete() { this.tymTableEditor?.delete(); }
+  @Output() text_undo() { this.tymTableEditor?.undo(); }
+  @Output() text_redo() { this.tymTableEditor?.redo(); }
+
 }
