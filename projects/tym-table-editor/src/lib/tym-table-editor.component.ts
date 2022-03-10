@@ -83,12 +83,12 @@ export class TymTableEditorComponent implements AfterViewInit {
     //---------------------------------------------------------------
     // ..
     const cell = (r: number, c: number) => tbodyElm.children[r]?.children[c] as HTMLTableCellElement;
-    const cellRange = (td: HTMLTableCellElement) => {
-      const [r, c] = cellRowCol(td);
+    const crntRange = () => {
+      const [r, c] = cellRowCol(crntElm);
       return { r1: r, c1: c, r2: r, c2: c };
     }
-    const cellRowCol = (td: HTMLTableCellElement) =>
-      [(td.parentElement as HTMLTableRowElement).rowIndex, td.cellIndex];
+    const cellRowCol = (td: HTMLTableCellElement | null) =>
+      (td) ? [(td.parentElement as HTMLTableRowElement).rowIndex, td.cellIndex] : [1, 1];
     //---------------------------------------------------------------
     // create element
     const createElm = (name: string) => this.renderer.createElement(name) as HTMLElement;
@@ -169,7 +169,7 @@ export class TymTableEditorComponent implements AfterViewInit {
      * @returns { r1: number, c1: number, r2: number, c2: number }
      */
     const range = (_selects: RANGE = selects) => {
-      let { r1, c1, r2, c2 } = (_selects.c2 < 0) ? (crntElm) ? cellRange(crntElm) : nosels : _selects;
+      let { r1, c1, r2, c2 } = (_selects.c2 < 0) ? (crntElm) ? crntRange() : nosels : _selects;
       [r1, r2] = r2 > r1 ? [r1, r2] : [r2, r1];
       [c1, c2] = c2 > c1 ? [c1, c2] : [c2, c1];
       return { r1: r1, c1: c1, r2: r2, c2: c2 };
@@ -201,14 +201,14 @@ export class TymTableEditorComponent implements AfterViewInit {
      * clear selection range style
      * @param clear true:clear "selects"
      */
-    const clearSelRange = (clear?: boolean) => {
+    const clearSelRangeStyle = (clear?: boolean) => {
       execRange(elm => classrm(elm, 'msel'));
       if (clear) selects = { ...nosels };
     }
     /****************************************************************
      * set selection range style
      */
-    const drawSelRange = () => execRange(elm => classadd(elm, 'msel'));
+    const drawSelRangeStyle = () => execRange(elm => classadd(elm, 'msel'));
     /****************************************************************
      * set converted text to cell (if converted, save to dataset-val)
      * @param elm 対象エレメント
@@ -248,7 +248,7 @@ export class TymTableEditorComponent implements AfterViewInit {
      */
     const setData2Range = (data: any[][], row: number, col: number) => {
       const maxcol = data.reduce((a, b) => a.length > b.length ? a : b);
-      clearSelRange();
+      clearSelRangeStyle();
       setSelRange1stRowCol(row, col);
       setSelRangeLstRowCol(row + data.length - 1, col + maxcol.length - 1);
       let hists: any = [];
@@ -321,8 +321,8 @@ export class TymTableEditorComponent implements AfterViewInit {
     //---------------------------------------------------------------
     // view insert / remove row
     const viewInsertRemoveRow = (insRowNum: number, rmRowNum: number) => {
-      clearSelRange(true);
-      clearCpyRange();
+      clearSelRangeStyle(true);
+      clearCpyRangeStyle();
       const [insRow, rmRow] = [tbodyElm.childNodes[insRowNum], tbodyElm.childNodes[rmRowNum]];
       tbodyElm.insertBefore(createrow(insRowNum), insRow);
       tbodyElm.removeChild(rmRow!);
@@ -365,8 +365,8 @@ export class TymTableEditorComponent implements AfterViewInit {
     //---------------------------------------------------------------
     // view insert / remove col
     const viewInsertRemoveCol = (insColNum: number, rmColNum: number, def?: TYM_EDITOR_DEF) => {
-      clearSelRange(true);
-      clearCpyRange();
+      clearSelRangeStyle(true);
+      clearCpyRangeStyle();
       const [insHeadCol, rmHeadCol] = [headTrElm.childNodes[insColNum], headTrElm.childNodes[rmColNum]];
       headTrElm.insertBefore(createRowTh(insColNum, def), insHeadCol);
       headTrElm.removeChild(rmHeadCol!);
@@ -451,8 +451,8 @@ export class TymTableEditorComponent implements AfterViewInit {
           if (td.cellIndex > 0) setText(td, td.cellIndex, '');
         });
       });
-      clearSelRange(true);
-      clearCpyRange();
+      clearSelRangeStyle(true);
+      clearCpyRangeStyle();
       clearHistory();
     }
     //---------------------------------------------------------------
@@ -463,7 +463,7 @@ export class TymTableEditorComponent implements AfterViewInit {
     /****************************************************************
      * clear copy range / style
      */
-    const clearCpyRange = () => {
+    const clearCpyRangeStyle = () => {
       execRange(elm => classrm(elm, 'cpy'), cpysels);
       cpysels = { ...nosels };
     }
@@ -471,7 +471,7 @@ export class TymTableEditorComponent implements AfterViewInit {
      * set copy range / style
      * @param range 
      */
-    const setCpyRange = (range: RANGE) => {
+    const setCpyRangeStyle = (range: RANGE) => {
       cpysels = range;
       execRange(elm => classadd(elm, 'cpy'), cpysels);
     }
@@ -495,7 +495,7 @@ export class TymTableEditorComponent implements AfterViewInit {
       try {
         const text = await clipboard.readText();
         if (clipdata != text) {
-          clearCpyRange();
+          clearCpyRangeStyle();
         }
         const rows = text.split('\r\n');
         rows.forEach(row => data.push(row.split('\t')));
@@ -510,7 +510,7 @@ export class TymTableEditorComponent implements AfterViewInit {
      * クリップボードへの(\r\n,/\t区切りテキストの)設定 (set copydat)
      */
     const elm2clipboard = async () => {
-      clearCpyRange();
+      clearCpyRangeStyle();
       let cols: any[] = [];
       copydat = [];
       execRange((elm, eol) => {
@@ -522,7 +522,7 @@ export class TymTableEditorComponent implements AfterViewInit {
       });
       let rows: any[] = [];
       copydat.forEach(cols => rows.push(cols.join('\t')));
-      setCpyRange((selects.c2 >= 0) ? { ...selects } : cellRange(crntElm!));
+      setCpyRangeStyle((selects.c2 >= 0) ? { ...selects } : crntRange());
       try {
         clipdata = rows.join('\r\n');
         await clipboard.writeText(rows.join('\r\n'));
@@ -588,6 +588,11 @@ export class TymTableEditorComponent implements AfterViewInit {
     });
     tableElm.style.width = 'fit-content';
 
+    //---------------------------------------------------------------
+    // set 1st cell
+    clearSelRangeStyle();
+    setCurrent(cell(1, 1));
+
     /****************************************************************
      * mouse down event
      * @param e MouseEvent
@@ -600,28 +605,44 @@ export class TymTableEditorComponent implements AfterViewInit {
         if (r1 <= r && r <= r2 && c1 <= c && c <= c2) return;
       }
       if (e.detail == 1) {
-        clearSelRange();
+        clearSelRangeStyle();
         if (td.tagName == 'TH') {
           // 1st click header:th or row top:th element
           const [thRowIx, thColIx] = cellRowCol(td);
+          const [crRowIx, crColIx] = (e.shiftKey)
+            ? ((crntElm) ? cellRowCol(crntElm) : [1, 1])
+            : [thRowIx, thColIx];
           const isHead = (thRowIx == 0);
           selects = (isHead)
-            ? { r1: 1, c1: thColIx, r2: maxrow, c2: thColIx }
-            : { r1: thRowIx, c1: 1, r2: thRowIx, c2: maxcol };
-          mousemv = (isHead) ? 2 : 3;
-          setCurrent(cell(selects.r1, selects.c1));
+            ? { r1: 1, c1: crColIx, r2: maxrow, c2: thColIx }
+            : { r1: crRowIx, c1: 1, r2: thRowIx, c2: maxcol };
+          if (e.shiftKey) {
+            mousemv = 0;
+            drawSelRangeStyle();
+          } else {
+            mousemv = (isHead) ? 2 : 3;
+            setCurrent(cell(selects.r1, selects.c1));
+          }
         } else {
           // 1st click => change current
-          setCurrent(td);
-          setSelRange1st(td);
-          mousemv = 1;
+          if (e.shiftKey) {
+            const [r, c] = cellRowCol(crntElm);
+            setSelRange1stRowCol(r, c)
+            setSelRangeLst(td);
+            drawSelRangeStyle();
+            mousemv = 0;
+          } else {
+            setCurrent(td);
+            setSelRange1st(td);
+            mousemv = 1;
+          }
         }
       } if (e.detail == 2) {
         if (td.tagName == 'TH') {
           // duble click => widen cell
-          clearSelRange();
+          clearSelRangeStyle();
           widen(td);
-          drawSelRange();
+          drawSelRangeStyle();
         } else {
           // duble click => change edit mode
           toEdit(td);
@@ -641,9 +662,9 @@ export class TymTableEditorComponent implements AfterViewInit {
       if (mousemv == 1 && selects.r2 == r && selects.c2 == c) return;
       if (mousemv == 2) r = selects.r2;
       if (mousemv == 3) c = selects.c2;
-      clearSelRange();
+      clearSelRangeStyle();
       [selects.r2, selects.c2] = [r, c];
-      drawSelRange();
+      drawSelRangeStyle();
     }
     tableElm.addEventListener('mousemove', event_mousemove);
     /****************************************************************
@@ -652,7 +673,7 @@ export class TymTableEditorComponent implements AfterViewInit {
      */
     const event_mouseleave = (e: MouseEvent) => {
       if (mousemv == 0) return;
-      clearSelRange(true);
+      clearSelRangeStyle(true);
       mousemv = 0;
     }
     tableElm.addEventListener('mouseleave', event_mouseleave);
@@ -664,10 +685,10 @@ export class TymTableEditorComponent implements AfterViewInit {
       const td = e.target as HTMLTableCellElement;
       const [r, c] = cellRowCol(td);
       if (mousemv == 1 && selects.r1 == r && selects.c1 == c) {
-        clearSelRange(true);
+        clearSelRangeStyle(true);
       }
-      if (mousemv == 2 && selects.c1 == c) drawSelRange();
-      if (mousemv == 3 && selects.r1 == r) drawSelRange();
+      if (mousemv == 2 && selects.c1 == c) drawSelRangeStyle();
+      if (mousemv == 3 && selects.r1 == r) drawSelRangeStyle();
       mousemv = 0;
       crntElm?.focus({ preventScroll: true });
     }
@@ -729,73 +750,35 @@ export class TymTableEditorComponent implements AfterViewInit {
         return scroll;
       }
       //-------------------------------------------------------------
-      /** 矢印によるフォーカスの上下移動                             */
-      const updown = (up: boolean, range: boolean = false): HTMLTableCellElement => {
+      /** 矢印によるフォーカスの上下左右移動                         */
+      const updownleftright = (isUpDown: boolean, isUpOrLeft: boolean, range: boolean = false): HTMLTableCellElement => {
         const b = (range && selects.c2 >= 0);
-        const r = b ? selects : rangeAll;
-        let colIx = thisColIx, rowIx = thisRowIx;
-        if (up) {
-          if (rowIx > r.r1) {
-            rowIx--;
-          } else {
-            if (b) {
-              rowIx = r.r2;
-              colIx = (colIx > r.c1) ? colIx - 1 : r.c2;
-            }
-          }
-        } else {
-          if (rowIx < r.r2) {
-            rowIx++;
-          } else {
-            if (b) {
-              rowIx = r.r1;
-              colIx = (colIx < r.c2) ? colIx + 1 : r.c1;
-            }
-          }
-        }
+        const { r1, c1, r2, c2 } = b ? selects : rangeAll;
+        let [rowIx, colIx] = [thisRowIx, thisColIx];
+        const [A, B, C, D, E] = (isUpDown)
+          ? (isUpOrLeft)
+            ? [(rowIx > r1), -1, 0, r2, (colIx > c1) ? colIx - 1 : c2]
+            : [(rowIx < r2), +1, 0, r1, (colIx < c2) ? colIx + 1 : c1]
+          : (isUpOrLeft)
+            ? [(colIx > c1), 0, -1, (rowIx > r1) ? rowIx - 1 : r2, c2]
+            : [(colIx < c2), 0, +1, (rowIx < r2) ? rowIx + 1 : r1, c1];
+        [rowIx, colIx] = A ? [rowIx + B, colIx + C] : ((b) ? [D, E] : [rowIx, colIx]);
         return arrow(getScroll(rowIx, colIx), rowIx, colIx);
       }
       //-------------------------------------------------------------
-      /** 矢印によるフォーカスの左右移動                             */
-      const leftright = (left: boolean, range: boolean = false): HTMLTableCellElement => {
-        const b = (range && selects.c2 >= 0);
-        const r = b ? selects : rangeAll;
-        let colIx = thisColIx, rowIx = thisRowIx;
-        if (left) {
-          if (colIx > r.c1) {
-            colIx--;
-          } else {
-            if (b) {
-              colIx = r.c2;
-              rowIx = (rowIx > r.r1) ? rowIx - 1 : r.r2;
-            }
-          }
-        } else {
-          if (colIx < r.c2) {
-            colIx++;
-          } else {
-            if (b) {
-              colIx = r.c1;
-              rowIx = (rowIx < r.r2) ? rowIx + 1 : r.r1;
-            }
-          }
-        }
-        return arrow(getScroll(rowIx, colIx), rowIx, colIx)
-      }
-      //-------------------------------------------------------------
       /** 矢印によるフォーカスの移動                                 */
-      const arrowmove = (isShift: boolean, movefunc: (dir: boolean, range?: boolean) => HTMLTableCellElement, dir: boolean) => {
+      const arrowmove = (isUpDown: boolean, isShift: boolean, dir: boolean) => {
         if (isShift) {
-          clearSelRange();
+          clearSelRangeStyle();
           if (selects.c1 < 0) {
             setSelRange1st(thisCell);
           }
-          const _td = movefunc(dir);
+          const _td = updownleftright(isUpDown, dir);
           setSelRangeLst(_td);
-          drawSelRange();
+          drawSelRangeStyle();
         } else {
-          clearSelRange(true);
-          movefunc(dir);
+          clearSelRangeStyle(true);
+          updownleftright(isUpDown, dir);
         }
       }
       //-------------------------------------------------------------
@@ -803,10 +786,10 @@ export class TymTableEditorComponent implements AfterViewInit {
       if (editElm) {
         switch (e.key) {
           case 'Tab':
-            leftright(e.shiftKey, true);
+            updownleftright(false, e.shiftKey, true);
             break;
           case 'Enter':
-            updown(e.shiftKey, true);
+            updownleftright(true, e.shiftKey, true);
             break;
           case 'Escape':
             thisCell.innerText = beforeValue!;
@@ -824,22 +807,22 @@ export class TymTableEditorComponent implements AfterViewInit {
         escapecnt--;
         switch (e.key) {
           case 'ArrowDown':
-            arrowmove(e.shiftKey, updown, false);
+            arrowmove(true, e.shiftKey, false);
             break;
           case 'ArrowUp':
-            arrowmove(e.shiftKey, updown, true);
+            arrowmove(true, e.shiftKey, true);
             break;
           case 'ArrowRight':
-            arrowmove(e.shiftKey, leftright, false);
+            arrowmove(false, e.shiftKey, false);
             break;
           case 'ArrowLeft':
-            arrowmove(e.shiftKey, leftright, true);
+            arrowmove(false, e.shiftKey, true);
             break;
           case 'Tab':
-            leftright(e.shiftKey, true);
+            updownleftright(false, e.shiftKey, true);
             break;
           case 'Enter':
-            updown(e.shiftKey, true);
+            updownleftright(true, e.shiftKey, true);
             break;
           case 'F2':
             toEdit(thisCell);
@@ -907,7 +890,7 @@ export class TymTableEditorComponent implements AfterViewInit {
             if (escapecnt < 0) {
               escapecnt = 1;
             } else if (escapecnt >= 0) {
-              clearCpyRange();
+              clearCpyRangeStyle();
               clearCpyData();
             }
             break;
@@ -946,7 +929,7 @@ export class TymTableEditorComponent implements AfterViewInit {
      * @returns 対象セルエレメント または 作り直したセルエレメント
      */
     const toEdit = (td: HTMLTableCellElement, val?: string) => {
-      clearCpyRange();
+      clearCpyRangeStyle();
       const [r, c] = cellRowCol(td);
       const editfnc = getEditFunc(td);
       beforeValue = text(td);
@@ -1009,7 +992,7 @@ export class TymTableEditorComponent implements AfterViewInit {
       if (r1 != r2 || c1 != c2) {
         setSelRange1stRowCol(r1, c1);
         setSelRangeLstRowCol(r2, c2);
-        drawSelRange();
+        drawSelRangeStyle();
       }
       const td = cell(r1, c1);
       td.focus();
@@ -1034,8 +1017,8 @@ export class TymTableEditorComponent implements AfterViewInit {
       history_pos = pos;
       const [v1, v2] = [hist[0], hist[hist.length - 1]];
       let index;
-      clearCpyRange();
-      clearSelRange();
+      clearCpyRangeStyle();
+      clearSelRangeStyle();
       if (v1.c == 0) {
         // c:0,a:r => remove row / c:0,a:i => insert row
         const { a, r } = v1;

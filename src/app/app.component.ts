@@ -914,7 +914,7 @@ export class AppComponent {
         ret = /^[+,-]?([0-9]\d*|0)$/.test(val) ? parseInt(val).toLocaleString() : val;
         break;
       case 'date':
-        ret = ((new Date(val)).toISOString().split("T")[0]).replace(/-/g, '/');
+        ret = ((d = new Date(val)) => (!isNaN(d.getTime())) ? (d.toISOString().split("T")[0]).replace(/-/g, '/') : val)();
         break;
       default:
         break;
@@ -945,7 +945,7 @@ export class AppComponent {
     return [
       ['data 1', 'data 2', 123,     '', 'number', 'date', 'datetime-local', 'time', 'tel', 'email', 'range'],
       ['3',      '4',      12345,   'data data data data 4'],
-      ['',       '',       1234567, 'data data data data 5']
+      ['',       '',       1234567, 'data data data data data 5']
     ];
   }
   @Output() reset_data() {
