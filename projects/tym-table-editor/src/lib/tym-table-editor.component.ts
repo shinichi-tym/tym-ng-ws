@@ -818,6 +818,20 @@ export class TymTableEditorComponent implements AfterViewInit {
           case 'ArrowLeft':
             arrowmove(false, e.shiftKey, true);
             break;
+          case 'Home':
+            if (e.ctrlKey) {
+              arrow(getScroll(1, 1), 1, 1);
+            } else {
+              arrow(getScroll(thisRowIx, 1), thisRowIx, 1);
+            }
+            break;
+          case 'End':
+            if (e.ctrlKey) {
+              arrow(getScroll(maxrow, maxcol), maxrow, maxcol);
+            } else {
+              arrow(getScroll(thisRowIx, maxcol), thisRowIx, maxcol);
+            }
+            break;
           case 'Tab':
             updownleftright(false, e.shiftKey, true);
             break;

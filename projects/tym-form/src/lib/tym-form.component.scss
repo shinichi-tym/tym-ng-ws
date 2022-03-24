@@ -1,0 +1,78 @@
+/*!
+ * tym-form.js
+ * Copyright (c) 2022 shinichi tayama
+ * Released under the MIT license.
+ * see https://opensource.org/licenses/MIT
+ */
+
+:host{
+  display: inline-block;
+  padding: 0;
+  margin: 0;
+  font-size: 16px;
+  line-height: 24px;
+  font-family: ui-monospace, monaco, monospace;
+  letter-spacing: 0;
+
+  >*{
+    padding: 8px;
+    margin: 0;
+    border: 5px double #888;
+    border-radius: 8px;
+    position: absolute;
+  }
+
+  >form{
+    border-color: transparent;
+    background-color: transparent;
+    color: #000;
+    >*{
+      box-sizing: border-box;
+      border: dotted 1px #ccc;
+      background-color: #efe;
+      padding: 0 7px 0 7px;
+      font-family: ui-monospace, monaco, monospace;
+      position: absolute;
+      font-size: 16px;
+      height: 22px;
+      resize: none;
+    }
+    label{
+      cursor: pointer;
+      user-select: none;
+      white-space: nowrap;
+      >input{
+        cursor: pointer;
+        position: relative;
+      }
+    }
+    span{
+      user-select: none;
+    }
+    input{
+      &:focus-visible{
+        outline: solid 1px #888;
+      }
+      &:invalid{
+        border: solid 1px red;
+      }
+      &[type=file]{
+        display: none;
+      }
+      &[type=button],&[type=reset]{
+        color: #fff;
+        font-size: 14px;
+        border-radius: 4px;
+        background-color: #44f;
+        cursor: pointer;
+        &:hover {
+          background-color: #00f;
+        }
+      }
+    }
+  }
+  >pre{
+    width: fit-content;
+    background-color: #eff;
+  }
+}

@@ -1,0 +1,30 @@
+[DEF]
+{id}:{var name}:{type}:{inputmode}:{pattern}:{required}:{placeholder}:{title}:{line}:{option}
+a:date         :date  :           :         :          :             :       :      :
+b:id           :text  :           :         :          :             :id.    :      :
+c:cat          :text  :           :         :          :             :       :      :
+d:code         :text  :           :         :          :             :       :      :
+e:name         :text  :           :         :          :             :       :      :
+f:maker        :select:           :         :          :             :       :      :,H会社,T社,N社
+g:unitprice    :number:           :         :          :             :       :      :
+h:purchase     :number:           :         :          :             :       :      :
+i:unit         :number:           :         :          :             :       :      :
+j:date         :text  :           :         :          :             :       :      :
+k:maker        :text  :           :         :          :             :       :      :
+
+r:reset        :reset :           :         :          :             :       :      :ﾘｾｯﾄ
+s:panel01      :button:           :         :          :             :       :      :パネル１
+t:panel02      :button:           :         :          :             :       :      :パネル２
+u:panel03      :button:           :         :          :             :       :      :パネル３
+v:close        :button:           :         :          :             :       :      :クローズ
+:-------------------------------------------------------------------------------
+:type      {| text | tel | url | email | password | date | month | week | time | datetime-local | number
+:           | checkbox | radio | file | select | reset | button}
+:inputmode {| none | text | tel | url | email | numeric | decimal | search}
+:pattern   {| [a-z]+ 半角英小文字, [A-Z]+ 半角英大文字, [0-9]{1,4} 半角数字1～4文字, etc}
+:required  {| y | n}
+:line      {| 1～4}
+:option    {type=file => メッセージ
+:           type-select => アイテム,アイテム,...
+:           type=checkbox/radio => ラベル,ラベル,...
+:           type=reset/button => ラベル}

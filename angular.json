@@ -260,6 +260,37 @@
           }
         }
       }
+    },
+    "tym-form": {
+      "projectType": "library",
+      "root": "projects/tym-form",
+      "sourceRoot": "projects/tym-form/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "project": "projects/tym-form/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/tym-form/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/tym-form/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/tym-form/src/test.ts",
+            "tsConfig": "projects/tym-form/tsconfig.spec.json",
+            "karmaConfig": "projects/tym-form/karma.conf.js"
+          }
+        }
+      }
     }
   },
   "defaultProject": "tym-ng-ws"

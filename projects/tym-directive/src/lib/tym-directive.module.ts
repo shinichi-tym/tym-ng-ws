@@ -1,6 +1,6 @@
 /*!
  * tym-directive.js
- * Copyright (c) 2021 shinichi tayama
+ * Copyright (c) 2021, 2022 shinichi tayama
  * Released under the MIT license.
  * see https://opensource.org/licenses/MIT
  */
@@ -10,6 +10,7 @@ import { CommonModule } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
 import { TymCommDirective } from './tym-comm.directive';
 import { TymResizeDirective } from './tym-resize.directive';
+import { TymTableEditDirective } from "./tym-table-edit.directive";
 import { TymTableViewComponent } from './tym-table-view.component';
 import { TymSplitterDirective } from './tym-splitter.directive';
 import { TymTreeViewComponent } from "./tym-tree-view.component";
@@ -18,6 +19,7 @@ import { TymTreeViewComponent } from "./tym-tree-view.component";
   declarations: [
     TymCommDirective,
     TymResizeDirective,
+    TymTableEditDirective,
     TymTableViewComponent,
     TymSplitterDirective,
     TymTreeViewComponent
@@ -29,6 +31,7 @@ import { TymTreeViewComponent } from "./tym-tree-view.component";
   exports: [
     TymCommDirective,
     TymResizeDirective,
+    TymTableEditDirective,
     TymTableViewComponent,
     TymSplitterDirective,
     TymTreeViewComponent

@@ -1,4 +1,4 @@
-import { Component, Output, ViewEncapsulation, ViewChild } from '@angular/core';
+import { Component, Output, ViewEncapsulation, ViewChild, ElementRef } from '@angular/core';
 import { SafeHtml, DomSanitizer } from "@angular/platform-browser";
 import {
   TYM_CUSTOM, TYM_FUNCS, TYM_DDDEF, TYM_COL, TYM_ORDER, TymTableComponent
@@ -8,6 +8,7 @@ import { TymModalService } from "tym-modals";
 import { TymDialogComponent, TymMenuComponent, MenuItems, IconItems } from "tym-modals";
 import { TymTreeComponent, TYM_TREE, TYM_LEAF, TYM_TREE_OPTION } from "tym-tree";
 import { TymTableEditorComponent, TymTableInputComponent, TYM_EDITOR_DEF } from "tym-table-editor";
+import { TymFormComponent } from "tym-form";
 
 @Component({
   selector: 'app-root',
@@ -27,6 +28,8 @@ export class AppComponent {
   @ViewChild("tree_d0") private tree_d0?: TymTreeComponent;
   @ViewChild("tree_d1") private tree_d1?: TymTreeComponent;
   @ViewChild("tree_d2") private tree_d2?: TymTreeComponent;
+  @ViewChild("tymform") private tymform?: TymFormComponent;
+  @ViewChild("tymformmsg") private tymformmsg?: ElementRef;
   /////////////////////////////////////////////////////////////////////
   dragType: string = 'move';
   dropType: string = 'move';
@@ -1122,4 +1125,24 @@ export class AppComponent {
   @Output() text_undo() { this.tymTableEditor?.undo(); }
   @Output() text_redo() { this.tymTableEditor?.redo(); }
 
+  @Output() panel1() { this.tymform!.formTextUrl = '/assets/panel1.txt'; }
+  @Output() panel2() { this.tymform!.formTextUrl = '/assets/panel2.txt'; }
+  @Output() open_panel() {
+    const provider = TymFormComponent.provider(
+      {}, '', '/assets/panel00.txt',
+      (varname: string, event: MouseEvent) => {
+        if (varname == 'close') {
+          componentRef!.destroy();
+        } else {
+          compo.formTextUrl = `/assets/${varname}.txt`;
+        }
+        this.tymformmsg!.nativeElement!.innerText = JSON.stringify(compo.vals);
+      },
+      (varname: string, event: KeyboardEvent) => { }
+    );
+    let componentRef = this.modal.open(TymFormComponent, provider, false);
+    const element = componentRef.location.nativeElement as HTMLElement;
+    const compo = componentRef.instance as TymFormComponent;
+    compo.formTextUrl = '/assets/panel01.txt'
+  }
 }

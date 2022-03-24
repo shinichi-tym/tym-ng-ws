@@ -1,6 +1,6 @@
 {
   "name": "tym-ng-ws",
-  "version": "0.4.8",
+  "version": "0.4.9",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -12,6 +12,7 @@
     "w3": "ng build tym-modals     --watch --configuration development",
     "w4": "ng build tym-tree       --watch --configuration development",
     "w5": "ng build tym-table-editor --watch --configuration development",
+    "w6": "ng build tym-form       --watch --configuration development",
     "test": "ng test"
   },
   "private": true,

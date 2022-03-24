@@ -25,6 +25,10 @@
         "dist/tym-directive/tym-directive",
         "dist/tym-directive"
       ],
+      "tym-form": [
+        "dist/tym-form/tym-form",
+        "dist/tym-form"
+      ],
       "tym-modals": [
         "dist/tym-modals/tym-modals",
         "dist/tym-modals"

@@ -1,8 +1,8 @@
 {
-  "name": "tym-directive",
-  "version": "0.8.4",
-  "description": "'tym' directive collections.",
-  "keywords": ["angular", "directive", "resize", "table", "grid", "splitter", "event", "tree", "folder", "editor"],
+  "name": "tym-form",
+  "version": "0.7.1",
+  "description": "'tym-form' is a simple form component.",
+  "keywords": ["angular", "form", "input", "panel"],
   "repository": {
     "type": "git",
     "url": "https://github.com/shinichi-tym/tym-ng-ws.git"
@@ -11,8 +11,8 @@
   "homepage": "https://github.com/shinichi-tym/",
   "license" : "MIT",
   "peerDependencies": {
-    "@angular/common": "^12.0.0, ^13.0.0",
-    "@angular/core": "^12.0.0, ^13.0.0"
+    "@angular/common": "^12.1.0",
+    "@angular/core": "^12.1.0"
   },
   "dependencies": {
     "tslib": "^2.2.0"

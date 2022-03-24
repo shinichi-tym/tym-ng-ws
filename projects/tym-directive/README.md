@@ -26,6 +26,7 @@ npm install tym-directive
 1. [スプリッター](#スプリッター)
 1. [簡易イベント通知](#簡易イベント通知)
 1. [簡易ツリー表示](#簡易ツリー表示)
+1. [簡易テーブル編集](#簡易テーブル編集)
 1. please wait...
 
 <br> 
@@ -302,6 +303,57 @@ const treeviewmenu = (texts: string[], event: MouseEvent): boolean => {
 - 表示イメージ
 
 ![表示イメージ](/tym-tree-view-demo.png)
+
+<br/>
+
+> ## 簡易テーブル編集
+
+<br>
+
+任意の `table` に簡易な編集機能を追加します。
+
+- 使い方:
+
+``` html
+<table border="1" style="width:90%;table-layout:fixed;">
+  <thead><tr><th>-</th><th>-</th><th>-</th><th>-</th><th>-</th></tr></thead>
+  <tbody tym-table-edit>
+    <tr><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td></tr>
+    <tr><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td></tr>
+    <tr><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td></tr>
+    <tr><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td></tr>
+  </tbody>
+</table>
+<!-- tbody タグに tym-table-edit を 付与します -->
+```
+
+### キーボード操作
+
+<br>
+
+[表示モード]
+- 上下左右のキーでフォーカス位置を移動できます。
+- `Tab`, `Shift+Tab`キーでフォーカス位置を左右に移動できます。
+- `Enter`, `Shift+Enter`キーでフォーカス位置を上下に移動できます。
+- `Home`, `End`キーでフォーカス位置を行頭行末に移動できます。
+- `Ctrl+Home`, `Ctrl+End`キーでフォーカス位置をテーブルの先頭末尾に移動できます。
+- `F2`キーで **編集モード** になります。
+- `Backspace`キーで文字を消去し **編集モード** になります。
+- `Delete`キーでフォーカス位置の文字を消去します。
+- その他のキーで **編集モード** になり, 入力した文字に置き換えます。
+
+[編集モード]
+- `Tab`, `Shift+Tab`キーで **表示モード** になります。
+- `Tab`, `Shift+Tab`キーで, 入力文字を確定し, フォーカス位置を左右に移動できます。
+- `Enter`, `Shift+Enter`キーで **表示モード** になります。
+- `Enter`, `Shift+Enter`キーで, 入力文字を確定し, フォーカス位置を上下に移動できます。
+- `Escape`キーで編集を中止し, **表示モード** になります。
+
+<br>
+
+- 表示イメージ
+
+![表示イメージ](/tym-table-edit-demo.png)
 
 <br/>
 

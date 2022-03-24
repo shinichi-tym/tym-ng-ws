@@ -314,6 +314,26 @@ effectAllowed:[none,copy,move,copyMove], dropEffect:[none,copy,move]
 </div>
 <div>select : <span [innerText]="treeviewret"></span></div>
 
+<hr><!-- ---------------------------------------------------------- -->
+<h2>tym-table-edit</h2>
+
+<table border="1" style="width:90%;table-layout:fixed;">
+  <thead><tr><th>-</th><th>-</th><th>-</th><th>-</th><th>-</th></tr></thead>
+  <tbody tymTableEdit>
+    <tr><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td></tr>
+    <tr><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td></tr>
+    <tr><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td></tr>
+    <tr><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td></tr>
+  </tbody>
+</table>
+<br>
+<table border="1" style="width:400px">
+  <tbody tym-table-edit>
+    <tr><td>11111</td><td>22222</td></tr>
+    <tr><td>11111</td><td>22222</td></tr>
+  </tbody>
+</table>
+
 <h1 id="tym-modals">tym-modals</h1>
 
 <hr><!-- ---------------------------------------------------------- -->
@@ -593,6 +613,21 @@ uptext:<input type="text" #treetext size="10" value="up text"><br>
 <input type="button" (click)="text_redo()" value="redo">
 
 <br>
+
+<h1 id="tym-form">tym-form</h1>
+
+<hr><!-- ---------------------------------------------------------- -->
+<br>
+<ngx-tym-form #tymform
+ formTextUrl="/assets/panel1.txt"
+ [vals]="{name:'zzzzz',date:'2022-02-22',select:'list-b'}"></ngx-tym-form>
+<br>
+<br>
+<input type="button" (click)="panel1()" value="panel1">
+<input type="button" (click)="panel2()" value="panel2">
+<input type="button" (click)="open_panel()" value="open_panel">
+<br>
+<span #tymformmsg></span>
 <br>
 <br>
 <br>
