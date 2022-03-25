@@ -2,8 +2,6 @@
 # `[tym-form]`
 `tym-form` は，シンプルなform表示の `angular` コンポーネントです。
 
-    now writing ...
-
 <br>
 
 表示サンプル (Display image)
@@ -32,15 +30,16 @@ npm install tym-form
 
 <br>
 
-表示される場所に htmlタグ を用意し，その中に`<ngx-tym-form>`タグを作成します。
-また, 表示する画面データをテキストファイルとして用意します。
+表示される場所に`<ngx-tym-form>`タグを作成します。
 
 ``` html
 <ngx-tym-form #tynForm
     [vals]="vals"
-    formTextUrl="/assets/panel.txt"
+    formTextUrl="./assets/panel1.txt"
 ></ngx-tym-form>
 ```
+
+表示する画面データを文字列 または テキストファイルとして用意します。
 
 ``` text:panel.txt
 パネル１
@@ -50,7 +49,7 @@ npm install tym-form
  商品区分 [c         ] / 商品コード [d       ]
 [DEF]
 {id}:{var name}:{type}:{inputmode}:{pattern}:{required}:{placeholder}:{title}:{line}:{option}
-a:date         :date  :           :         :          :             :       :      :
+a:tourokubi    :date  :           :         :          :             :       :      :
 b:id           :text  :           :         :          :             :       :      :
 c:cat          :text  :           :         :          :             :       :      :
 d:code         :text  :           :         :          :             :       :      :
@@ -92,6 +91,8 @@ import { TymFormComponent } from "tym-form";
 <br>
 
 - [基本機能](#基本機能) (Basic Function)
+- [ファイル仕様](#ファイル仕様) (File Specifications)
+- [ダイアログ表示機能](#ダイアログ表示機能) (Dialog View Function)
 
 <br>
 
@@ -103,7 +104,7 @@ import { TymFormComponent } from "tym-form";
 
 <br>
 
-- custom, afnc, cols, data, odrmk 値を指定すると，その値に従ってテーブルを表示します。
+- formText に指定したテキスト または formTextUrl に指定したファイルの内容に従って画面を表示します。
 
 - [定義]
 ``` html
@@ -111,36 +112,143 @@ import { TymFormComponent } from "tym-form";
     [vals]="vals"
     [formText]="text"
     [formTextUrl]="texturl"
-    [button]="buttonfunc"
-    [enter]="enterfunc"
-  @Input() button = (varname: string, event: MouseEvent) => { }
-
-  @Input() enter = (varname: string, event: KeyboardEvent) => { }
-
+    [button]="button"
+    [enter]="enter"
 ></ngx-tym-table>
 ```
 - `vals: any`
+  - form に表示する変数, form に入力された変数。
+  - `type.checkbox`, `type.radio` では, 文字列配列になります。
 ``` typescript
-
-  ...
-
+let vals = {
+  tourokubi: '2022-02-22',
+  id: '',
+  cat: '',
+  code: '',
+}
 ```
 - `formText: string`
-``` typescript
-
-  ...
-
+``` text:panel.txt
+パネル１
+───────────────────────
+ 登録日   [a                ]
+ 商品ID   [b       ]
+ 商品区分 [c         ] / 商品コード [d       ]
+[DEF]
+a:tourokubi    :date  :::::::
+b:id           :text  :::::::
+c:cat          :text  :::::::
+d:code         :text  :::::::
 ```
+
 - `formTextUrl: string`
 ``` typescript
-
-  ..
-
+this.tymform!.formTextUrl = '/assets/panel2.txt';
 ```
 
-- `button: (varname: string, event: MouseEvent) => void`
+- `button: (event: MouseEvent, vals: any, varname: string) => void`
+``` typescript
+const button = (event: MouseEvent, vals: any, varname: string) => {
+  if (varname == 'b1') {
+    console.log('b1 ボタンが押されました');
+  }
+}
+```
 
-- `enter: (varname: string, event: KeyboardEvent) => void`
+- `enter: (event: KeyboardEvent, vals: any, varname: string) => void`
+``` typescript
+const enter = (event: KeyboardEvent, vals: any, varname: string) => {
+  if (varname == 'cmdtext') {
+    console.log(`${vals.cmdtext} を実行します`);
+  }
+}
+```
+
+<br>
+
+> ### ファイル仕様
+
+<br>
+
+![ファイル仕様説明](/tym-form-info.png)
+
+- 画面を定義します。
+- 定義は `[DEF]` の前後で `画面部` と `定義部` があります。
+- `定義部` は, 新しい `定義部` を入力するまで引き継がれます。
+- `画面部`
+  - 画面のフォーマットを定義します。
+  - 画面は固定長フォントでそのまま表示します。
+  - 入力フォームは `'['`+`'英小文字'` ～ `']'` で定義します。
+  - `'英小文字'` は `定義部` の `{id}` と対応させます。
+- `定義部`
+  - 入力フォームの情報を定義します。
+  - 情報は `':'` 区切りで複数あります。
+  - カラム1 : `{id}` (必須)
+    - `画面部` と `定義部` の入力フォームを関連付けに利用します。
+  - カラム2 : `{var name}` (必須)
+    - `vals` の メンバー変数(例:`vals.tourokubi`) を定義します。
+  - カラム3 : `{type}` (省略値:text)
+    - `input` タグの `type` 属性の値を定義します。
+    - `type` の値によって生成されるタグが異なります。  
+      `checkbox`, `radio` は `span` と複数の `input` タグ  
+      `file` は `label`, `input` タグ  
+      `select` は `select`, `option` タグ
+  - カラム4 : `{inputmode}` (省略値:なし)
+    - `input` タグの `inputmode` 属性の値を定義します。
+  - カラム5 : `{pattern}` (省略値:なし)
+    - `input` タグの `pattern` 属性の値を定義します。
+  - カラム6 : `{required}` {'y' | その他} (省略値:なし)
+    - `input` タグの `required` 属性の値を定義します。  
+    `'y'` を指定すると設定します。
+  - カラム7 : `{placeholder}` (省略値:なし)
+    - `input` タグの `placeholder` 属性の値を定義します。
+  - カラム8 : `{title}` (省略値:なし)
+    - `input` タグの `title` 属性の値を定義します。
+  - カラム9 : `{line}` (省略値:1)
+    - 入力フォームの行数を定義します。
+  - カラム10 : `{option}` (省略値:なし)
+    - カンマ区切りで情報を定義します。
+    - `type:checkbox` では, カンマ区切りでラベルを定義します。
+    - `type:radio` では, カンマ区切りでラベルを定義します。
+    - `type:file` では, 未選択時のメッセージを定義します。
+    - `type:select` では, カンマ区切りで項目を定義します。
+    - `type:reset`, `type:button` では, ボタン名を定義します。
+
+<br>
+
+> ### ダイアログ表示機能
+
+<br>
+
+- `tym-modals` を利用してダイアログ形式で表示できます。
+``` typescript
+  :
+import { TymFormComponent } from "tym-form";
+import { TymModalService } from "tym-modals";
+  :
+  constructor(private modal: TymModalService) { }
+  :
+```
+``` typescript
+let vals = {
+  tourokubi: '2022-02-22',
+  id: '',
+  cat: '',
+  code: '',
+}
+const button = (event: MouseEvent, vals: any, varname: string) => {
+  if (varname == 'b1') {
+    console.log('b1 ボタンが押されました');
+  }
+  if (varname == 'close') {
+     compoRef.destory();
+  }
+}
+const provider = TymFormComponent.provider(
+  vals, '', './assets/panel1.txt', button
+);
+let compoRef = this.modal.open(TymFormComponent, provider);
+```
 
 <br>
 

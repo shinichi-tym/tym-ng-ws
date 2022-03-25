@@ -1125,24 +1125,29 @@ export class AppComponent {
   @Output() text_undo() { this.tymTableEditor?.undo(); }
   @Output() text_redo() { this.tymTableEditor?.redo(); }
 
-  @Output() panel1() { this.tymform!.formTextUrl = '/assets/panel1.txt'; }
-  @Output() panel2() { this.tymform!.formTextUrl = '/assets/panel2.txt'; }
+  @Output() panel1() { this.tymform!.formTextUrl = './assets/panel1.txt'; }
+  @Output() panel2() { this.tymform!.formTextUrl = './assets/panel2.txt'; }
   @Output() open_panel() {
     const provider = TymFormComponent.provider(
-      {}, '', '/assets/panel00.txt',
-      (varname: string, event: MouseEvent) => {
+      {}, '', './assets/panel00.txt',
+      (event: MouseEvent, vals: any, varname: string) => {
+        let msg;
         if (varname == 'close') {
+          msg = JSON.stringify(compo.vals);
           componentRef!.destroy();
+        } else if (varname.startsWith('b')) {
+          msg = `click: ${varname}`;
         } else {
-          compo.formTextUrl = `/assets/${varname}.txt`;
+          msg = JSON.stringify(compo.vals);
+          compo.formTextUrl = `./assets/${varname}.txt`;
         }
-        this.tymformmsg!.nativeElement!.innerText = JSON.stringify(compo.vals);
+        this.tymformmsg!.nativeElement!.innerText = msg;
       },
-      (varname: string, event: KeyboardEvent) => { }
+      (event: KeyboardEvent, vals: any, varname: string) => { }
     );
-    let componentRef = this.modal.open(TymFormComponent, provider, false);
+    let componentRef = this.modal.open(TymFormComponent, provider, true);
     const element = componentRef.location.nativeElement as HTMLElement;
     const compo = componentRef.instance as TymFormComponent;
-    compo.formTextUrl = '/assets/panel01.txt'
+    compo.formTextUrl = './assets/panel01.txt';
   }
 }

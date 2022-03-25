@@ -47,9 +47,9 @@ export class TymFormComponent {
     this.setTextUrl(url);
   }
 
-  @Input() button = (varname: string, event: MouseEvent) => { }
+  @Input() button = (event: MouseEvent, vals: any, varname: string) => { }
 
-  @Input() enter = (varname: string, event: KeyboardEvent) => { }
+  @Input() enter = (event: KeyboardEvent, vals: any, varname: string) => { }
 
   /**
    * コンストラクタ
@@ -88,8 +88,9 @@ export class TymFormComponent {
     }
   }
 
+  //-----------------------------------------------------------------
+  // ..
   private async setTextUrl(url: string) {
-
     this.loading = fetch(url).then(res => {
       if (res.ok) {
         let p = res.text();
@@ -106,15 +107,19 @@ export class TymFormComponent {
     return this.loading;
   }
 
+  //-----------------------------------------------------------------
+  // ..
   private createForm(_text: string) {
     const [txt, def] = _text.split('[DEF]', 2);
     if (def != undefined) this.createDefMap(def);
     if (txt.trim() != '') this.createView(txt);
   }
 
+  //-----------------------------------------------------------------
+  // ..
   private createDefMap(defstext: string) {
     this.defmap.clear();
-    defstext.split('\r\n')?.forEach(def => {
+    defstext.split(/\r\n|\n/)?.forEach(def => {
       //{id}:{var name}:{type}:{inputmode}:{pattern}:{required}:{placeholder}:{title}:{line}:{option}
       const [_id, varname, type, inputmode, pattern, required, placeholder, title, line, option] = def.split(':');
       const id = _id.trim();
@@ -135,7 +140,6 @@ export class TymFormComponent {
   }
 
   private createView(viewtext: string) {
-
     //---------------------------------------------------------------
     // ..
     const vals = this.vals as any;
@@ -150,7 +154,7 @@ export class TymFormComponent {
       [...str].reduce((sum, c) => sum + (c.match(/[ -~ｱ-ﾝﾞﾟ]/) ? 1 : 2), 0);
     //---------------------------------------------------------------
     // ..
-    const set_prop = (varname: string, val: string) =>
+    const set_prop = (varname: string, val: any) =>
       Object.assign(vals, { [varname]: val });
     //---------------------------------------------------------------
     // ..
@@ -178,7 +182,7 @@ export class TymFormComponent {
         set_prop(def.varname, _input.value);
       });
       input.addEventListener('keypress', e => {
-        if (e.key == 'Enter') this.enter(def.varname, e);
+        if (e.key == 'Enter') this.enter(e, vals, def.varname);
       });
       if (def.inputmode) input.inputMode = def.inputmode;
       if (def.pattern) input.pattern = def.pattern;
@@ -197,8 +201,10 @@ export class TymFormComponent {
     const make_check_elm = (def: DEF, type: string) => {
       const span = create_span_element();
       span.addEventListener('keypress', e => {
-        if (e.key == 'Enter') this.enter(def.varname, e);
+        if (e.key == 'Enter') this.enter(e, vals, def.varname);
       });
+      const selvals: string[] =
+        (vals?.hasOwnProperty(def.varname)) ? vals[def.varname] : [];
       def.option?.forEach(o => {
         const label = create_label_element();
         const input = create_input_element(type);
@@ -207,10 +213,11 @@ export class TymFormComponent {
           span.querySelectorAll('input').forEach(e => {
             if (e.checked) rets.push(e.value);
           });
-          set_prop(def.varname, rets.join(','));
+          set_prop(def.varname, rets);
         });
         input.name = def.varname;
         input.value = o;
+        if (selvals.indexOf(o) >= 0) input.checked = true;
         label.appendChild(input);
         label.appendChild(create_text(o));
         span.appendChild(label);
@@ -228,7 +235,7 @@ export class TymFormComponent {
       const input = create_input_element(type);
       const text = create_text(msg);
       label.addEventListener('keypress', e => {
-        if (e.key == 'Enter') this.enter(def.varname, e);
+        if (e.key == 'Enter') this.enter(e, vals, def.varname);
         if (e.key == ' ') {
           input.dispatchEvent(new MouseEvent('click'));
           e.preventDefault();
@@ -250,7 +257,7 @@ export class TymFormComponent {
     const make_select_elm = (def: DEF, type: string) => {
       const select = create_select_element();
       select.addEventListener('keypress', e => {
-        if (e.key == 'Enter') this.enter(def.varname, e);
+        if (e.key == 'Enter') this.enter(e, vals, def.varname);
       });
       select.addEventListener('change', e => {
         set_prop(def.varname, select.value);
@@ -278,7 +285,7 @@ export class TymFormComponent {
             e.dispatchEvent(new Event('change'));
           });
         }
-        this.button(def.varname, e);
+        this.button(e, vals, def.varname);
       });
       return button;
     }
@@ -295,7 +302,9 @@ export class TymFormComponent {
       const left = str_len(prev);
       const width = str_len(hits);
       const spec = ['checkbox', 'radio', 'file', 'select', 'reset', 'button'];
-      const fncs = [make_check_elm, make_check_elm, make_file_elm, make_select_elm, make_button_elm, make_button_elm];
+      const fncs = [
+        make_check_elm, make_check_elm, make_file_elm,
+        make_select_elm, make_button_elm, make_button_elm];
       const idx = spec.indexOf(type);
       const elm = (idx == -1) ? make_input_elm(def, type) : fncs[idx](def, type);
       Object.assign(elm.style, {
@@ -316,7 +325,7 @@ export class TymFormComponent {
     //---------------------------------------------------------------
     // ..
     const re = /(\[[a-z] *\])/g
-    viewtext.split('\r\n').forEach((tx, line) => {
+    viewtext.split(/\r\n|\n/).forEach((tx, line) => {
       let matches;
       while ((matches = re.exec(tx)) != null) {
         create_elm(matches, line);
@@ -337,8 +346,8 @@ export class TymFormComponent {
     vals: any,
     text: string,
     texturl: string,
-    button?: (varname: string, event: MouseEvent) => void,
-    enter?: (varname: string, event: KeyboardEvent) => void
+    button?: (event: MouseEvent, vals: any, varname: string) => void,
+    enter?: (event: KeyboardEvent, vals: any, varname: string) => void
   ): StaticProvider {
     return {
       provide: TymFormComponent.TYM_FORM_TOKEN,

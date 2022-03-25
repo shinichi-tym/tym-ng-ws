@@ -26,7 +26,7 @@ npm install tym-tree
 
 <br>
 
-表示される場所に htmlタグ を用意し，その中に`<ngx-tym-tree>`タグを作成します。
+表示される場所に`<ngx-tym-tree>`タグを作成します。
 
 ``` html
   :
