@@ -1070,7 +1070,7 @@ export class AppComponent {
   @Output() panel2() { this.tymform!.formTextUrl = './assets/panel2.txt'; }
   @Output() open_panel() {
     const provider = TymFormComponent.provider(
-      {}, '', './assets/panel00.txt',
+      {}, '', './assets/panel00.txt', {},
       (event: MouseEvent, vals: any, varname: string) => {
         let msg;
         if (varname == 'close') {

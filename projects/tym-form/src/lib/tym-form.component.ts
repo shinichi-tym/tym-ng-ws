@@ -88,19 +88,18 @@ export class TymFormComponent {
       borderStyle, borderColor, backgroundColor,
       formBorder, formFontColor, formBackgroundColor,
       formFocusOutline, formInvalidBorder } = opts;
-    if (zoom) {
-      style.transformOrigin = '0 0';
-      style.transform = `scale(${zoom})`;
-    }
     if (fontColor) style.color = fontColor;
-    if (typeof lineHeight16px == 'string' && (lineHeight16px as string) == 'true') style.lineHeight = '16px';
-    if (typeof lineHeight16px == 'boolean' && lineHeight16px) style.lineHeight = '16px';
+    if (lineHeight16px?.toString() == 'true') style.lineHeight = '16px';
     setTimeout(() => {
       const pre = thisElm.firstElementChild as HTMLPreElement;
+      const form = thisElm.lastElementChild as HTMLFormElement;
       const prestyle = pre.style;
       if (borderStyle) prestyle.borderStyle = borderStyle;
       if (borderColor) prestyle.borderColor = borderColor;
       if (backgroundColor) prestyle.backgroundColor = backgroundColor;
+      if (zoom) {
+        prestyle.transform = form.style.transform = `scale(${zoom})`;
+      }
     });
     //---------------------------------------------------------------
     if (formBorder) this.formBorder = formBorder;
@@ -401,8 +400,9 @@ export class TymFormComponent {
     pre.innerText = viewtext;
     form.style.width = `${pre.clientWidth - 16}px`;
     form.style.height = `${pre.clientHeight - 16}px`;
-    thisElm.style.width = `${pre.clientWidth + 10}px`;
-    thisElm.style.height = `${pre.clientHeight + 10}px`;
+    const scales = window.getComputedStyle(pre).transform.split(/[(,)]/);
+    thisElm.style.width = `calc(${pre.clientWidth + 10}px * ${(scales.length >= 5) ? scales[1] : 1})`;
+    thisElm.style.height = `calc(${pre.clientHeight + 10}px * ${(scales.length >= 5) ? scales[4] : 1})`;
     //---------------------------------------------------------------
     // ..
     const calc_prex = create_element('pre');
@@ -423,6 +423,7 @@ export class TymFormComponent {
    * @param vals val names object
    * @param text form text
    * @param texturl form text url
+   * @param opts custom options
    * @param button button click event function
    * @param enter press enter key event function
    * @returns FORM画面用StaticProvider
@@ -431,9 +432,9 @@ export class TymFormComponent {
     vals: any,
     text: string,
     texturl: string,
+    opts?: TYM_FORM_OPTS,
     button?: (event: MouseEvent, vals: any, varname: string) => void,
     enter?: (event: KeyboardEvent, vals: any, varname: string) => void,
-    opts?: TYM_FORM_OPTS
   ): StaticProvider {
     return {
       provide: TymFormComponent.TYM_FORM_TOKEN,

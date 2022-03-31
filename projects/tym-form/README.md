@@ -291,7 +291,7 @@ const button = (event: MouseEvent, vals: any, varname: string) => {
   }
 }
 const provider = TymFormComponent.provider(
-  vals, '', './assets/panel1.txt', button
+  vals, '', './assets/panel1.txt', opts, button
 );
 let compoRef = this.modal.open(TymFormComponent, provider);
 ```
