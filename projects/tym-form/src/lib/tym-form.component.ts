@@ -90,7 +90,7 @@ export class TymFormComponent {
       formFocusOutline, formInvalidBorder } = opts;
     if (zoom) {
       style.transformOrigin = '0 0';
-      style.transform = zoom;
+      style.transform = `scale(${zoom})`;
     }
     if (fontColor) style.color = fontColor;
     if (typeof lineHeight16px == 'string' && (lineHeight16px as string) == 'true') style.lineHeight = '16px';
