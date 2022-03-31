@@ -8,7 +8,7 @@ import { TymModalService } from "tym-modals";
 import { TymDialogComponent, TymMenuComponent, MenuItems, IconItems } from "tym-modals";
 import { TymTreeComponent, TYM_TREE, TYM_LEAF, TYM_TREE_OPTION } from "tym-tree";
 import { TymTableEditorComponent, TymTableInputComponent, TYM_EDITOR_DEF } from "tym-table-editor";
-import { TymFormComponent } from "tym-form";
+import { TymFormComponent, TYM_FORM_OPTS } from "tym-form";
 
 @Component({
   selector: 'app-root',
@@ -459,66 +459,7 @@ export class AppComponent {
       const elm_td = element.parentElement?.previousElementSibling as HTMLElement;
       const elm_id = elm_td.innerText;
       console.log(elm_id)
-      switch (elm_id) {
-        case 'fontFamily':
-          custom.fontFamily = elm_val;
-          break;
-
-        case 'fontSize':
-          custom.fontSize = elm_val;
-          break;
-
-        case 'borderColor':
-          custom.borderColor = elm_val;
-          break;
-
-        case 'headerBackground':
-          custom.headerBackground = elm_val;
-          break;
-
-        case 'headerColor':
-          custom.headerColor = elm_val;
-          break;
-
-        case 'headerBoxShadow':
-          custom.headerBoxShadow = elm_val;
-          break;
-
-        case 'bodyColor':
-          custom.bodyColor = elm_val;
-          break;
-
-        case 'bodyBoxShadow':
-          custom.bodyBoxShadow = elm_val;
-          break;
-
-        case 'bodyBoxPadding':
-          custom.bodyBoxPadding = elm_val;
-          break;
-
-        case 'bodyEvenColor':
-          custom.bodyEvenColor = elm_val;
-          break;
-
-        case 'bodyOddColor':
-          custom.bodyOddColor = elm_val;
-          break;
-
-        case 'bodySeldColor':
-          custom.bodySeldColor = elm_val;
-          break;
-
-        case 'bodyHovrColor':
-          custom.bodyHovrColor = elm_val;
-          break;
-
-        case 'bodyFocusColor':
-          custom.bodyFocusColor = elm_val;
-          break;
-
-        default:
-          break;
-      }
+      Object.assign(custom, { [elm_id]: elm_val });
     }
     this.custom = custom;
     let dddef: TYM_DDDEF = {
@@ -1148,6 +1089,28 @@ export class AppComponent {
     let componentRef = this.modal.open(TymFormComponent, provider, true);
     const element = componentRef.location.nativeElement as HTMLElement;
     const compo = componentRef.instance as TymFormComponent;
-    compo.formTextUrl = './assets/panel01.txt';
+    compo.loading.then(_ => compo.formTextUrl = './assets/panel01.txt');
+  }
+  @ViewChild("tymformx") private tymformx?: TymFormComponent;
+  @ViewChild("tymformxdef") private tymformxdef?: ElementRef;
+  @ViewChild("tymformxtext") private tymformxtext?: ElementRef;
+  @Output() tymformx_set() {
+    const textareadef = this.tymformxdef?.nativeElement as HTMLTextAreaElement;
+    const textareatext = this.tymformxtext?.nativeElement as HTMLTextAreaElement;
+    this.tymformx!.formText = textareadef.value;
+    this.tymformx!.formText = textareatext.value;
+  }
+  @Output() formopts = {}
+  @Output() setFormCustom() {
+    let inputs = document.querySelectorAll<HTMLInputElement>('#formcust input');
+    let opts: TYM_FORM_OPTS = {};
+    for (let index = 0; index < inputs.length; index++) {
+      const element = inputs[index];
+      const elm_val = element.value;
+      const elm_td = element.parentElement?.previousElementSibling as HTMLElement;
+      const elm_id = elm_td.innerText;
+      Object.assign(opts, { [elm_id]: elm_val });
+    }
+    this.formopts = opts;
   }
 }

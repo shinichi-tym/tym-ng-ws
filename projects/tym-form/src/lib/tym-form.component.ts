@@ -6,7 +6,40 @@
  */
 
 import { Inject, InjectionToken, StaticProvider } from '@angular/core';
-import { Component, Input, ElementRef, Renderer2 } from '@angular/core';
+import { Component, Input, ElementRef, Renderer2, HostBinding } from '@angular/core';
+
+/**
+ * フォームスタイルカスタマイズの定義
+ */
+export type TYM_FORM_OPTS = {
+  /** font size, default:16px */
+  /** line height, default:24px */
+
+  /** zoom, default:1 */
+  zoom?: string,
+
+  /** font color, default:#000 */
+  fontColor?: string,
+  /** set '16px' to line height */
+  lineHeight16px?: boolean,
+  /** border style, default:double */
+  borderStyle?: string,
+  /** border color, default:#888 */
+  borderColor?: string,
+  /** background color, default:#eff */
+  backgroundColor?: string,
+
+  /** form element border, default:dotted 1px #ccc */
+  formBorder?: string,
+  /** form element font color, default:#000 */
+  formFontColor?: string,
+  /** form element background color, default:#efe */
+  formBackgroundColor?: string,
+  /** form element focus outline, default:solid 1px #888 */
+  formFocusOutline?: string,
+  /** form element invalid border, default:solid 1px #f00 */
+  formInvalidBorder?: string,
+}
 
 type DEF = {
   id: string,
@@ -36,16 +69,48 @@ export class TymFormComponent {
   private defmap = new Map<string, DEF>();
 
   private thisElm: HTMLElement; // this table element
+  private bkuptext: string = '';
+
+  @HostBinding('style.--fm-bo') protected formBorder!: string;
+  @HostBinding('style.--fm-co') protected formFontColor!: string;
+  @HostBinding('style.--fm-bg') protected formBackgroundColor!: string;
+  @HostBinding('style.--fm-ol') protected formFocusOutline!: string;
+  @HostBinding('style.--fm-ib') protected formInvalidBorder!: string;
 
   @Input() vals = {}
 
-  @Input() set formText(text: string) {
-    this.createForm(text);
+  @Input() set opts(opts: TYM_FORM_OPTS) {
+    if (!opts) return;
+    const thisElm = this.thisElm;
+    const style = thisElm.style;
+    const {
+      zoom, fontColor, lineHeight16px,
+      borderStyle, borderColor, backgroundColor,
+      formBorder, formFontColor, formBackgroundColor,
+      formFocusOutline, formInvalidBorder } = opts;
+    if (zoom) Object.assign(style, { zoom: zoom });
+    if (fontColor) style.color = fontColor;
+    if (typeof lineHeight16px == 'string' && (lineHeight16px as string) == 'true') style.lineHeight = '16px';
+    if (typeof lineHeight16px == 'boolean' && lineHeight16px) style.lineHeight = '16px';
+    setTimeout(() => {
+      const pre = thisElm.firstElementChild as HTMLPreElement;
+      const prestyle = pre.style;
+      if (borderStyle) prestyle.borderStyle = borderStyle;
+      if (borderColor) prestyle.borderColor = borderColor;
+      if (backgroundColor) prestyle.backgroundColor = backgroundColor;
+    });
+    //---------------------------------------------------------------
+    if (formBorder) this.formBorder = formBorder;
+    if (formFontColor) this.formFontColor = formFontColor;
+    if (formBackgroundColor) this.formBackgroundColor = formBackgroundColor;
+    if (formFocusOutline) this.formFocusOutline = formFocusOutline;
+    if (formInvalidBorder) this.formInvalidBorder = formInvalidBorder;
+    this.createForm(this.bkuptext);
   }
 
-  @Input() set formTextUrl(url: string) {
-    this.setTextUrl(url);
-  }
+  @Input() set formText(text: string) { this.createForm(text) }
+
+  @Input() set formTextUrl(url: string) { this.setTextUrl(url) }
 
   @Input() button = (event: MouseEvent, vals: any, varname: string) => { }
 
@@ -69,6 +134,7 @@ export class TymFormComponent {
       if (vals_.texturl) this.setTextUrl(vals_.texturl);
       if (vals_.button) this.button = vals_.button;
       if (vals_.enter) this.enter = vals_.enter;
+      if (vals_.opts) this.opts = vals_.opts;
       Object.assign(this.thisElm.style, {
         width: 'min-content',
         height: 'min-content',
@@ -91,6 +157,7 @@ export class TymFormComponent {
   //-----------------------------------------------------------------
   // ..
   private async setTextUrl(url: string) {
+    if (!url) return;
     this.loading = fetch(url).then(res => {
       if (res.ok) {
         let p = res.text();
@@ -109,15 +176,17 @@ export class TymFormComponent {
 
   //-----------------------------------------------------------------
   // ..
-  private createForm(_text: string) {
-    const [txt, def] = _text.split('[DEF]', 2);
+  private createForm(text: string) {
+    if (!text) return;
+    const [txt, def] = text.split('[DEF]', 2);
     if (def != undefined) this.createDefMap(def);
-    if (txt.trim() != '') this.createView(txt);
+    if (txt.trim() != '') setTimeout(() => this.createView(txt));
   }
 
   //-----------------------------------------------------------------
   // ..
   private createDefMap(defstext: string) {
+    if (!defstext) return;
     this.defmap.clear();
     defstext.split(/\r\n|\n/)?.forEach(def => {
       //{id}:{var name}:{type}:{inputmode}:{pattern}:{required}:{placeholder}:{title}:{line}:{option}
@@ -140,6 +209,7 @@ export class TymFormComponent {
   }
 
   private createView(viewtext: string) {
+    if (!viewtext) return;
     //---------------------------------------------------------------
     // ..
     const vals = this.vals as any;
@@ -148,10 +218,7 @@ export class TymFormComponent {
     const pre = thisElm.firstElementChild as HTMLPreElement;
     const form = thisElm.lastElementChild as HTMLFormElement;
     while (form.firstChild) form.removeChild(form.firstChild);
-    //---------------------------------------------------------------
-    // ..
-    const str_len = (str: string): number =>
-      [...str].reduce((sum, c) => sum + (c.match(/[ -~ｱ-ﾝﾞﾟ]/) ? 1 : 2), 0);
+    const { lineHeight } = window.getComputedStyle(pre);
     //---------------------------------------------------------------
     // ..
     const set_prop = (varname: string, val: any) =>
@@ -231,7 +298,7 @@ export class TymFormComponent {
       const msg = def.option[0] || 'select file ...';
       const label = create_label_element();
       label.tabIndex = 0;
-      label.style.fontSize = '90%';
+      label.style.fontSize = '75%';
       const input = create_input_element(type);
       const text = create_text(msg);
       label.addEventListener('keypress', e => {
@@ -245,7 +312,7 @@ export class TymFormComponent {
         setTimeout(() => {
           text.nodeValue = input.value || msg;
           set_prop(def.varname, input.value);
-          label.style.fontSize = (input.value) ? '' : '90%';
+          label.style.fontSize = (input.value) ? '' : '75%';
         });
       });
       label.appendChild(input);
@@ -278,7 +345,14 @@ export class TymFormComponent {
     // ..
     const make_button_elm = (def: DEF, type: string) => {
       const button = create_input_element(type);
-      if (def.option) button.value = def.option[0];
+      //ラベル,color,bgColor
+      if (def.option) {
+        const [label, color, bgColor, hoverColor, hoverBgColor] = def.option;
+        const style = button.style;
+        if (label) button.value = label;
+        if (color) style.color = color;
+        if (bgColor) style.backgroundColor = bgColor;
+      }
       button.addEventListener('click', e => {
         if (type == 'reset') {
           form.querySelectorAll('input').forEach(e => {
@@ -291,6 +365,12 @@ export class TymFormComponent {
     }
     //---------------------------------------------------------------
     // ..
+    const getsize = (txt: string) => {
+      calc_prex.innerText = txt;
+      return calc_prex.clientWidth;
+    }
+    //---------------------------------------------------------------
+    // ..
     const create_elm = (matches: RegExpExecArray, line: number) => {
       const prev = matches.input.substring(0, matches.index);
       const hits = matches[1];
@@ -299,8 +379,6 @@ export class TymFormComponent {
       if (!def) return;
       //-----------------
       const type = def.type || 'text';
-      const left = str_len(prev);
-      const width = str_len(hits);
       const spec = ['checkbox', 'radio', 'file', 'select', 'reset', 'button'];
       const fncs = [
         make_check_elm, make_check_elm, make_file_elm,
@@ -308,10 +386,10 @@ export class TymFormComponent {
       const idx = spec.indexOf(type);
       const elm = (idx == -1) ? make_input_elm(def, type) : fncs[idx](def, type);
       Object.assign(elm.style, {
-        top: `${8 + 24 * line}px`,
-        left: `${8 + 8 * left}px`,
-        width: `${8 * width}px`,
-        height: `${22 + (def.line - 1) * 24}px`,
+        top: `calc(${lineHeight} * ${line} + 8px)`,
+        left: `calc(${getsize(prev)}px - 8px)`,  //padding分
+        width: `calc(${getsize(hits)}px - 16px)`,//padding分
+        height: `calc(${def.line} * ${lineHeight} - 1px)`,
       } as CSSStyleDeclaration);
       form.appendChild(elm);
     }
@@ -324,13 +402,17 @@ export class TymFormComponent {
     thisElm.style.height = `${pre.clientHeight + 10}px`;
     //---------------------------------------------------------------
     // ..
-    const re = /(\[[a-z] *\])/g
+    const calc_prex = create_element('pre');
+    thisElm.appendChild(calc_prex);
+    const re = /(\[[a-z][ \t]*\])/g
     viewtext.split(/\r\n|\n/).forEach((tx, line) => {
       let matches;
       while ((matches = re.exec(tx)) != null) {
         create_elm(matches, line);
       }
     });
+    calc_prex.parentElement.removeChild(calc_prex);
+    this.bkuptext = viewtext;
   }
 
   /**
@@ -347,7 +429,8 @@ export class TymFormComponent {
     text: string,
     texturl: string,
     button?: (event: MouseEvent, vals: any, varname: string) => void,
-    enter?: (event: KeyboardEvent, vals: any, varname: string) => void
+    enter?: (event: KeyboardEvent, vals: any, varname: string) => void,
+    opts?: TYM_FORM_OPTS
   ): StaticProvider {
     return {
       provide: TymFormComponent.TYM_FORM_TOKEN,
@@ -357,6 +440,7 @@ export class TymFormComponent {
         texturl: texturl,
         button: button,
         enter: enter,
+        opts: opts,
       }
     }
   }

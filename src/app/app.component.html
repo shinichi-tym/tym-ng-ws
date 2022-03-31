@@ -620,15 +620,96 @@ uptext:<input type="text" #treetext size="10" value="up text"><br>
 <br>
 <ngx-tym-form #tymform
  formTextUrl="./assets/panel1.txt"
+ [opts]="formopts"
  [vals]="{name:'zzzzz',date:'2022-02-22',select:'list-b'}"></ngx-tym-form>
 <br>
+<form><table id="formcust">
+  <tr>
+    <td>zoom</td><td><input type="text" value="1"></td>
+    <td>backgroundColor</td><td><input type="text" value="#eff"></td>
+  </tr>
+  <tr>
+    <td>borderStyle</td><td><input type="text" value="double"></td>
+    <td>borderColor</td><td><input type="text" value="#888"></td>
+  </tr>
+  <tr>
+    <td>formBorder</td><td><input type="text" value="dotted 1px #ccc"></td>
+    <td>formFontColor</td><td><input type="text" value="#000"></td>
+  </tr>
+  <tr>
+    <td>formBackgroundColor</td><td><input type="text" value="#fff"></td>
+    <td>formFocusOutline</td><td><input type="text" value="solid 1px #888"></td>
+  </tr>
+  <tr>
+    <td>formInvalidBorder</td><td><input type="text" value="solid 1px #f00"></td>
+    <td>lineHeight16px</td><td><input type="text" value="false"></td>
+  </tr>
+</table></form>
 <br>
 <input type="button" (click)="panel1()" value="panel1">
 <input type="button" (click)="panel2()" value="panel2">
+<input type="button" (click)="setFormCustom()" value="setFormCustom">
 <input type="button" (click)="open_panel()" value="open_panel">
 <br>
 <span #tymformmsg></span>
 <br>
+<div style="display:inline-block">
+<ngx-tym-form style="border:solid 1px #888"
+ formTextUrl="./assets/panel04.txt"
+ [opts]="{zoom:'70%',lineHeight16px:true,borderColor:'transparent',backgroundColor:'#fff'}"
+></ngx-tym-form>
+<br><pre>
+zoom:'70%',
+lineHeight16px:true,
+borderColor:'transparent',
+backgroundColor:'#fff'
+
+</pre>
+</div>
+&nbsp;
+<div style="display:inline-block">
+<ngx-tym-form style="border:solid 1px #888"
+ formTextUrl="./assets/panel04.txt"
+ [opts]="{zoom:'.7',lineHeight16px:true,borderStyle:'solid',borderColor:'#888',backgroundColor:'#ffc'}"
+></ngx-tym-form>
+<br><pre>
+zoom:'.7',
+lineHeight16px:true,
+borderStyle:'solid',
+borderColor:'#888',
+backgroundColor:'#ffc'
+</pre>
+</div>
+<br>
+<ngx-tym-form id="tymformx" #tymformx formText="please set"></ngx-tym-form>
+<br>
+<input type="button" (click)="tymformx_set()" value="set">
+<br>
+<textarea #tymformxtext style="width:90%;height:15em">
+登録日   [a                  ]
+商品ID   [b         ]
+</textarea>
+<textarea #tymformxdef style="width:90%;height:15em">
+[DEF]
+{id}:{var name}:{type}:{inputmode}:{pattern}:{required}:{placeholder}:{title}:{line}:{option}
+a:var01        :date  :           :         :          :             :       :      :
+b:var02        :text  :           :         :          :             :       :      :
+c:var03        :text  :           :         :          :             :       :      :
+d:var04        :text  :           :         :          :             :       :      :
+
+
+:type      {| text | tel | url | email | password | date | month | week | time | datetime-local | number
+:           | checkbox | radio | file | select | reset | button}
+:inputmode {| none | text | tel | url | email | numeric | decimal | search}
+:pattern   {| [a-z]+ 半角英小文字, [A-Z]+ 半角英大文字, [0-9]{1,4} 半角数字1～4文字, etc}
+:required  {| y | n}
+:line      {| 1～4}
+:option    {type=file => メッセージ
+:           type-select => 項目,項目,...
+:           type=checkbox/radio => ラベル,ラベル,...
+:           type=reset/button => ラベル}
+:           type=reset/button => ボタン名,color,bgColor}
+</textarea>
 <br>
 <br>
 <br>

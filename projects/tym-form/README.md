@@ -41,7 +41,7 @@ npm install tym-form
 
 表示する画面データを文字列 または テキストファイルとして用意します。
 
-``` text:panel.txt
+``` text :panel.txt
 パネル１
 ───────────────────────
  登録日   [a                ]
@@ -93,6 +93,7 @@ import { TymFormComponent } from "tym-form";
 - [基本機能](#基本機能) (Basic Function)
 - [ファイル仕様](#ファイル仕様) (File Specifications)
 - [ダイアログ表示機能](#ダイアログ表示機能) (Dialog View Function)
+- [カスタマイズ](#カスタマイズ) (Customization)
 
 <br>
 
@@ -114,6 +115,7 @@ import { TymFormComponent } from "tym-form";
     [formTextUrl]="texturl"
     [button]="button"
     [enter]="enter"
+    [opts]="opts"
 ></ngx-tym-table>
 ```
 - `vals: any`
@@ -164,6 +166,46 @@ const enter = (event: KeyboardEvent, vals: any, varname: string) => {
 }
 ```
 
+- `opts: TYM_FORM_OPTS`
+``` typescript
+/**
+ * フォームスタイルカスタマイズの定義
+ */
+export type TYM_FORM_OPTS = {
+  /** font size, default:16px */
+  /** line height, default:24px */
+
+  /** zoom, default:1 */
+  zoom?: string,
+
+  /** font color, default:#000 */
+  fontColor?: string,
+  /** set '16px' to line height */
+  lineHeight16px?: boolean,
+  /** border style, default:double */
+  borderStyle?: string,
+  /** border color, default:#888 */
+  borderColor?: string,
+  /** background color, default:#eff */
+  backgroundColor?: string,
+
+  /** form element border, default:dotted 1px #ccc */
+  formBorder?: string,
+  /** form element font color, default:#000 */
+  formFontColor?: string,
+  /** form element background color, default:#efe */
+  formBackgroundColor?: string,
+  /** form element focus outline, default:solid 1px #888 */
+  formFocusOutline?: string,
+  /** form element invalid border, default:solid 1px #f00 */
+  formInvalidBorder?: string,
+}
+```
+
+<br>
+
+---
+
 <br>
 
 > ### ファイル仕様
@@ -212,7 +254,11 @@ const enter = (event: KeyboardEvent, vals: any, varname: string) => {
     - `type:radio` では, カンマ区切りでラベルを定義します。
     - `type:file` では, 未選択時のメッセージを定義します。
     - `type:select` では, カンマ区切りで項目を定義します。
-    - `type:reset`, `type:button` では, ボタン名を定義します。
+    - `type:reset`, `type:button` では, カンマ区切りで ボタン名, color, bgColor を定義します。
+
+<br>
+
+---
 
 <br>
 
@@ -248,6 +294,27 @@ const provider = TymFormComponent.provider(
   vals, '', './assets/panel1.txt', button
 );
 let compoRef = this.modal.open(TymFormComponent, provider);
+```
+
+<br>
+
+---
+
+<br>
+
+> ### カスタマイズ
+
+<br>
+
+- `opts` 値を設定するとカスタマイズできます。
+
+``` typescript
+opts = {
+  zoom:'70%',
+  lineHeight16px:true,
+  borderColor:'transparent',
+  backgroundColor:'#fff',
+}; 
 ```
 
 <br>

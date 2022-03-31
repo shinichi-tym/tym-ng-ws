@@ -4,10 +4,10 @@
  アドレス         [c                                                           ]
  メールアドレス   [d                                                           ]
  パスワード       [e                 ]
- 日付             [f                ]
- 月 / 週 / 時刻   [g                ]  [h                       ]  [i         ]
- 日時             [j                         ]
- 数字             [k         ]   [l         ]  [m         ]
+ 日付             [f                 ]
+ 月 / 週 / 時刻   [g                 ]  [h                       ]  [i         ]
+ 日時             [j                       ]
+ 数字             [k         ]  [l         ]  [m         ]
  チェックボックス [n                                ]
 
  ラジオボタン     [o                                                           ]
@@ -50,6 +50,7 @@ z:command      :text  :           :         :          :             :       :  
 :required  {| y | n}
 :line      {| 1～4}
 :option    {type=file => メッセージ
-:           type-select => アイテム,アイテム,...
+:           type-select => 項目,項目,...
 :           type=checkbox/radio => ラベル,ラベル,...
 :           type=reset/button => ラベル}
+:           type=reset/button => ボタン名,color,bgColor}

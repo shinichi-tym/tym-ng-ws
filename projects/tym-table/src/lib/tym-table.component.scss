@@ -74,6 +74,7 @@ table {
       }
 
       th.chkbox {
+        font-family: monospace;
         z-index: 2;
         left: 0;
         cursor: pointer;
@@ -113,6 +114,7 @@ table {
 
       th.chkbox {
         position: -webkit-sticky;
+        font-family: monospace;
         position: sticky;
         left: 0;
         padding: 0;
@@ -175,6 +177,9 @@ table {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+  td {
+    font-variant-numeric: tabular-nums slashed-zero;
   }
 
   input[type=checkbox] {
