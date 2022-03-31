@@ -88,7 +88,10 @@ export class TymFormComponent {
       borderStyle, borderColor, backgroundColor,
       formBorder, formFontColor, formBackgroundColor,
       formFocusOutline, formInvalidBorder } = opts;
-    if (zoom) Object.assign(style, { zoom: zoom });
+    if (zoom) {
+      style.transformOrigin = '0 0';
+      style.transform = zoom;
+    }
     if (fontColor) style.color = fontColor;
     if (typeof lineHeight16px == 'string' && (lineHeight16px as string) == 'true') style.lineHeight = '16px';
     if (typeof lineHeight16px == 'boolean' && lineHeight16px) style.lineHeight = '16px';
