@@ -89,7 +89,7 @@ export class TymFormComponent {
       formBorder, formFontColor, formBackgroundColor,
       formFocusOutline, formInvalidBorder } = opts;
     if (fontColor) style.color = fontColor;
-    if (lineHeight16px?.toString() == 'true') style.lineHeight = '16px';
+    style.lineHeight = (lineHeight16px?.toString() == 'true') ? '16px' : '';
     setTimeout(() => {
       const pre = thisElm.firstElementChild as HTMLPreElement;
       const form = thisElm.lastElementChild as HTMLFormElement;
@@ -367,10 +367,8 @@ export class TymFormComponent {
     }
     //---------------------------------------------------------------
     // ..
-    const getsize = (txt: string) => {
-      calc_prex.innerText = txt;
-      return calc_prex.clientWidth;
-    }
+    const getsize = (txt: string) =>
+      (calc_prex.innerText = txt, calc_prex.clientWidth);
     //---------------------------------------------------------------
     // ..
     const create_elm = (matches: RegExpExecArray, line: number) => {
@@ -407,7 +405,7 @@ export class TymFormComponent {
     // ..
     const calc_prex = create_element('pre');
     thisElm.appendChild(calc_prex);
-    const re = /(\[[a-z][ \t]*\])/g
+    const re = /(\[[a-z][ \t　]*\])/g;
     viewtext.split(/\r\n|\n/).forEach((tx, line) => {
       let matches;
       while ((matches = re.exec(tx)) != null) {

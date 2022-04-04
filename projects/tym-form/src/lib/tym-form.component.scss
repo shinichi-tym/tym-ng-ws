@@ -28,18 +28,18 @@
   >*{
     padding: 8px;
     margin: 0;
-    border: 5px double #888;
+    border: 5px double transparent;
     border-radius: 8px;
     position: absolute;
     background-color: transparent;
     transform-origin: 0 0;
   }
   >pre{
+    border-color: #888;
     width: fit-content;
     background-color: #eff;
   }
   >form{
-    border-color: transparent;
     >*{
       box-sizing: border-box;
       border: var(--fm-bo);
@@ -84,6 +84,14 @@
         &:active{
           border: inset 2px;
         }
+      }
+    }
+    textarea{
+      &:focus-visible{
+        outline: var(--fm-ol);
+      }
+      &:invalid{
+        border: var(--fm-ib);
       }
     }
   }

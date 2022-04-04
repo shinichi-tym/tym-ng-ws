@@ -625,7 +625,7 @@ uptext:<input type="text" #treetext size="10" value="up text"><br>
 <br>
 <form><table id="formcust">
   <tr>
-    <td>zoom</td><td><input type="text" value="1"></td>
+    <td>fontColor</td><td><input type="text" value="#000"></td>
     <td>backgroundColor</td><td><input type="text" value="#eff"></td>
   </tr>
   <tr>
@@ -644,11 +644,18 @@ uptext:<input type="text" #treetext size="10" value="up text"><br>
     <td>formInvalidBorder</td><td><input type="text" value="solid 1px #f00"></td>
     <td>lineHeight16px</td><td><input type="text" value="false"></td>
   </tr>
+  <tr>
+    <td>zoom</td><td><input type="text" value="1"></td>
+    <td></td><td></td>
+  </tr>
 </table></form>
 <br>
 <input type="button" (click)="panel1()" value="panel1">
 <input type="button" (click)="panel2()" value="panel2">
 <input type="button" (click)="setFormCustom()" value="setFormCustom">
+<input type="button" (click)="formCustom(0)" value="Custom 0">
+<input type="button" (click)="formCustom(1)" value="Custom 1">
+<input type="button" (click)="formCustom(2)" value="Custom 2">
 <input type="button" (click)="open_panel()" value="open_panel">
 <br>
 <span #tymformmsg></span>

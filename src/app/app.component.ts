@@ -1113,4 +1113,21 @@ export class AppComponent {
     }
     this.formopts = opts;
   }
+  @Output() formCustom(n: number) {
+    let inputs = document.querySelectorAll<HTMLInputElement>('#formcust input');
+    const fontColor = ['#000', '#000', '#fff'];
+    const backgroundColor = ['#eff', '#fff', '#123'];
+    const borderColor = ['#888', 'transparent', '#123'];
+    const formBorder = ['dotted 1px #ccc', 'solid 1px #000', 'dashed 1px #123'];
+    for (let index = 0; index < inputs.length; index++) {
+      const element = inputs[index];
+      const elm_td = element.parentElement?.previousElementSibling as HTMLElement;
+      const elm_id = elm_td.innerText;
+      if (elm_id == 'fontColor') element.value = fontColor[n];
+      if (elm_id == 'backgroundColor') element.value = backgroundColor[n];
+      if (elm_id == 'borderColor') element.value = borderColor[n];
+      if (elm_id == 'formBorder') element.value = formBorder[n];
+    }
+    this.setFormCustom();
+  }
 }
