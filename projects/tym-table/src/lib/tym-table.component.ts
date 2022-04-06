@@ -236,9 +236,12 @@ export class TymTableComponent implements AfterViewInit {
    * @param row 行データ
    */
   private _doDragStart = (event: DragEvent, num: number, row: any): void => {
-    event.dataTransfer?.setData('text/plain', num.toString());
-    event.dataTransfer?.setData('application/json', JSON.stringify(row));
-    event.dataTransfer!.effectAllowed = this._dd_def.dragType as any;
+    const dtr = event.dataTransfer;
+    if (dtr) {
+      dtr.setData('text/plain', num.toString());
+      dtr.setData('application/json', JSON.stringify(row));
+      dtr.effectAllowed = this._dd_def.dragType as any;
+    }
   }
 
   /**
@@ -258,14 +261,11 @@ export class TymTableComponent implements AfterViewInit {
    */
   private _doDragEnterOrOver = (event: DragEvent, num: number, row: any): void => {
     event.preventDefault();
-    if (this._dd_def.dropType != event.dataTransfer?.effectAllowed) {
-      if (event.dataTransfer?.effectAllowed == 'copyMove') {
-        event.dataTransfer!.dropEffect = this._dd_def.dropType as any;
-      } else {
-        event.dataTransfer!.dropEffect = 'none';
-      }
-    } else {
-      event.dataTransfer!.dropEffect = this._dd_def.dropType as any;
+    const [typ, dtr] = [this._dd_def.dropType, event.dataTransfer];
+    if (dtr) {
+      dtr.dropEffect = (typ != dtr.effectAllowed)
+        ? (dtr.effectAllowed == 'copyMove') ? typ as any : 'none'
+        : typ as any;
     }
   }
 

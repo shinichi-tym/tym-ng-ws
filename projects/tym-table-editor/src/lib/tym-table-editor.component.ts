@@ -212,10 +212,9 @@ export class TymTableEditorComponent implements AfterViewInit {
     /****************************************************************
      * set converted text to cell (if converted, save to dataset-val)
      * @param elm 対象エレメント
-     * @param col 列番号
      * @param val 値
      */
-    const setText = (elm: HTMLTableCellElement, col: number, val: string) => {
+    const setText = (elm: HTMLTableCellElement, val: string) => {
       const viewfnc = getViewFunc(elm);
       elm.innerText = (viewfnc) ? viewfnc(elm.dataset.val = val) : val;
     }
@@ -236,7 +235,7 @@ export class TymTableEditorComponent implements AfterViewInit {
       let r = 0, c = 0;
       execRange((elm, eol) => {
         const v = data[r][c] || '';
-        setText(elm, 1 + c, v);
+        setText(elm, v);
         if (eol) c = 0, r++; else c++
       });
     };
@@ -256,7 +255,7 @@ export class TymTableEditorComponent implements AfterViewInit {
       execRange((elm, eol) => {
         const v = data[r][c] || '';
         hists.push({ r: row + r, c: col + c, b: text(elm), a: v });
-        setText(elm, col + c, v);
+        setText(elm, v);
         classadd(elm, 'msel');
         if (eol) c = 0, r++; else c++
       });
@@ -448,7 +447,7 @@ export class TymTableEditorComponent implements AfterViewInit {
         const _tr = tr as HTMLTableRowElement;
         if (_tr.rowIndex > 0) tr.childNodes.forEach(cell => {
           const td = cell as HTMLTableCellElement;
-          if (td.cellIndex > 0) setText(td, td.cellIndex, '');
+          if (td.cellIndex > 0) setText(td, '');
         });
       });
       clearSelRangeStyle(true);
@@ -538,7 +537,7 @@ export class TymTableEditorComponent implements AfterViewInit {
       execRange(elm => {
         const [r, c] = cellRowCol(elm);
         hists.push({ r: r, c: c, b: text(elm), a: '' });
-        setText(elm, c, '');
+        setText(elm, '');
       });
       // 編集履歴に追加
       addhists(hists);
@@ -844,7 +843,7 @@ export class TymTableEditorComponent implements AfterViewInit {
             break;
           case 'Backspace':
             const newtd = toEdit(thisCell, '');
-            setText(newtd, thisColIx, '');
+            setText(newtd, '');
             e.preventDefault();
             break;
           case 'Delete':
@@ -926,7 +925,7 @@ export class TymTableEditorComponent implements AfterViewInit {
         editElm.removeEventListener('blur', editBlue);
         editElm.removeAttribute('contentEditable');
         const [r, c] = cellRowCol(editElm);
-        setText(editElm, c, thisValue);
+        setText(editElm, thisValue);
         if (thisValue != beforeValue && beforeValue != null) {
           const hist = { r: r, c: c, b: beforeValue, a: thisValue };
           addhists([hist]);
@@ -951,7 +950,7 @@ export class TymTableEditorComponent implements AfterViewInit {
         // 編集機能あり
         editfnc(td, val || beforeValue).then(v => {
           if (v != null) {
-            setText(td, c, v);
+            setText(td, v);
             addhists([{ r: r, c: c, b: beforeValue!, a: v }]);
           }
         });
@@ -1059,7 +1058,7 @@ export class TymTableEditorComponent implements AfterViewInit {
       }
       for (; index < hist.length; index++) {
         const { r, c, a, b } = hist[index];
-        setText(cell(r, c), c, (redo) ? a : b);
+        setText(cell(r, c), (redo) ? a : b);
       }
     }
 

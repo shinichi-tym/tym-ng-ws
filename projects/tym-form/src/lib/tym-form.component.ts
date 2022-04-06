@@ -122,7 +122,9 @@ export class TymFormComponent {
    * コンストラクタ
    *
    * @param {ElementRef} elementRef このディレクティブがセットされたDOMへの参照
-   * @memberof TymTableEditDirective
+   * @param {Renderer2} renderer DOMを操作用
+   * @param {any} vals_ StaticProviderのuseValue値
+   * @memberof TymFormComponent
    */
   constructor(
     private elementRef: ElementRef,
@@ -156,10 +158,13 @@ export class TymFormComponent {
     }
   }
 
-  //-----------------------------------------------------------------
-  // ..
+  /**
+   * urlからformテキストを読み込み表示する
+   * @param url url文字列
+   * @returns Promise<string>
+   */
   private async setTextUrl(url: string) {
-    if (!url) return;
+    if (!url) return Promise.resolve('err');
     this.loading = fetch(url).then(res => {
       if (res.ok) {
         let p = res.text();
@@ -176,17 +181,22 @@ export class TymFormComponent {
     return this.loading;
   }
 
-  //-----------------------------------------------------------------
-  // ..
+  /**
+   * formテキストを表示する
+   * @param text formテキスト
+   */
   private createForm(text: string) {
-    if (!text) return;
-    const [txt, def] = text.split('[DEF]', 2);
-    if (def != undefined) this.createDefMap(def);
-    if (txt.trim() != '') setTimeout(() => this.createView(txt));
+    if (text) {
+      const [txt, def] = text.split('[DEF]', 2);
+      if (def != undefined) this.createDefMap(def);
+      if (txt.trim() != '') setTimeout(() => this.createView(txt));
+    }
   }
 
-  //-----------------------------------------------------------------
-  // ..
+  /**
+   * 定義文字列から定義情報(map)を作成する
+   * @param defstext 定義文字列
+   */
   private createDefMap(defstext: string) {
     if (!defstext) return;
     this.defmap.clear();
@@ -210,6 +220,10 @@ export class TymFormComponent {
     });
   }
 
+  /**
+   * 画面テキストと定義データから画面を表示する
+   * @param viewtext 画面テキスト
+   */
   private createView(viewtext: string) {
     if (!viewtext) return;
     //---------------------------------------------------------------
@@ -221,10 +235,6 @@ export class TymFormComponent {
     const form = thisElm.lastElementChild as HTMLFormElement;
     while (form.firstChild) form.removeChild(form.firstChild);
     const { lineHeight } = window.getComputedStyle(pre);
-    //---------------------------------------------------------------
-    // ..
-    const set_prop = (varname: string, val: any) =>
-      Object.assign(vals, { [varname]: val });
     //---------------------------------------------------------------
     // ..
     const renderer = this.renderer;
@@ -240,8 +250,20 @@ export class TymFormComponent {
     const create_span_element = () => create_element('span') as HTMLSpanElement;
     const create_select_element = () => create_element('select') as HTMLSelectElement;
     const create_option_element = () => create_element('option') as HTMLOptionElement;
-    //---------------------------------------------------------------
-    // ..
+    /****************************************************************
+     * valsにメンバ変数/値を設定する
+     * @param varname 変数名文字列
+     * @param val 設定する値
+     * @returns 
+     */
+    const set_prop = (varname: string, val: any) =>
+      Object.assign(vals, { [varname]: val });
+    /****************************************************************
+     * input/textarea タグを作成する
+     * @param def タグ用定義
+     * @param type タグタイプ
+     * @returns エレメント
+     */
     const make_input_elm = (def: DEF, type: string) => {
       const input = (def.line > 1)
         ? create_textarea_element()
@@ -265,8 +287,12 @@ export class TymFormComponent {
       }
       return input;
     }
-    //---------------------------------------------------------------
-    // ..
+    /****************************************************************
+     * input type=checkbox/radio タグを作成する
+     * @param def タグ用定義
+     * @param type タグタイプ
+     * @returns エレメント
+     */
     const make_check_elm = (def: DEF, type: string) => {
       const span = create_span_element();
       span.addEventListener('keypress', e => {
@@ -294,8 +320,12 @@ export class TymFormComponent {
       });
       return span;
     }
-    //---------------------------------------------------------------
-    // ..
+    /****************************************************************
+     * input type=file タグを作成する
+     * @param def タグ用定義
+     * @param type タグタイプ
+     * @returns エレメント
+     */
     const make_file_elm = (def: DEF, type: string) => {
       const msg = def.option[0] || 'select file ...';
       const label = create_label_element();
@@ -321,8 +351,12 @@ export class TymFormComponent {
       label.appendChild(text);
       return label;
     }
-    //---------------------------------------------------------------
-    // ..
+    /****************************************************************
+     * select/option タグを作成する
+     * @param def タグ用定義
+     * @param type タグタイプ
+     * @returns エレメント
+     */
     const make_select_elm = (def: DEF, type: string) => {
       const select = create_select_element();
       select.addEventListener('keypress', e => {
@@ -343,13 +377,17 @@ export class TymFormComponent {
       });
       return select;
     }
-    //---------------------------------------------------------------
-    // ..
+    /****************************************************************
+     * input type=button/reset タグを作成する
+     * @param def タグ用定義
+     * @param type タグタイプ
+     * @returns エレメント
+     */
     const make_button_elm = (def: DEF, type: string) => {
       const button = create_input_element(type);
       //ラベル,color,bgColor
       if (def.option) {
-        const [label, color, bgColor, hoverColor, hoverBgColor] = def.option;
+        const [label, color, bgColor] = def.option;
         const style = button.style;
         if (label) button.value = label;
         if (color) style.color = color;
@@ -365,12 +403,18 @@ export class TymFormComponent {
       });
       return button;
     }
-    //---------------------------------------------------------------
-    // ..
+    /****************************************************************
+     * テキスト表示時のサイズ(幅)を求める
+     * @param txt テキスト
+     * @returns サイズ(px)
+     */
     const getsize = (txt: string) =>
       (calc_prex.innerText = txt, calc_prex.clientWidth);
-    //---------------------------------------------------------------
-    // ..
+    /****************************************************************
+     * 各タグを作成する
+     * @param matches テキスト分割正規表現
+     * @param line 行位置
+     */
     const create_elm = (matches: RegExpExecArray, line: number) => {
       const prev = matches.input.substring(0, matches.index);
       const hits = matches[1];

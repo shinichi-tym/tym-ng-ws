@@ -167,11 +167,8 @@ export class TymMenuComponent implements AfterViewInit {
         const { classList, dataset } = liElm;
         if (item.gid == dataset.gid) {
           if (grouptop) {
-            if (classList.contains(CLS)) {
-              classList.replace(CLS, OPN);
-            } else {
-              classList.replace(OPN, CLS);
-            }
+            const [P, Q] = classList.contains(CLS) ? [CLS, OPN] : [OPN, CLS];
+            classList.replace(P, Q);
             grouptop = false;
           } else {
             if (classList.contains(NOD)) {
@@ -189,6 +186,9 @@ export class TymMenuComponent implements AfterViewInit {
    * StaticProviderのuseValue値の生成
    * @param menuItem メニュー項目
    * @param menuAction メニューアクション関数
+   * @param screenX x座標
+   * @param screenY y座標
+   * @param iconItem アイコンデータ
    * @returns メニュー用StaticProvider
    */
   public static provider(

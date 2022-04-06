@@ -18,7 +18,7 @@ export interface TYM_LEAF {
   /** 子リーフの配列 または 子リーフ取得用関数 */
   children?: TYM_TREE | ((indexs: number[], texts: string[], leaf?: any) => Promise<TYM_TREE>);
   /** 任意のデータ */
-  [any:string]: any
+  [any: string]: any
 }
 
 /**
@@ -189,7 +189,6 @@ export class TymTreeComponent implements OnInit {
    * 
    * @param {ElementRef} elementRef このコンポーネントがセットされたDOMへの参照
    * @param {Renderer2} renderer DOMを操作用
-   * @param {TymModalService} modal モーダルサービス
    * @memberof TymModalComponent
    */
   constructor(
@@ -232,17 +231,9 @@ export class TymTreeComponent implements OnInit {
         }
       }
     }
-    if (opt.doLeafOpen) this.doLeafOpen = opt.doLeafOpen;
-    if (opt.doLeafClose) this.doLeafClose = opt.doLeafClose;
-    if (opt.doDrawList) this.doDrawList = opt.doDrawList;
-    if (opt.doContext) this.doContext = opt.doContext;
-    if (opt.dragType) this.dragType = opt.dragType;
-    if (opt.dropType) this.dropType = opt.dropType;
-    if (opt.doDragStart) this.doDragStart = opt.doDragStart;
-    if (opt.doDragEnd) this.doDragEnd = opt.doDragEnd;
-    if (opt.doDragEnter) this.doDragEnter = opt.doDragEnter;
-    if (opt.doDragOver) this.doDragOver = opt.doDragOver;
-    if (opt.doDrop) this.doDrop = opt.doDrop;
+    ['doLeafOpen', 'doLeafClose', 'doDrawList', 'doContext', 'dragType', 'dropType',
+      'doDragStart', 'doDragEnd', 'doDragEnter', 'doDragOver', 'doDrop'
+    ].forEach(k => { if ((opt as any)[k]) (this as any)[k] = (opt as any)[k] });
 
     // 初期リーフ生成
     const divElm = this.thisElm.firstElementChild as HTMLDivElement;
@@ -252,25 +243,6 @@ export class TymTreeComponent implements OnInit {
     this.create_child(divElm, this.tree, 0);
     this.hover_tm_dly = null;
 
-    //キーボードイベント操作
-    divElm.addEventListener(KEYDOWN, this.key_event);
-
-    //ホイール操作時にホバーを消す
-    divElm.addEventListener(WHEEL, e => this.hover_off_delay());
-
-    //他からのTABキーによるフォーカスイン時にツリー内にフォーカスを設定する
-    divElm.addEventListener(FOCUS, e => this.set_cur_focus());
-
-    //ツリー内からフォーカスアウト時の動作
-    divElm.addEventListener(FOCUSOUT, e => {
-      const related = e.relatedTarget as HTMLElement;
-      const parent = parentElement(related) as HTMLElement;
-      //ツリー内からフォーカスアウトするときにホバーを消す
-      if (!parent?.classList.contains(HOV)) {
-        this.hover_off();
-      }
-    });
-
     // <SPAN> OP-CL <SPAN ICON></SPAN> <SPAN>TEXT</SPAN> </SPAN>
     const ev = (e: Event, f: Function) => {
       const span = e.target as HTMLElement;
@@ -279,14 +251,30 @@ export class TymTreeComponent implements OnInit {
       f(e, isSpanTag(parent) ? parent : span);
     }
 
-    //クリックイベントの動作
-    divElm.addEventListener(CLICK, e => ev(e, this.click_event));
-
-    //ダブルクリックイベントの動作
-    divElm.addEventListener(DBLCLICK, e => ev(e, this.dblclick_event));
-
-    //コンテキストメニューイベントの動作
-    divElm.addEventListener(CONTEXTMENU, e => ev(e, this.context_event));
+    //イベント登録
+    ([
+      //キーボードイベント操作
+      [KEYDOWN, this.key_event],
+      //ホイール操作時にホバーを消す
+      [WHEEL, () => this.hover_off_delay()],
+      //他からのTABキーによるフォーカスイン時にツリー内にフォーカスを設定する
+      [FOCUS, () => this.set_cur_focus()],
+      //ツリー内からフォーカスアウト時の動作
+      [FOCUSOUT, (e: MouseEvent) => {
+        const related = e.relatedTarget as HTMLElement;
+        const parent = parentElement(related) as HTMLElement;
+        //ツリー内からフォーカスアウトするときにホバーを消す
+        if (!parent?.classList.contains(HOV)) {
+          this.hover_off();
+        }
+      }],
+      //クリックイベントの動作
+      [CLICK, (e: MouseEvent) => ev(e, this.click_event)],
+      //ダブルクリックイベントの動作
+      [DBLCLICK, (e: MouseEvent) => ev(e, this.dblclick_event)],
+      //コンテキストメニューイベントの動作
+      [CONTEXTMENU, (e: MouseEvent) => ev(e, this.context_event)]
+    ] as [string, any][]).forEach(i => divElm.addEventListener(i[0], i[1]));
 
     //ドロップ用のイベント等設定
     this.setDropElm(divElm);
@@ -297,19 +285,19 @@ export class TymTreeComponent implements OnInit {
 
   /**
    * ドラッグ用のイベント等設定
-   * @param thisElm HTMLElement
+   * @param hovElm HTMLElement
    * @param span HTMLElement
    */
   private setDragElm(hovElm: HTMLElement, span: HTMLElement): void {
     hovElm.draggable = (this.dragType != NONE);
-    const dragStart = (e: DragEvent) => this._dragStart(e, span);
-    const dragEnd = (e: DragEvent) => this._dragEnd(e, span);
+    const evinfos: [string, any][] = [
+      [DRAGSTART, (e: DragEvent) => this._dragStart(e, span)],
+      [DRAGEND, (e: DragEvent) => this._dragEnd(e, span)]
+    ];
     if (hovElm.draggable) {
-      hovElm.addEventListener(DRAGSTART, dragStart);
-      hovElm.addEventListener(DRAGEND, dragEnd);
+      evinfos.forEach(inf => hovElm.addEventListener(inf[0], inf[1]));
     } else {
-      hovElm.removeEventListener(DRAGEND, dragEnd);
-      hovElm.removeEventListener(DRAGSTART, dragStart);
+      evinfos.forEach(inf => hovElm.removeEventListener(inf[0], inf[1]));
     }
   }
 
@@ -319,16 +307,16 @@ export class TymTreeComponent implements OnInit {
    */
   private setDropElm(thisElm: HTMLElement): void {
     const droptarget = (this.dropType != NONE);
+    const evinfos: [string, any][] = [
+      [DRAGENTER, this._dragEnter],
+      [DRAGOVER, this._dragOver],
+      [DRAGLEAVE, this._dragleave],
+      [DROP, this._drop]
+    ];
     if (droptarget) {
-      thisElm.addEventListener(DRAGENTER, this._dragEnter);
-      thisElm.addEventListener(DRAGOVER, this._dragOver);
-      thisElm.addEventListener(DRAGLEAVE, this._dragleave);
-      thisElm.addEventListener(DROP, this._drop);
+      evinfos.forEach(inf => thisElm.addEventListener(inf[0], inf[1]));
     } else {
-      thisElm.removeEventListener(DROP, this._drop);
-      thisElm.removeEventListener(DRAGLEAVE, this._dragleave);
-      thisElm.removeEventListener(DRAGOVER, this._dragOver);
-      thisElm.removeEventListener(DRAGENTER, this._dragEnter);
+      evinfos.forEach(inf => thisElm.removeEventListener(inf[0], inf[1]));
     }
   }
 
@@ -759,16 +747,19 @@ export class TymTreeComponent implements OnInit {
       this.hover_off();
     }, 1500);
 
-    //マウスが離れたときにホバーを消す
-    hov_inn.addEventListener(MOUSELEAVE, e => this.hover_off());
-    //ホイール操作時にホバーを消す
-    hov_inn.addEventListener(WHEEL, e => this.hover_off_delay());
-    //クリック時に開閉およびフォーカス設定
-    hov_inn.addEventListener(CLICK, e => this.click_event(e, span));
-    //ダブルクリック時に開閉
-    hov_inn.addEventListener(DBLCLICK, e => this.dblclick_event(e, span));
-    //コンテキスト時に開閉
-    hov_inn.addEventListener(CONTEXTMENU, e => this.context_event(e, span));
+    //イベント登録
+    ([
+      //マウスが離れたときにホバーを消す
+      [MOUSELEAVE, () => this.hover_off()],
+      //ホイール操作時にホバーを消す
+      [WHEEL, () => this.hover_off_delay()],
+      //クリック時に開閉およびフォーカス設定
+      [CLICK, (e: MouseEvent) => this.click_event(e, span)],
+      //ダブルクリック時に開閉
+      [DBLCLICK, (e: MouseEvent) => this.dblclick_event(e, span)],
+      //コンテキスト時に開閉
+      [CONTEXTMENU, (e: MouseEvent) => this.context_event(e, span)]
+    ] as [string, any][]).forEach(i => hov_inn.addEventListener(i[0], i[1]));
   }
 
   /**

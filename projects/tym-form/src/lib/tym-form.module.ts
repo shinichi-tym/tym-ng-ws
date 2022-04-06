@@ -17,6 +17,8 @@ import { TymFormComponent } from './tym-form.component';
   exports: [
     TymFormComponent
   ],
-  providers: [{ provide: TymFormComponent.TYM_FORM_TOKEN, useValue: {} }]
+  providers: [
+    { provide: TymFormComponent.TYM_FORM_TOKEN, useValue: {} }
+  ]
 })
 export class TymFormModule { }

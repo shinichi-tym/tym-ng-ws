@@ -23,7 +23,7 @@ export class TymResizeDirective implements OnInit {
    * リサイズイベント関数
    * 
    *  規定値:親エレメントリサイズ処理
-   * @param elm HTMLElement
+   * @param thisElm HTMLElement
    * @param parentElm 親HTMLElement
    */
   @Input() tymResizeCallback = (thisElm: HTMLElement, parentElm: HTMLElement): void => {

@@ -69,13 +69,9 @@ export class TymModalComponent implements OnInit, AfterViewInit {
      * ESCキーのイベントを登録・解除する。
      */
     const observer = new MutationObserver(() => {
-      if (divElm.childElementCount > 1) {
-        this.display = ''; // show modal
-        document.addEventListener(KEYUP, keyup, false);
-      } else {
-        this.display = 'none'; // hide modal
-        document.removeEventListener(KEYUP, keyup, false);
-      }
+      this.display = (divElm.childElementCount > 1)
+        ? (document.addEventListener(KEYUP, keyup, false), '')
+        : (document.removeEventListener(KEYUP, keyup, false), 'none');
     });
     observer.observe(divElm, { childList: true });
   }

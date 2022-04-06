@@ -49,7 +49,7 @@ export class TymDialogComponent {
 
   /**
    * ボタンクリック時の関数
-   * @param {string} id ボタンのID
+   * @param {object} btn ボタン用オブジェクト
    * @private @access private
    */
   public onC(btn: { id: string, val: string, act: Function }) {

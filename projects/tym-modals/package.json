@@ -1,6 +1,6 @@
 {
   "name": "tym-modals",
-  "version": "0.8.3",
+  "version": "0.8.4",
   "description": "'tym-modals' is a simple modal component.",
   "keywords": ["angular", "modal", "modal-less", "modeless", "dialog", "contextmenu"],
   "repository": {

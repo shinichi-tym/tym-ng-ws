@@ -128,7 +128,7 @@ export class TymModalService {
         elm.parentElement!.insertBefore(this.cvr, elm);
       } else {
         // 背景カバーの削除
-        this.cvr.parentElement!.removeChild(this.cvr)
+        this.cvr.parentElement!.removeChild(this.cvr);
         // モーダル表示時にbodyスクロール抑止解除
         bodyStyle.overflow = this.scrollOverflow;
         bodyStyle.paddingRight = this.scrollPadding;

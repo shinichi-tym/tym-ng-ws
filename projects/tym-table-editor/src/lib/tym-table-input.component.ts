@@ -100,8 +100,7 @@ export class TymTableInputComponent implements AfterViewInit, OnDestroy {
    * StaticProviderのuseValue値の生成
    * @param type input type
    * @param val 値
-   * @param screenX 表示位置X
-   * @param screenY 表示位置Y
+   * @param elm ターゲットエレメント
    * @returns ダイアログ画面用StaticProvider
    */
   public static provider(
