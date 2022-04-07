@@ -1,0 +1,59 @@
+テキスト	[a	]
+電話番号	[b	]
+アドレス	[c			]
+メールアドレス	[d			]
+パスワード	[e	]
+日付	[f	]
+月	[g		]
+週	[h		]
+時刻	[i		]
+日時	[j		]
+数字	[k	]
+ 	[l	]
+	[m	]
+チェックボックス	[n		]
+
+ラジオボタン	[o			]
+ファイル	[p			]
+リスト	[q	]
+リセットボタン	[r	]
+ボタン	[s	]
+サーチ	[t			]
+パターン	[u			]
+■ fontFamily: 'system-ui', tabSize: '30', zoom: '85%' ■
+[DEF]
+{id}:{var name}:{type}:{inputmode}:{pattern}:{required}:{placeholder}:{title}:{line}:{option}
+a:text         :text  :           :         :          : text        :       :      :
+b:tel          :tel   :           :         :          :             :tel no.:      :
+c:url          :url   :           :         :          :             :       :      :
+d:email        :email :           :         :          :             :       :      :
+e:password   :password:           :         :          :             :       :      :
+f:date         :date  :           :         :          :             :       :      :
+g:month        :month :           :         :          :             :       :      :
+h:week         :week  :           :         :          :             :       :      :
+i:time         :time  :           :         :          :             :       :      :
+j:datetime:datetime-local:        :         :          :             :       :      :
+k:number       :number:           :\d{5,8}  :y         :             :       :      :
+l:number2      :number:number     :         :          :             :       :      :
+m:number3      :number:decimal    :         :          :             :       :      :
+n:checkbox   :checkbox:           :         :          :             :       :2     :aaaa,bbbb,cccc,dddd,eeee,ffff
+o:radio        :radio :           :         :          :             :       :      :ccccc,ddddd,eeee
+p:file         :file  :           :         :          :             :       :      :ファイルの選択(ファイルが選択されていません)
+q:select       :select:           :         :          :             :LIST   :      :,list-a,list-b,list-c,list-d
+r:reset        :reset :           :         :          :             :       :      :ﾘｾｯﾄ
+s:button       :button:           :         :          :             :       :      :実行
+t:search       :text  :search     :         :          :             :       :      :
+u:pattern      :text  :           :[a-z0-9]+:          :             :       :      :
+z:command      :text  :           :         :          :             :       :      :
+:-------------------------------------------------------------------------------
+:type      {| text | tel | url | email | password | date | month | week | time | datetime-local | number
+:           | checkbox | radio | file | select | reset | button}
+:inputmode {| none | text | tel | url | email | numeric | decimal | search}
+:pattern   {| [a-z]+ 半角英小文字, [A-Z]+ 半角英大文字, [0-9]{1,4} 半角数字1～4文字, etc}
+:required  {| y | n}
+:line      {| 1～4}
+:option    {type=file => メッセージ
+:           type-select => 項目,項目,...
+:           type=checkbox/radio => ラベル,ラベル,...
+:           type=reset/button => ラベル}
+:           type=reset/button => ボタン名,color,bgColor}

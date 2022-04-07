@@ -116,7 +116,7 @@ import { TymFormComponent } from "tym-form";
     [button]="button"
     [enter]="enter"
     [opts]="opts"
-></ngx-tym-table>
+></ngx-tym-form>
 ```
 - `vals: any`
   - form に表示する変数, form に入力された変数。
@@ -180,6 +180,10 @@ export type TYM_FORM_OPTS = {
 
   /** font color, default:#000 */
   fontColor?: string,
+  /** font family, default:monospace, monospace */
+  fontFamily?: string,
+  /** tab size, default:unset */
+  tabSize?: string,
   /** set '16px' to line height */
   lineHeight16px?: boolean,
   /** border style, default:double */
@@ -316,6 +320,28 @@ opts = {
   backgroundColor:'#fff',
 }; 
 ```
+
+- プロポーショナルフォントを利用する場合, `tabSize` を利用すると画面部を定義しやすくなります。
+
+``` text:panel.txt
+--- panel.txt ---
+123456789+123456789+123456789+123456789+
+プロポーショナルフォント\t[a\t]
+proportional font\t[b\t]
+[DEF]
+a:font1:text:::::::
+b:font2:text:::::::
+--- end of file ---
+```
+
+``` html
+<ngx-tym-form #tymForm
+    [formTextUrl]="./panel.txt"
+    [opts]="{fontFamily: 'system-ui', tabSize: '25'}"
+></ngx-tym-form>
+```
+
+![表示サンプル](/tym-form-smpl.png)
 
 <br>
 

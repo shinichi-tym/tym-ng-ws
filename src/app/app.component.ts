@@ -1091,6 +1091,22 @@ export class AppComponent {
     const compo = componentRef.instance as TymFormComponent;
     compo.loading.then(_ => compo.formTextUrl = './assets/panel01.txt');
   }
+  @Output() open_panel2() {
+    const provider = TymFormComponent.provider(
+      {}, '', '', { fontFamily: 'system-ui', tabSize: '25', zoom: '85%' });
+    let componentRef = this.modal.open(TymFormComponent, provider, false);
+    const compo = componentRef.instance as TymFormComponent;
+    compo.formText = ['123456789+123456789+123456789+123456789+',
+      'プロポーショナルフォント\t[a\t]',
+      'proportional font\t[b\t]',
+      '[DEF]',
+      'a:font1:text:::::::',
+      'b:font2:text:::::::'].join('\n');
+    setTimeout(() => {
+      const compo = componentRef.instance as TymFormComponent;
+      compo.formTextUrl = './assets/panel3.txt';
+    }, 4000);
+  }
   @ViewChild("tymformx") private tymformx?: TymFormComponent;
   @ViewChild("tymformxdef") private tymformxdef?: ElementRef;
   @ViewChild("tymformxtext") private tymformxtext?: ElementRef;

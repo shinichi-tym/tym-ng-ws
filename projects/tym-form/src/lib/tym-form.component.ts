@@ -20,6 +20,10 @@ export type TYM_FORM_OPTS = {
 
   /** font color, default:#000 */
   fontColor?: string,
+  /** font family, default:monospace, monospace */
+  fontFamily?: string,
+  /** tab size, default:unset */
+  tabSize?: string,
   /** set '16px' to line height */
   lineHeight16px?: boolean,
   /** border style, default:double */
@@ -84,11 +88,13 @@ export class TymFormComponent {
     const thisElm = this.thisElm;
     const style = thisElm.style;
     const {
-      zoom, fontColor, lineHeight16px,
+      zoom, fontColor, fontFamily, tabSize, lineHeight16px,
       borderStyle, borderColor, backgroundColor,
       formBorder, formFontColor, formBackgroundColor,
       formFocusOutline, formInvalidBorder } = opts;
     if (fontColor) style.color = fontColor;
+    if (fontFamily) style.fontFamily = fontFamily;
+    if (tabSize) style.tabSize = tabSize;
     style.lineHeight = (lineHeight16px?.toString() == 'true') ? '16px' : '';
     setTimeout(() => {
       const pre = thisElm.firstElementChild as HTMLPreElement;
