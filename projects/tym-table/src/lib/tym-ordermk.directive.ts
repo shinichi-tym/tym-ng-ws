@@ -12,19 +12,6 @@ import { Directive, Input, ElementRef, OnInit } from '@angular/core';
 })
 export class OrdermkDirective implements OnInit {
 
-  // /**
-  //  * 昇順マーク描画データ
-  //  */
-  // private asc_point = "1 9, 9 9, 5 1";
-  // /**
-  //  * 降順マーク描画データ
-  //  */
-  // private desc_point = "1 1, 9 1, 5 9";
-  // /**
-  //  * 対象外マーク描画データ
-  //  */
-  // private none_point = "1 4, 9 6, 5 9, 1 6, 9 4, 5 1";
-
   /**
    * 昇順・降順マークタイプ {'asc','desc',other}
    */
