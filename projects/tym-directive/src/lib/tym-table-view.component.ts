@@ -36,9 +36,10 @@ export class TymTableViewComponent implements AfterViewInit {
    */
   ngAfterViewInit() {
     const thisElm = this.elementRef.nativeElement as HTMLElement; // tym-table-view
-    const tableElm = thisElm.firstElementChild as HTMLTableElement; // table
-    const theadElm = tableElm.firstElementChild as HTMLTableSectionElement; // thead
-    const tableTr = theadElm.firstElementChild as HTMLTableRowElement; // tr
+    const firstElementChild = (elm: HTMLElement) => elm.firstElementChild;
+    const tableElm = firstElementChild(thisElm) as HTMLTableElement; // table
+    const theadElm = firstElementChild(tableElm) as HTMLTableSectionElement; // thead
+    const tableTr = firstElementChild(theadElm) as HTMLTableRowElement; // tr
     tableTr.childNodes.forEach(node => {
       const elm = node as HTMLElement;
       if (elm.tagName == 'TH') { // #comment 除去
@@ -48,11 +49,8 @@ export class TymTableViewComponent implements AfterViewInit {
           : realStyle.width;
       }
     });
-    if (this.lastsp) {
-      (tableTr.lastElementChild as HTMLElement).style.width = '';
-      tableElm.style.width = '100%';
-    } else {
-      tableElm.style.width = 'fit-content';
-    }
+    tableElm.style.width = (this.lastsp)
+      ? ((tableTr.lastElementChild as HTMLElement).style.width = '', '100%')
+      : 'fit-content';
   }
 }

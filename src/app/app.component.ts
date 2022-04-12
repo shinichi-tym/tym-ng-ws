@@ -1093,17 +1093,18 @@ export class AppComponent {
   }
   @Output() open_panel2() {
     const provider = TymFormComponent.provider(
-      {}, '', '', { fontFamily: 'system-ui', tabSize: '25', zoom: '85%' });
+      {}, ['123456789+123456789+123456789+123456789+',
+        'プロポーショナルフォント\t[a\t]',
+        'proportional font\t[b\t]',
+        '[DEF]',
+        'a:font1:text:::::::',
+        'b:font2:text:::::::'].join('\n'), '',
+      { fontFamily: 'system-ui', tabSize: '25', zoom: '85%', borderLines: [0,1,2,3] });
     let componentRef = this.modal.open(TymFormComponent, provider, false);
     const compo = componentRef.instance as TymFormComponent;
-    compo.formText = ['123456789+123456789+123456789+123456789+',
-      'プロポーショナルフォント\t[a\t]',
-      'proportional font\t[b\t]',
-      '[DEF]',
-      'a:font1:text:::::::',
-      'b:font2:text:::::::'].join('\n');
     setTimeout(() => {
       const compo = componentRef.instance as TymFormComponent;
+      compo.opts = { borderLines: [] }
       compo.formTextUrl = './assets/panel3.txt';
     }, 4000);
   }
@@ -1122,9 +1123,10 @@ export class AppComponent {
     let opts: TYM_FORM_OPTS = {};
     for (let index = 0; index < inputs.length; index++) {
       const element = inputs[index];
-      const elm_val = element.value;
+      let elm_val:any = element.value;
       const elm_td = element.parentElement?.previousElementSibling as HTMLElement;
       const elm_id = elm_td.innerText;
+      if (elm_id == 'borderLines') elm_val = elm_val.split(',').map((s: string) => parseInt(s)) as number[]
       Object.assign(opts, { [elm_id]: elm_val });
     }
     this.formopts = opts;
@@ -1135,6 +1137,7 @@ export class AppComponent {
     const backgroundColor = ['#eff', '#fff', '#123'];
     const borderColor = ['#888', 'transparent', '#123'];
     const formBorder = ['dotted 1px #ccc', 'solid 1px #000', 'dashed 1px #123'];
+    const borderLines = ['', '2,3,4,5,6,7,8,9,10,12', '']
     for (let index = 0; index < inputs.length; index++) {
       const element = inputs[index];
       const elm_td = element.parentElement?.previousElementSibling as HTMLElement;
@@ -1143,6 +1146,7 @@ export class AppComponent {
       if (elm_id == 'backgroundColor') element.value = backgroundColor[n];
       if (elm_id == 'borderColor') element.value = borderColor[n];
       if (elm_id == 'formBorder') element.value = formBorder[n];
+      if (elm_id == 'borderLines') element.value = borderLines[n];
     }
     this.setFormCustom();
   }

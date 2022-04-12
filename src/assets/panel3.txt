@@ -20,7 +20,7 @@
 ボタン	[s	]
 サーチ	[t			]
 パターン	[u			]
-■ fontFamily: 'system-ui', tabSize: '30', zoom: '85%' ■
+■ fontFamily: 'system-ui', tabSize: '25', zoom: '85%' ■
 [DEF]
 {id}:{var name}:{type}:{inputmode}:{pattern}:{required}:{placeholder}:{title}:{line}:{option}
 a:text         :text  :           :         :          : text        :       :      :

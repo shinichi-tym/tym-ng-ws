@@ -43,6 +43,9 @@ export type TYM_FORM_OPTS = {
   formFocusOutline?: string,
   /** form element invalid border, default:solid 1px #f00 */
   formInvalidBorder?: string,
+
+  /** border bottom positions(0,1～max line), default:none */
+  borderLines?: number[],
 }
 
 type DEF = {
@@ -74,6 +77,7 @@ export class TymFormComponent {
 
   private thisElm: HTMLElement; // this table element
   private bkuptext: string = '';
+  private borderLines: number[] = [];
 
   @HostBinding('style.--fm-bo') protected formBorder!: string;
   @HostBinding('style.--fm-co') protected formFontColor!: string;
@@ -113,6 +117,7 @@ export class TymFormComponent {
     if (formBackgroundColor) this.formBackgroundColor = formBackgroundColor;
     if (formFocusOutline) this.formFocusOutline = formFocusOutline;
     if (formInvalidBorder) this.formInvalidBorder = formInvalidBorder;
+    this.borderLines = opts.borderLines ?? [];
     this.createForm(this.bkuptext);
   }
 
@@ -140,11 +145,11 @@ export class TymFormComponent {
     this.thisElm = this.elementRef.nativeElement as HTMLElement;
     if (vals_.vals) {
       this.vals = vals_.vals;
-      if (vals_.text) this.createForm(vals_.text);
-      if (vals_.texturl) this.setTextUrl(vals_.texturl);
+      if (vals_.opts) this.opts = vals_.opts;
       if (vals_.button) this.button = vals_.button;
       if (vals_.enter) this.enter = vals_.enter;
-      if (vals_.opts) this.opts = vals_.opts;
+      if (vals_.text) this.createForm(vals_.text);
+      if (vals_.texturl) this.setTextUrl(vals_.texturl);
       Object.assign(this.thisElm.style, {
         width: 'min-content',
         height: 'min-content',
@@ -161,6 +166,37 @@ export class TymFormComponent {
         backgroundColor: '#fff',
         padding: '8px',
       } as CSSStyleDeclaration);
+    }
+  }
+
+  /**
+   * borderLinesから罫線用のタグを作成する
+   */
+  private createBorderLines() {
+    const pre = this.thisElm.firstElementChild as HTMLPreElement;
+    const { lineHeight } = window.getComputedStyle(pre);
+    const borderLines = this.borderLines;
+    const create_div_element = () => this.renderer.createElement('div') as HTMLDivElement;
+    let div1 = pre.nextElementSibling as HTMLDivElement;
+    if (div1 && div1.tagName == 'DIV') {
+      while (div1?.firstChild) { div1.removeChild(div1.firstChild); }
+    } else {
+      div1 = this.thisElm.insertBefore(create_div_element(), div1);
+    }
+    div1.style.width = `${pre.clientWidth - 16}px`;
+    div1.style.height = `${pre.clientHeight - 16}px`;
+    div1.style.transform = pre.style.transform;
+    const maxlinenum = Math.max(...borderLines);
+    for (let index = 1; index <= maxlinenum; index++) {
+      const div = div1.appendChild(create_div_element());
+      div.style.height = lineHeight;
+      div.style.boxSizing = 'border-box';
+      if (borderLines.indexOf(index) >= 0) {
+        div.style.borderBottom = 'solid 1px #ccc';
+      }
+    }
+    if (div1.firstElementChild && borderLines.indexOf(0) >= 0) {
+      (div1.firstElementChild as HTMLElement).style.borderTop = 'solid 1px #ccc';
     }
   }
 
@@ -439,7 +475,7 @@ export class TymFormComponent {
         top: `calc(${lineHeight} * ${line} + 8px)`,
         left: `calc(${getsize(prev)}px - 8px)`,  //padding分
         width: `calc(${getsize(hits)}px - 16px)`,//padding分
-        height: `calc(${def.line} * ${lineHeight} - 1px)`,
+        height: `calc(${lineHeight} * ${def.line} - 1px)`,
       } as CSSStyleDeclaration);
       form.appendChild(elm);
     }
@@ -464,6 +500,7 @@ export class TymFormComponent {
     });
     calc_prex.parentElement.removeChild(calc_prex);
     this.bkuptext = viewtext;
+    this.createBorderLines();
   }
 
   /**

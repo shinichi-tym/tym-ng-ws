@@ -23,9 +23,10 @@ export class TymTableUtilities {
    */
   public static _widen(tableElm: HTMLTableElement, divElm: HTMLDivElement) {
 
-    const cntnrElm = tableElm.parentElement as HTMLElement; // ngx-tym-table エレメント
-    const scrolElm = cntnrElm.parentElement as HTMLElement; // div等のスクロールするエレメント
-    const thElm = divElm.parentElement as HTMLTableCellElement; // *th* エレメント
+    const parentElement = (elm: HTMLElement) => elm.parentElement;
+    const cntnrElm = parentElement(tableElm) as HTMLElement; // ngx-tym-table エレメント
+    const scrolElm = parentElement(cntnrElm) as HTMLElement; // div等のスクロールするエレメント
+    const thElm = parentElement(divElm) as HTMLTableCellElement; // *th* エレメント
 
     const scrollLeft = scrolElm.scrollLeft; // スクロール状態を保持
     const cntnrRect = cntnrElm.getBoundingClientRect();

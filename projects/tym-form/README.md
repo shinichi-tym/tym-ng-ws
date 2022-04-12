@@ -203,6 +203,9 @@ export type TYM_FORM_OPTS = {
   formFocusOutline?: string,
   /** form element invalid border, default:solid 1px #f00 */
   formInvalidBorder?: string,
+
+  /** border bottom positions(0,1～max line), default:none */
+  borderLines?: number[],
 }
 ```
 
