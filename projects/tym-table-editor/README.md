@@ -144,6 +144,7 @@ let data = [
     [defs]="defs"
     [data]="data"
     [menu]="menu"
+    [opts]="opts"
 ></ngx-tym-table-editor>
 ```
 
@@ -155,13 +156,13 @@ let data = [
 
 - `defs: TYM_EDITOR_DEF[]`
 ``` typescript
-/* 定義 */
+/** カラム定義 */
 export type TYM_EDITOR_DEF = {
   /** 対象列番号(1～) */
   col: number;
   /** 対象例タイプ */
   type?: string;
-  /** 対象列揃え指定 {'left' | 'center' | 'right'}, , 規定値: 'left' */
+  /** 対象列揃え指定 {'left' | 'center' | 'right'}, 規定値: 'left' */
   align?: 'left' | 'center' | 'right';
   /** 値を表示文字に変換する関数, 規定値: なし */
   viewfnc?: (val: string, type?: string, col?: number) => string;
@@ -175,6 +176,17 @@ export type TYM_EDITOR_DEF = {
 
 - `menu: (event: MouseEvent, row1: number, col1: number, row2: number, col2: number): boolean`
   - コンテキストメニューイベント関数
+
+- `opts: TYM_EDITOR_OPTS`
+``` typescript
+/** オプション定義 */
+export type TYM_EDITOR_OPTS = {
+  /** 選択, カレントセルを折り返ししない */
+  whiteSpaceNoWrap?: boolean;
+  /** 編集モードの解除時に列のリサイズを実行する */
+  editModeAutoResize?: boolean;
+}
+```
 
 <br>
 

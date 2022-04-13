@@ -11,17 +11,25 @@ const num2 = (n: number) => ('00' + n).slice(-2);
 type HIST = { r: number, c: number, b: string, a: string, d?: TYM_EDITOR_DEF };
 type HISTS = HIST[];
 type RANGE = { r1: number, c1: number, r2: number, c2: number };
+/** カラム定義 */
 export type TYM_EDITOR_DEF = {
   /** 対象列番号(1～) */
   col: number;
   /** 対象例タイプ */
   type?: string;
-  /** 対象列揃え指定 {'left' | 'center' | 'right'} */
+  /** 対象列揃え指定 {'left' | 'center' | 'right'}, 規定値: 'left' */
   align?: 'left' | 'center' | 'right';
-  /** 値を表示文字に変換する関数 */
+  /** 値を表示文字に変換する関数, 規定値: なし */
   viewfnc?: (val: string, type?: string, col?: number) => string;
-  /** 値を編集する関数 *`please wait...`* */
+  /** 値を編集する関数, 規定値: なし */
   editfnc?: (elm: HTMLElement, val: string, type?: string, col?: number) => Promise<string | null>;
+}
+/** オプション定義 */
+export type TYM_EDITOR_OPTS = {
+  /** 選択, カレントセルを折り返ししない */
+  whiteSpaceNoWrap?: boolean;
+  /** 編集モードの解除時に列のリサイズを実行する */
+  editModeAutoResize?: boolean;
 }
 
 @Component({
@@ -38,6 +46,7 @@ export class TymTableEditorComponent implements AfterViewInit {
   @Input() defs: TYM_EDITOR_DEF[] = [];
   @Input() data: any[][] = [['']];
   @Input() menu = (event: MouseEvent, row1: number, col1: number, row2: number, col2: number) => false;
+  @Input() opts: TYM_EDITOR_OPTS = {}
 
   /**
    * コンストラクタ
@@ -61,6 +70,11 @@ export class TymTableEditorComponent implements AfterViewInit {
     const tableElm = thisElm.firstElementChild as HTMLElement;
     const tbodyElm = tableElm.firstElementChild as HTMLElement;
     const contentName = tableElm.attributes[0].name;
+    //---------------------------------------------------------------
+    // ..
+    if (this.opts.whiteSpaceNoWrap) {
+      tbodyElm.classList.add('nowrap');
+    }
     //---------------------------------------------------------------
     // ..
     const maxrow = this.row;
@@ -922,6 +936,7 @@ export class TymTableEditorComponent implements AfterViewInit {
     const editBlue = () => {
       if (editElm) {
         const thisValue = editElm.innerText;
+        editElm.scrollLeft = 0
         editElm.removeEventListener('blur', editBlue);
         editElm.removeAttribute('contentEditable');
         const [r, c] = cellRowCol(editElm);
@@ -929,6 +944,9 @@ export class TymTableEditorComponent implements AfterViewInit {
         if (thisValue != beforeValue && beforeValue != null) {
           const hist = { r: r, c: c, b: beforeValue, a: thisValue };
           addhists([hist]);
+        }
+        if (this.opts.editModeAutoResize) {
+          widen(headTrElm.children[editElm.cellIndex] as HTMLTableCellElement);
         }
       }
       beforeValue = null;

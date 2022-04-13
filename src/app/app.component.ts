@@ -1099,7 +1099,7 @@ export class AppComponent {
         '[DEF]',
         'a:font1:text:::::::',
         'b:font2:text:::::::'].join('\n'), '',
-      { fontFamily: 'system-ui', tabSize: '25', zoom: '85%', borderLines: [0,1,2,3] });
+      { fontFamily: 'system-ui', tabSize: '25', zoom: '85%', borderLines: [0, 1, 2, 3] });
     let componentRef = this.modal.open(TymFormComponent, provider, false);
     const compo = componentRef.instance as TymFormComponent;
     setTimeout(() => {

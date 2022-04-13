@@ -92,8 +92,11 @@ td {
     }
   }
 }
-tbody.widen td {
+tbody.widen td, tbody.nowrap td {
   &.msel, &.crn, &[contentEditable] {
     white-space: nowrap;
+    &[contentEditable]{
+      text-overflow: unset;
+    }
   }
 }

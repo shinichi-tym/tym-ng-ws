@@ -613,6 +613,19 @@ uptext:<input type="text" #treetext size="10" value="up text"><br>
 <input type="button" (click)="text_redo()" value="redo">
 
 <br>
+<br>
+  whiteSpaceNoWrap:true,editModeAutoResize:true
+<br>
+<div class="tblbase tymTable" style="border:solid 1px">
+<ngx-tym-table-editor #tymTableEditor
+  [defs]="defs"
+  [data]="editordata()"
+  [menu]="editor_menu"
+  [opts]="{whiteSpaceNoWrap:true,editModeAutoResize:true}"
+></ngx-tym-table-editor>
+</div>
+  
+<br>
 
 <h1 id="tym-form">tym-form</h1>
 
@@ -664,10 +677,10 @@ uptext:<input type="text" #treetext size="10" value="up text"><br>
 <div style="display:inline-block">
 <ngx-tym-form style="border:solid 1px #888"
  formTextUrl="./assets/panel04.txt"
- [opts]="{zoom:'70%',lineHeight16px:true,borderColor:'transparent',backgroundColor:'#fff'}"
+ [opts]="{zoom:'75%',lineHeight16px:true,borderColor:'transparent',backgroundColor:'#fff'}"
 ></ngx-tym-form>
 <br><pre>
-zoom:'70%',
+zoom:'75%',
 lineHeight16px:true,
 borderColor:'transparent',
 backgroundColor:'#fff'
@@ -678,10 +691,10 @@ backgroundColor:'#fff'
 <div style="display:inline-block">
 <ngx-tym-form style="border:solid 1px #888"
  formTextUrl="./assets/panel04.txt"
- [opts]="{zoom:'.7',lineHeight16px:true,borderStyle:'solid',borderColor:'#888',backgroundColor:'#ffc'}"
+ [opts]="{zoom:'.75',lineHeight16px:true,borderStyle:'solid',borderColor:'#888',backgroundColor:'#ffc'}"
 ></ngx-tym-form>
 <br><pre>
-zoom:'.7',
+zoom:'.75',
 lineHeight16px:true,
 borderStyle:'solid',
 borderColor:'#888',
