@@ -100,6 +100,8 @@ const CONTEXTMENU = 'contextmenu';
 const KEYDOWN = 'keydown';
 const FOCUS = 'focus';
 const FOCUSOUT = 'focusout';
+const ADDEVENTLISTENER = 'addEventListener';
+const REMOVEEVENTLISTENER = 'removeEventListener'
 
 const isSpanTag = (elm: Element | null) => elm?.tagName == 'SPAN';
 const isDivTag = (elm: Element | null) => elm?.tagName == 'DIV';
@@ -224,11 +226,7 @@ export class TymTreeComponent implements OnInit {
       } else {
         this.i_opn = SPCS + images.open;
         this.i_cls = SPCS + images.close;
-        if (images.none) {
-          this.i_noc = SPCS + images.none;
-        } else {
-          this.i_noc = SPC;
-        }
+        this.i_noc = (images.none) ? SPCS + images.none : SPC;
       }
     }
     ['doLeafOpen', 'doLeafClose', 'doDrawList', 'doContext', 'dragType', 'dropType',
@@ -294,11 +292,8 @@ export class TymTreeComponent implements OnInit {
       [DRAGSTART, (e: DragEvent) => this._dragStart(e, span)],
       [DRAGEND, (e: DragEvent) => this._dragEnd(e, span)]
     ];
-    if (hovElm.draggable) {
-      evinfos.forEach(inf => hovElm.addEventListener(inf[0], inf[1]));
-    } else {
-      evinfos.forEach(inf => hovElm.removeEventListener(inf[0], inf[1]));
-    }
+    const evtstr = (hovElm.draggable) ? ADDEVENTLISTENER : REMOVEEVENTLISTENER;
+    evinfos.forEach(inf => hovElm[evtstr](inf[0], inf[1]));
   }
 
   /**
@@ -313,11 +308,8 @@ export class TymTreeComponent implements OnInit {
       [DRAGLEAVE, this._dragleave],
       [DROP, this._drop]
     ];
-    if (droptarget) {
-      evinfos.forEach(inf => thisElm.addEventListener(inf[0], inf[1]));
-    } else {
-      evinfos.forEach(inf => thisElm.removeEventListener(inf[0], inf[1]));
-    }
+    const evtstr = (droptarget) ? ADDEVENTLISTENER : REMOVEEVENTLISTENER;
+    evinfos.forEach(inf => thisElm[evtstr](inf[0], inf[1]));
   }
 
   //-------------------------------------------------------------------

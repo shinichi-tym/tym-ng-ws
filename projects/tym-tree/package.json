@@ -1,8 +1,8 @@
 {
   "name": "tym-tree",
-  "version": "0.8.1",
+  "version": "0.8.2",
   "description": "'tym-tree' is a simple tree view component.",
-  "keywords": ["angular", "tree", "folder"],
+  "keywords": ["angular", "front-end", "web", "tree", "folder"],
   "repository": {
     "type": "git",
     "url": "https://github.com/shinichi-tym/tym-ng-ws.git"

@@ -1,8 +1,8 @@
 {
   "name": "tym-modals",
-  "version": "0.8.4",
+  "version": "0.8.5",
   "description": "'tym-modals' is a simple modal component.",
-  "keywords": ["angular", "modal", "modal-less", "modeless", "dialog", "contextmenu"],
+  "keywords": ["angular", "front-end", "web", "modal", "modal-less", "modeless", "dialog", "contextmenu"],
   "repository": {
     "type": "git",
     "url": "https://github.com/shinichi-tym/tym-ng-ws.git"

@@ -124,12 +124,12 @@ export class TymMenuComponent implements AfterViewInit {
 
     const resize = () => {
       const { height: div_h, width: div_w } = divElm.getBoundingClientRect();
-      const { height: this_h, width: this_w, top: this_t, left: this_l } = thisElm.getBoundingClientRect();
-      if ((this_t + this_h) > div_h) {
-        thisElmStyle.top = `${div_h - this_h}px`;
+      const { height, width, top, left } = thisElm.getBoundingClientRect();
+      if ((top + height) > div_h) {
+        thisElmStyle.top = `${div_h - height}px`;
       }
-      if ((this_l + this_w) > div_w) {
-        thisElmStyle.left = `${this_l - this_w}px`;
+      if ((left + width) > div_w) {
+        thisElmStyle.left = `${left - width}px`;
       }
     }
 

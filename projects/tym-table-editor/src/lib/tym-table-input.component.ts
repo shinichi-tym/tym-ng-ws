@@ -73,13 +73,13 @@ export class TymTableInputComponent implements AfterViewInit, OnDestroy {
 
     const resize = () => {
       const { height: div_h, width: div_w } = divElm.getBoundingClientRect();
-      const { height: this_h, width: this_w, top: this_t, left: this_l } = thisElm.getBoundingClientRect();
+      const { height, width, top, left } = thisElm.getBoundingClientRect();
       const thisStyle = thisElm.style;
-      if ((this_t + this_h) > div_h) {
-        thisStyle.top = `${div_h - this_h}px`;
+      if ((top + height) > div_h) {
+        thisStyle.top = `${div_h - height}px`;
       }
-      if ((this_l + this_w) > div_w) {
-        thisStyle.left = `${this_l - this_w}px`;
+      if ((left + width) > div_w) {
+        thisStyle.left = `${left - width}px`;
       }
       inputElm.focus();
     }
