@@ -5,7 +5,7 @@
  * see https://opensource.org/licenses/MIT
  */
 
-import { Component, AfterViewInit, ElementRef, Renderer2, Input } from '@angular/core';
+import { Component, AfterViewInit, ElementRef, Renderer2, Input, HostBinding } from '@angular/core';
 
 const num2 = (n: number) => ('00' + n).slice(-2);
 type HIST = { r: number, c: number, b: string, a: string, d?: TYM_EDITOR_DEF };
@@ -30,6 +30,8 @@ export type TYM_EDITOR_OPTS = {
   whiteSpaceNoWrap?: boolean;
   /** 編集モードの解除時に列のリサイズを実行する */
   editModeAutoResize?: boolean;
+  /** フラットデザインにする */
+  flatDesign?: boolean;
 }
 
 @Component({
@@ -46,7 +48,35 @@ export class TymTableEditorComponent implements AfterViewInit {
   @Input() defs: TYM_EDITOR_DEF[] = [];
   @Input() data: any[][] = [['']];
   @Input() menu = (event: MouseEvent, row1: number, col1: number, row2: number, col2: number) => false;
-  @Input() opts: TYM_EDITOR_OPTS = {}
+  private _opts: TYM_EDITOR_OPTS = {}
+  @Input() set opts(opts: TYM_EDITOR_OPTS) {
+    this._opts = opts;
+    this.setopt();
+  }
+  private setopt() {
+    const tableElm = this.thisElm.firstElementChild as HTMLElement;
+    const tbodyElm = tableElm?.firstElementChild as HTMLElement;
+    setTimeout(() => {
+      if (this._opts.whiteSpaceNoWrap) {
+        tbodyElm?.classList.add('nowrap');
+      } else {
+        tbodyElm?.classList.remove('nowrap');
+      }
+    });
+    [this.thFont, this.thWidth, this.thBgColor, this.thBorder, this.thWidth1, this.thWidth2, this.tdShadow]
+      = (this._opts.flatDesign)
+        ? ['700 9pt/12pt system-ui', '1.40em', '#eee', 'solid 1px #666', '1px 1px 1px 0', '0 1px 1px 1px', 'none']
+        : ['700 8pt/10pt system-ui', '1.25em', '#ccc', 'outset 2px #eee', '2px', '2px', '.5px .5px 0px #000 inset'];
+  }
+
+  /** Host Binding style */
+  @HostBinding('style.--th-fo') protected thFont!: string; //700 8pt/10pt system-ui / 700 9pt/12pt system-ui
+  @HostBinding('style.--th-wd') protected thWidth!: string; //1.25em / 1.40em
+  @HostBinding('style.--th-bc') protected thBgColor!: string; //#ccc / #eee
+  @HostBinding('style.--th-bo') protected thBorder!: string; //outset 2px #eee / solid 1px #666
+  @HostBinding('style.--th-w1') protected thWidth1!: string; //2px / 0 1px 1px 0
+  @HostBinding('style.--th-w2') protected thWidth2!: string; //2px / 0 1px 1px 0
+  @HostBinding('style.--td-bs') protected tdShadow!: string; //.5px .5px 0px #000 inset / none
 
   /**
    * コンストラクタ
@@ -70,11 +100,6 @@ export class TymTableEditorComponent implements AfterViewInit {
     const tableElm = thisElm.firstElementChild as HTMLElement;
     const tbodyElm = tableElm.firstElementChild as HTMLElement;
     const contentName = tableElm.attributes[0].name;
-    //---------------------------------------------------------------
-    // ..
-    if (this.opts.whiteSpaceNoWrap) {
-      tbodyElm.classList.add('nowrap');
-    }
     //---------------------------------------------------------------
     // ..
     const maxrow = this.row;
@@ -732,6 +757,7 @@ export class TymTableEditorComponent implements AfterViewInit {
     }
     tableElm.addEventListener('keypress', event_keypress);
     let escapecnt = 0;
+    const { offsetWidth: zzWidth, offsetHeight: zzHeight } = cell(0, 0);
     /****************************************************************
      * key down event
      * @param e KeyboardEvent
@@ -744,7 +770,18 @@ export class TymTableEditorComponent implements AfterViewInit {
       /** 矢印によるフォーカスの移動                                 */
       const arrow = (opt: ScrollToOptions, rowix: number, colix: number): HTMLTableCellElement => {
         const td = cell(rowix, colix);
-        if (opt != {}) scrollElm.scroll(opt);
+        {
+          const ofLeft = td.offsetLeft - zzWidth;
+          if (ofLeft < scrollElm.scrollLeft) scrollElm.scroll({ left: ofLeft } as ScrollToOptions);
+        }
+        {
+          const ofLeft = td.offsetLeft + td.clientWidth + scrollElm.clientLeft - scrollElm.clientWidth;
+          if (ofLeft > scrollElm.scrollLeft) scrollElm.scroll({ left: ofLeft } as ScrollToOptions);
+        }
+        {
+          const ofTop = td.offsetTop - zzHeight;
+          if (ofTop < scrollElm.scrollTop) scrollElm.scroll({ top: ofTop } as ScrollToOptions)
+        }
         td.blur();
         td.focus();
         setCurrent(td);
@@ -945,7 +982,7 @@ export class TymTableEditorComponent implements AfterViewInit {
           const hist = { r: r, c: c, b: beforeValue, a: thisValue };
           addhists([hist]);
         }
-        if (this.opts.editModeAutoResize) {
+        if (this._opts.editModeAutoResize) {
           widen(headTrElm.children[editElm.cellIndex] as HTMLTableCellElement);
         }
       }

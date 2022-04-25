@@ -118,6 +118,7 @@ let data = [
 - [表示文字編集機能](#表示文字編集機能) (String Formatter)
 - [文字編集機能切替](#文字編集機能切替) (Switching String Editor)
 - [コンテキストイベント](#コンテキストイベント) (Contextmenu event)
+- [カスタマイズ](#カスタマイズ) (Customization)
 - *`please wait...`*
 
 <br>
@@ -185,6 +186,8 @@ export type TYM_EDITOR_OPTS = {
   whiteSpaceNoWrap?: boolean;
   /** 編集モードの解除時に列のリサイズを実行する */
   editModeAutoResize?: boolean;
+  /** フラットデザインにする */
+  flatDesign?: boolean;
 }
 ```
 
@@ -245,6 +248,7 @@ export type TYM_EDITOR_OPTS = {
 - 初期表示時に表示する文字の長さによって, セルの幅を広げで表示します(上限あり)。
 - フォーカスのあるセルの文字が表示幅を超えている場合, セルの行数を広げて表示します。
 - 選択範囲に文字が表示幅を超えているセルがある場合, 行数を広げて表示します。
+- `opts.whiteSpaceNoWrap=true` を設定した場合は, 行数を広げて表示しません。
 
 <br>
 
@@ -409,6 +413,30 @@ editor_menu = (event: MouseEvent, row1: number, col1: number, row2: number, col2
   return true;
 }
 ```
+
+<br>
+
+> ### カスタマイズ
+
+<br>
+
+- `opts` 値を設定するとカスタマイズできます。
+
+``` typescript
+opts = {
+  whiteSpaceNoWrap: true,
+  editModeAutoResize: true,
+  flatDesign: true
+}
+```
+
+- `whiteSpaceNoWrap` を設定すると, 選択およびカレントセルを折り返ししないようにします。
+- `editModeAutoResize` を設定すると, 編集モードの解除時に列をリサイズします。
+- `flatDesign` を設定すると, フラットデザインにします。
+
+<br>
+
+![表示サンプル](/tym-table-editor-demo2.png)
 
 <br>
 

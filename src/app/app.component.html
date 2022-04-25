@@ -587,7 +587,9 @@ uptext:<input type="text" #treetext size="10" value="up text"><br>
 
 <br>
 
-<div class="tblbase tymTable" style="border:solid 1px">
+
+
+<div class="tblbase" style="height:250px;resize:both;border:solid 1px #000;padding:3px;">
 <ngx-tym-table-editor #tymTableEditor
   [defs]="defs"
   [data]="editordata()"
@@ -616,12 +618,11 @@ uptext:<input type="text" #treetext size="10" value="up text"><br>
 <br>
   whiteSpaceNoWrap:true,editModeAutoResize:true
 <br>
-<div class="tblbase tymTable" style="border:solid 1px">
-<ngx-tym-table-editor #tymTableEditor
+<div class="tblbase" style="height:250px;resize:both;border:solid 1px #000;padding:3px;">
+<ngx-tym-table-editor
   [defs]="defs"
   [data]="editordata()"
-  [menu]="editor_menu"
-  [opts]="{whiteSpaceNoWrap:true,editModeAutoResize:true}"
+  [opts]="{whiteSpaceNoWrap:true,editModeAutoResize:true,flatDesign:true}"
 ></ngx-tym-table-editor>
 </div>
   

@@ -7,6 +7,18 @@
 
 :host {
   display: block;
+  overflow: auto;
+  width: auto;
+  height: 100%;
+  border: solid 1px #ccc;
+  box-sizing: border-box;
+  --th-fo: 700 8pt/10pt system-ui;
+  --th-wd: 1.25em;
+  --th-bc: #ccc;
+  --th-bo: outset 2px #eee;
+  --th-w1: 2px;
+  --th-w2: 2px;
+  --td-bs: .5px .5px 0px #000 inset;
 }
 
 table {
@@ -28,35 +40,38 @@ th, td {
 th {
   position: -webkit-sticky;
   position: sticky;
-  font: 700 8pt/10pt system-ui;
-  background-color: #ccc;
-  border: outset 2px #eee;
+  font: var(--th-fo);
+  background-color: var(--th-bc);
+  border: var(--th-bo);
   cursor: pointer;
   padding: 0;
 }
-tbody>tr:first-child th {
+tbody>tr:first-child th:not(:first-child) {
   top: 0;
   resize: horizontal;
   min-width: 4em;
   width: 8em;
+  border-width: var(--th-w1);
 }
 tbody tr:not(:first-child) {
   height: 2em;
 }
-tbody th:first-child {
+tbody tr:not(:first-child) th:first-child {
   left: 0;
   resize: vertical;
+  border-width: var(--th-w2);
 }
 tbody>tr:first-child th:first-child {
   resize: none;
-  width: 1.25em;
-  min-width: 1.25em;
+  width: var(--th-wd);
+  min-width: var(--th-wd);
   z-index: 1;
+  top: 0;
   left: 0;
 }
 td {
   background-color: #fff;
-  box-shadow: .5px .5px 0px #888 inset;
+  box-shadow: var(--td-bs);
   padding: .2em .5em;
   white-space: nowrap;
   &.msel, &.crn, &[contentEditable]{
@@ -70,7 +85,7 @@ td {
   }
   &.crn{
     outline: solid 2px #000;
-    outline-offset: -2px;
+    outline-offset: -1px;
     background-color: #fff;
   }
   &[contentEditable]{
