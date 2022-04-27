@@ -1,6 +1,6 @@
 {
   "name": "tym-table",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "description": "'tym-table' is a simple table component.",
   "keywords": ["angular", "front-end", "web", "table", "grid", "spreadsheet", "drag and drop"],
   "repository": {
@@ -11,8 +11,8 @@
   "homepage": "https://github.com/shinichi-tym/",
   "license" : "MIT",
   "peerDependencies": {
-    "@angular/common": "^12.0.0, ^13.0.0,",
-    "@angular/core": "^12.0.0, ^13.0.0,"
+    "@angular/common": "^12.0.0 || ^13.0.0",
+    "@angular/core": "^12.0.0 || ^13.0.0"
   },
   "dependencies": {
     "tslib": "^2.2.0"
