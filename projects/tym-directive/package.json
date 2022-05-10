@@ -1,6 +1,6 @@
 {
   "name": "tym-directive",
-  "version": "0.8.7",
+  "version": "0.8.8",
   "description": "'tym' directive collections.",
   "keywords": ["angular", "front-end", "web", "directive", "resize", "table", "grid", "splitter", "event", "tree", "folder", "editor"],
   "repository": {

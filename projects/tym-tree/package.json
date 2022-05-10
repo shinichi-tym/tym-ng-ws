@@ -1,6 +1,6 @@
 {
   "name": "tym-tree",
-  "version": "0.8.3",
+  "version": "0.8.4",
   "description": "'tym-tree' is a simple tree view component.",
   "keywords": ["angular", "front-end", "web", "tree", "folder"],
   "repository": {
