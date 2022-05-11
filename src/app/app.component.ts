@@ -1118,6 +1118,8 @@ export class AppComponent {
     this.tymformx!.formText = textareatext.value;
   }
   @Output() formopts = {}
+  @Output() formbutton = (event: MouseEvent, vals: any, varname: string) => console.log(vals);
+  @Output() formenter = (event: KeyboardEvent, vals: any, varname: string) => console.log(vals);
   @Output() setFormCustom() {
     let inputs = document.querySelectorAll<HTMLInputElement>('#formcust input');
     let opts: TYM_FORM_OPTS = {};

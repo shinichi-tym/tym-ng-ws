@@ -77,7 +77,7 @@ import { TymFormComponent } from "tym-form";
   private tymForm?: TymFormComponent;
   :
   // パネルの切り替え実行
-  this.tymform!.formTextUrl = '/assets/panel2.txt';
+  this.tymform!.formTextUrl = './assets/panel2.txt';
 ```
 
 <br> 
@@ -145,7 +145,7 @@ d:code         :text  :::::::
 
 - `formTextUrl: string`
 ``` typescript
-this.tymform!.formTextUrl = '/assets/panel2.txt';
+this.tymform!.formTextUrl = './assets/panel2.txt';
 ```
 
 - `button: (event: MouseEvent, vals: any, varname: string) => void`

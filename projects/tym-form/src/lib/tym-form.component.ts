@@ -298,8 +298,19 @@ export class TymFormComponent {
      * @param val 設定する値
      * @returns 
      */
-    const set_prop = (varname: string, val: any) =>
-      Object.assign(vals, { [varname]: val });
+    const set_prop = (varname: string, val: any) => {
+      if (vals.hasOwnProperty(varname) || val != '') Object.assign(vals, { [varname]: val });
+    }
+    /****************************************************************
+     * keypressイベントでEnterイベントを登録する
+     * @param elm エレメント
+     * @param def タグ用定義
+     */
+    const make_enter_event = (elm: HTMLElement, def: DEF) => {
+      elm.addEventListener('keypress', e => {
+        if (e.key == 'Enter') this.enter(e, vals, def.varname);
+      });
+    }
     /****************************************************************
      * input/textarea タグを作成する
      * @param def タグ用定義
@@ -314,9 +325,7 @@ export class TymFormComponent {
         const _input = e.target as HTMLInputElement;
         set_prop(def.varname, _input.value);
       });
-      input.addEventListener('keypress', e => {
-        if (e.key == 'Enter') this.enter(e, vals, def.varname);
-      });
+      make_enter_event(input, def);
       if (def.inputmode) input.inputMode = def.inputmode;
       if (def.pattern) input.pattern = def.pattern;
       if (def.required) input.required = (def.required == 'y');
@@ -337,9 +346,7 @@ export class TymFormComponent {
      */
     const make_check_elm = (def: DEF, type: string) => {
       const span = create_span_element();
-      span.addEventListener('keypress', e => {
-        if (e.key == 'Enter') this.enter(e, vals, def.varname);
-      });
+      make_enter_event(span, def);
       const selvals: string[] =
         (vals?.hasOwnProperty(def.varname)) ? vals[def.varname] : [];
       def.option?.forEach(o => {
@@ -375,8 +382,8 @@ export class TymFormComponent {
       label.style.fontSize = '75%';
       const input = create_input_element(type);
       const text = create_text(msg);
+      make_enter_event(label, def);
       label.addEventListener('keypress', e => {
-        if (e.key == 'Enter') this.enter(e, vals, def.varname);
         if (e.key == ' ') {
           input.dispatchEvent(new MouseEvent('click'));
           e.preventDefault();
@@ -401,9 +408,7 @@ export class TymFormComponent {
      */
     const make_select_elm = (def: DEF, type: string) => {
       const select = create_select_element();
-      select.addEventListener('keypress', e => {
-        if (e.key == 'Enter') this.enter(e, vals, def.varname);
-      });
+      make_enter_event(select, def);
       select.addEventListener('change', e => {
         set_prop(def.varname, select.value);
       });
@@ -436,12 +441,14 @@ export class TymFormComponent {
         if (bgColor) style.backgroundColor = bgColor;
       }
       button.addEventListener('click', e => {
-        if (type == 'reset') {
-          form.querySelectorAll('input').forEach(e => {
-            e.dispatchEvent(new Event('change'));
-          });
-        }
-        this.button(e, vals, def.varname);
+        setTimeout(() => {
+          if (type == 'reset') {
+            form.querySelectorAll('input,select,textarea').forEach(e => {
+              e.dispatchEvent(new Event('change'));
+            });
+          }
+          this.button(e, vals, def.varname);
+        });
       });
       return button;
     }
