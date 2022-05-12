@@ -321,6 +321,7 @@ export class TymFormComponent {
       const input = (def.line > 1)
         ? create_textarea_element()
         : create_input_element(type);
+      input.name = def.varname;
       input.addEventListener('change', e => {
         const _input = e.target as HTMLInputElement;
         set_prop(def.varname, _input.value);
@@ -381,6 +382,7 @@ export class TymFormComponent {
       label.tabIndex = 0;
       label.style.fontSize = '75%';
       const input = create_input_element(type);
+      input.name = def.varname;
       const text = create_text(msg);
       make_enter_event(label, def);
       label.addEventListener('keypress', e => {
@@ -432,23 +434,30 @@ export class TymFormComponent {
      */
     const make_button_elm = (def: DEF, type: string) => {
       const button = create_input_element(type);
-      //ラベル,color,bgColor
+      //ラベル,color,bgColor,method,action,target
       if (def.option) {
-        const [label, color, bgColor] = def.option;
+        const [label, color, bgColor, method, action, target] = def.option;
         const style = button.style;
         if (label) button.value = label;
         if (color) style.color = color;
         if (bgColor) style.backgroundColor = bgColor;
+        if (type == 'submit') {
+          if (method) form.method = method;
+          if (action) form.action = action;
+          if (target) form.target = target;
+        }
       }
       button.addEventListener('click', e => {
-        setTimeout(() => {
-          if (type == 'reset') {
+        if (type == 'reset') {
+          setTimeout(() => {
             form.querySelectorAll('input,select,textarea').forEach(e => {
               e.dispatchEvent(new Event('change'));
             });
-          }
+            this.button(e, vals, def.varname);
+          });
+        } else {
           this.button(e, vals, def.varname);
-        });
+        }
       });
       return button;
     }
@@ -472,10 +481,10 @@ export class TymFormComponent {
       if (!def) return;
       //-----------------
       const type = def.type || 'text';
-      const spec = ['checkbox', 'radio', 'file', 'select', 'reset', 'button'];
+      const spec = ['checkbox', 'radio', 'file', 'select', 'reset', 'button', 'submit'];
       const fncs = [
         make_check_elm, make_check_elm, make_file_elm,
-        make_select_elm, make_button_elm, make_button_elm];
+        make_select_elm, make_button_elm, make_button_elm, make_button_elm];
       const idx = spec.indexOf(type);
       const elm = (idx == -1) ? make_input_elm(def, type) : fncs[idx](def, type);
       Object.assign(elm.style, {
@@ -507,6 +516,9 @@ export class TymFormComponent {
     });
     calc_prex.parentElement.removeChild(calc_prex);
     this.bkuptext = viewtext;
+    if (form.querySelector('input[type=file]')) {
+      form.enctype = 'multipart/form-data';
+    }
     this.createBorderLines();
   }
 

@@ -13,7 +13,7 @@
  ラジオボタン     [o                                                           ]
  ファイル         [p                                                           ]
  リスト           [q         ]  リセットボタン [r         ]  ボタン [s         ]
- サーチ           [t                         ]
+ サーチ           [t                         ]                      [v         ]
  パターン         [u                                                           ]
 
 ────────────────────────────────────────
@@ -38,9 +38,10 @@ o:radio        :radio :           :         :          :             :       :  
 p:file         :file  :           :         :          :             :       :      :ファイルの選択(ファイルが選択されていません)
 q:select       :select:           :         :          :             :LIST   :      :,list-a,list-b,list-c,list-d
 r:reset        :reset :           :         :          :             :       :2     :ﾘｾｯﾄ
-s:button       :button:           :         :          :             :       :2     :実行
+s:button       :button:           :         :          :             :       :      :実行
 t:search       :text  :search     :         :          :             :       :      :
 u:pattern      :text  :           :[a-z0-9]+:          :             :       :2     :
+v:submit       :submit:           :         :          :             :       :      :ｻﾌﾞﾐｯﾄ,,,POST,./,TARGET
 z:command      :text  :           :         :          :             :       :      :
 :-------------------------------------------------------------------------------
 :type      {| text | tel | url | email | password | date | month | week | time | datetime-local | number
@@ -54,3 +55,4 @@ z:command      :text  :           :         :          :             :       :  
 :           type=checkbox/radio => ラベル,ラベル,...
 :           type=reset/button => ラベル}
 :           type=reset/button => ボタン名,color,bgColor}
+:           type=submit => ボタン名,color,bgColor,method,action,target}

@@ -33,7 +33,7 @@ npm install tym-form
 表示される場所に`<ngx-tym-form>`タグを作成します。
 
 ``` html
-<ngx-tym-form #tynForm
+<ngx-tym-form #tymForm
     [vals]="vals"
     formTextUrl="./assets/panel1.txt"
 ></ngx-tym-form>
@@ -94,6 +94,7 @@ import { TymFormComponent } from "tym-form";
 - [ファイル仕様](#ファイル仕様) (File Specifications)
 - [ダイアログ表示機能](#ダイアログ表示機能) (Dialog View Function)
 - [カスタマイズ](#カスタマイズ) (Customization)
+- [応用](#応用) (How To)
 
 <br>
 
@@ -257,11 +258,16 @@ export type TYM_FORM_OPTS = {
     - 入力フォームの行数を定義します。
   - カラム10 : `{option}` (省略値:なし)
     - カンマ区切りで情報を定義します。
-    - `type:checkbox` では, カンマ区切りでラベルを定義します。
-    - `type:radio` では, カンマ区切りでラベルを定義します。
-    - `type:file` では, 未選択時のメッセージを定義します。
-    - `type:select` では, カンマ区切りで項目を定義します。
-    - `type:reset`, `type:button` では, カンマ区切りで ボタン名, color, bgColor を定義します。
+    - `type:checkbox` では, `ラベル`
+    - `type:radio` では, `ラベル`
+    - `type:file` では, `未選択時のメッセージ`
+    - `type:select` では, 複数の `項目`
+    - `type:reset`, `type:button` では,  
+      `ボタン名`, `color`, `bgColor`
+    - `type:submit` では,   
+      `ボタン名`, `color`, `bgColor`, `method`, `action`, `target`  
+      ※ `method`, `action`, `target` は`<form>` タグに設定します。
+  - `type` の値に `file` をすると, `<form>` タグに `enctype="multipart/form-data"` を設定します。
 
 <br>
 
@@ -345,6 +351,59 @@ b:font2:text:::::::
 ```
 
 ![表示サンプル](/tym-form-smpl.png)
+
+<br>
+
+> ### 応用
+
+<br>
+
+- 定義部を複数の画面部と共有する場合, 画面部 と 定義部 を別で用意し利用できます。
+
+``` text: def.txt
+--- def.txt ---
+[DEF]
+a:tourokubi    :date  :::::::
+b:id           :text  :::::::
+c:cat          :text  :::::::
+d:code         :text  :::::::
+--- end of file ---
+```
+``` text: panel1.txt
+--- panel1.txt ---
+パネル１
+───────────────────────
+ 登録日   [a                ]
+ 商品ID   [b       ]
+ --- end of file ---
+```
+``` text: panel2.txt
+--- panel2.txt ---
+パネル２
+───────────────────────
+ 商品ID   [b       ]
+ 商品区分 [c         ] / 商品コード [d       ]
+ --- end of file ---
+```
+``` html
+<ngx-tym-form #tymForm
+    [vals]="vals"
+    formTextUrl="./assets/def.txt"
+></ngx-tym-form>
+```
+``` typescript :app.component.ts
+  :
+import { TymFormComponent } from "tym-form";
+  :
+  @ViewChild("tymForm")  
+  private tymForm?: TymFormComponent;
+  :
+  // パネルの切り替え実行
+  this.tymform!.formTextUrl = './assets/panel1.txt';
+  :
+  // パネルの切り替え実行
+  this.tymform!.formTextUrl = './assets/panel2.txt';
+```
 
 <br>
 
