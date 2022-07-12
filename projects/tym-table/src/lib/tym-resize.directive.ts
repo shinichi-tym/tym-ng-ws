@@ -1,6 +1,6 @@
 /*!
  * tym-table.js
- * Copyright (c) 2021 shinichi tayama
+ * Copyright (c) 2021, 2022 shinichi tayama
  * Released under the MIT license.
  * see https://opensource.org/licenses/MIT
  */
@@ -16,19 +16,19 @@ export class ResizeDirective implements OnInit {
   /**
    * コンストラクタ
    *
-   * @param {ElementRef} elementRef このディレクティブがセットされたDOMへの参照
+   * @param {ElementRef} _elmRef このディレクティブがセットされたDOMへの参照
    * @memberof ResizeDirective
    */
   constructor(
-    private elementRef: ElementRef
+    private _elmRef: ElementRef
   ) {
-    this.thisElm = this.elementRef.nativeElement;
+    this._thisElm = this._elmRef.nativeElement;
   }
 
   /**
    * this native element
    */
-  private thisElm: HTMLDivElement;
+  private _thisElm: HTMLDivElement;
 
   /**
    * 初期処理
@@ -36,7 +36,7 @@ export class ResizeDirective implements OnInit {
    * @memberof ResizeDirective
    */
   public ngOnInit() {
-    const thisElm = this.thisElm;
+    const thisElm = this._thisElm;
     const thElm = thisElm.parentElement as HTMLTableCellElement;
     const tableElm = thisElm.closest('table') as HTMLTableElement;
     thisElm.addEventListener('dblclick', (e: MouseEvent) => {

@@ -25,6 +25,8 @@ import {
 } from './tym-table.interface'
 import { TymTableUtilities } from "./tym-table.utilities";
 
+const NONE = 'none';
+
 @Component({
   selector: 'ngx-tym-table',
   templateUrl: './tym-table.component.html',
@@ -62,22 +64,8 @@ export class TymTableComponent implements AfterViewInit {
    * @memberof TymTableComponent
    */
   @Input() set custom(custom: TYM_CUSTOM) {
-    if (custom) {
-      this.fontFamily = custom.fontFamily ?? '';
-      this.fontSize = custom.fontSize ?? '';
-      this.borderColor = custom.borderColor ?? '';
-      this.headerBackground = custom.headerBackground ?? '';
-      this.headerColor = custom.headerColor ?? '';
-      this.headerBoxShadow = custom.headerBoxShadow ?? '';
-      this.bodyColor = custom.bodyColor ?? '';
-      this.bodyBoxShadow = custom.bodyBoxShadow ?? '';
-      this.bodyBoxPadding = custom.bodyBoxPadding ?? '';
-      this.bodyEvenColor = custom.bodyEvenColor ?? '';
-      this.bodyOddColor = custom.bodyOddColor ?? '';
-      this.bodySeldColor = custom.bodySeldColor ?? '';
-      this.bodyHovrColor = custom.bodyHovrColor ?? '';
-      this.bodyFocusColor = custom.bodyFocusColor ?? '';
-    }
+    // @ts-expect-error
+    Object.keys(custom).map(k => this[k] = custom[k] ?? '');
   }
 
   //-------------------------------------------------------------------
@@ -264,7 +252,7 @@ export class TymTableComponent implements AfterViewInit {
     const [typ, dtr] = [this._dd_def.dropType, event.dataTransfer];
     if (dtr) {
       dtr.dropEffect = (typ != dtr.effectAllowed)
-        ? (dtr.effectAllowed == 'copyMove') ? typ as any : 'none'
+        ? (dtr.effectAllowed == 'copyMove') ? typ as any : NONE
         : typ as any;
     }
   }
@@ -323,8 +311,8 @@ export class TymTableComponent implements AfterViewInit {
     }
     /** TYM_DDDEF */
     this._dd_def = {
-      dragType: dddef.dragType ?? 'none',
-      dropType: dddef.dropType ?? 'none',
+      dragType: dddef.dragType ?? NONE,
+      dropType: dddef.dropType ?? NONE,
       doDragStart: this._doDragStart,
       doDragEnd: this._doDragEnd,
       doDragEnter: this._doDragEnter,
@@ -384,22 +372,22 @@ export class TymTableComponent implements AfterViewInit {
   /**
    * this native element
    */
-  private thisElm: HTMLElement;
+  private _thisElm: HTMLElement;
 
   /**
    * table element
    */
-  private tblElm!: HTMLTableElement
+  private _tblElm!: HTMLTableElement
 
   /**
    * all tr elements
    */
-  private trElms!: HTMLElement[];
+  private _trElms!: HTMLElement[];
 
   /**
    * focus index number of tr element
    */
-  private fcIdx!: number;
+  private _fcIdx!: number;
 
   //-------------------------------------------------------------------
 
@@ -407,9 +395,9 @@ export class TymTableComponent implements AfterViewInit {
    * コンストラクター
    */
   constructor(
-    private elementRef: ElementRef,
-    private changeDetectorRef: ChangeDetectorRef) {
-    this.thisElm = this.elementRef.nativeElement as HTMLElement;
+    private _elmRef: ElementRef,
+    private _changeDetectorRef: ChangeDetectorRef) {
+    this._thisElm = this._elmRef.nativeElement as HTMLElement;
   }
 
   //-------------------------------------------------------------------
@@ -418,7 +406,7 @@ export class TymTableComponent implements AfterViewInit {
    * ビューを初期化した後の処理
    */
   ngAfterViewInit() {
-    this.tblElm = this.thisElm.firstElementChild as HTMLTableElement;;
+    this._tblElm = this._thisElm.firstElementChild as HTMLTableElement;;
   }
 
   //-------------------------------------------------------------------
@@ -436,7 +424,7 @@ export class TymTableComponent implements AfterViewInit {
    * @param event イベント
    */
   fout(event: any) {
-    if (this.trElms.indexOf(event.relatedTarget) != -1)
+    if (this._trElms.indexOf(event.relatedTarget) != -1)
       (event.target as HTMLElement).tabIndex = -1;
   }
 
@@ -445,7 +433,7 @@ export class TymTableComponent implements AfterViewInit {
    * @param event イベント
    */
   onKeydown(event: any) {
-    const [elm, elms] = [event.target as HTMLElement, this.trElms];
+    const [elm, elms] = [event.target as HTMLElement, this._trElms];
     let idx = elms.indexOf(elm);
     switch (event.key) {
       case 'ArrowDown':
@@ -464,7 +452,7 @@ export class TymTableComponent implements AfterViewInit {
       default:
         return;
     }
-    this.fcIdx = idx;
+    this._fcIdx = idx;
     event.preventDefault();
   }
 
@@ -485,8 +473,8 @@ export class TymTableComponent implements AfterViewInit {
   onCheckChange(event: any, row: number) {
     this._rows_chkd[row] = event;
     this._allCheck = this._rows_chkd.every(checked => checked == true);
-    this.fcIdx = row;
-    const elm = this.trElms[row];
+    this._fcIdx = row;
+    const elm = this._trElms[row];
     elm.tabIndex = 0;
     elm.focus();
   }
@@ -625,14 +613,14 @@ export class TymTableComponent implements AfterViewInit {
     this._rows_chkd = rows_chkd;
     if (this.autors) {
       setTimeout(() => {
-        TymTableUtilities._allWiden(this.tblElm);
+        TymTableUtilities._allWiden(this._tblElm);
       });
     }
     setTimeout(() => {
-      const tbody = this.tblElm.lastElementChild as HTMLTableSectionElement;
-      this.trElms = Array.from(tbody.children) as HTMLElement[];
-      this.fcIdx = 0;
-      if (this.trElms.length > 0) this.trElms[0].tabIndex = 0;
+      const tbody = this._tblElm.lastElementChild as HTMLTableSectionElement;
+      this._trElms = Array.from(tbody.children) as HTMLElement[];
+      this._fcIdx = 0;
+      if (this._trElms.length > 0) this._trElms[0].tabIndex = 0;
     });
   }
 

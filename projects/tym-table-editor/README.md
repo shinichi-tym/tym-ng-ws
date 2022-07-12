@@ -188,6 +188,8 @@ export type TYM_EDITOR_OPTS = {
   editModeAutoResize?: boolean;
   /** フラットデザインにする */
   flatDesign?: boolean;
+  /** 垂直方向のリサイズを無しにする */
+  noVerticalResize?: boolean;
 }
 ```
 
@@ -426,13 +428,15 @@ editor_menu = (event: MouseEvent, row1: number, col1: number, row2: number, col2
 opts = {
   whiteSpaceNoWrap: true,
   editModeAutoResize: true,
-  flatDesign: true
+  flatDesign: true,
+  noVerticalResize: true
 }
 ```
 
 - `whiteSpaceNoWrap` を設定すると, 選択およびカレントセルを折り返ししないようにします。
 - `editModeAutoResize` を設定すると, 編集モードの解除時に列をリサイズします。
 - `flatDesign` を設定すると, フラットデザインにします。
+- `noVerticalResize` を設定すると, 垂直方向のリサイズを無しにする。
 
 <br>
 

@@ -616,13 +616,13 @@ uptext:<input type="text" #treetext size="10" value="up text"><br>
 
 <br>
 <br>
-  whiteSpaceNoWrap:true,editModeAutoResize:true,flatDesign:true
+  whiteSpaceNoWrap:true,editModeAutoResize:true,flatDesign:true,noVerticalResize:true
 <br>
 <div class="tblbase" style="height:250px;resize:both;border:solid 1px #000;padding:3px;">
 <ngx-tym-table-editor
   [defs]="defs"
   [data]="editordata()"
-  [opts]="{whiteSpaceNoWrap:true,editModeAutoResize:true,flatDesign:true}"
+  [opts]="{whiteSpaceNoWrap:true,editModeAutoResize:true,flatDesign:true,noVerticalResize:true}"
 ></ngx-tym-table-editor>
 </div>
   
@@ -737,6 +737,27 @@ d:var04        :text  :           :         :          :             :       :  
 <br>
 <br>
 <br>
+
+<tym-wc-table-view #tymWcTableView1
+ [textContent]="textContent"
+ right-cols="1,2,3"
+ last-sp="false"
+></tym-wc-table-view>
+
+<tym-wc-table-view #tymWcTableView2
+ [textContent]="textContent"
+ [rightCols]='["2","3"]'
+ [lastSp]="false"
+></tym-wc-table-view>
+
+<br>
+
+<tym-wc-tree-view id="asd" #tymWcTreeView1
+  [tree]="treetree"
+  [leafclick]="leafclick"
+  [leafmenu]="leafmenu"
+></tym-wc-tree-view>
+
 <br>
 <br>
 <br>

@@ -7,7 +7,11 @@
 
 import { Component, AfterViewInit, ElementRef, Renderer2, Input, HostBinding } from '@angular/core';
 
+const AUTO = 'auto';
+const SCROLL = 'scroll';
+
 const num2 = (n: number) => ('00' + n).slice(-2);
+const FIRST_ELEMENT_CHILD = (elm: HTMLElement) => elm?.firstElementChild as HTMLElement;
 type HIST = { r: number, c: number, b: string, a: string, d?: TYM_EDITOR_DEF };
 type HISTS = HIST[];
 type RANGE = { r1: number, c1: number, r2: number, c2: number };
@@ -32,6 +36,8 @@ export type TYM_EDITOR_OPTS = {
   editModeAutoResize?: boolean;
   /** フラットデザインにする */
   flatDesign?: boolean;
+  /** 垂直方向のリサイズを無しにする */
+  noVerticalResize?: boolean;
 }
 
 @Component({
@@ -41,7 +47,7 @@ export type TYM_EDITOR_OPTS = {
 })
 export class TymTableEditorComponent implements AfterViewInit {
 
-  private thisElm: HTMLElement; // this table element
+  private _thisElm: HTMLElement; // this table element
 
   @Input() row: number = 30;
   @Input() col: number = 20;
@@ -51,16 +57,16 @@ export class TymTableEditorComponent implements AfterViewInit {
   private _opts: TYM_EDITOR_OPTS = {}
   @Input() set opts(opts: TYM_EDITOR_OPTS) {
     this._opts = opts;
-    this.setopt();
+    this._setopt();
   }
-  private setopt() {
-    const tableElm = this.thisElm.firstElementChild as HTMLElement;
-    const tbodyElm = tableElm?.firstElementChild as HTMLElement;
+  private _setopt() {
+    const tableElm = FIRST_ELEMENT_CHILD(this._thisElm);
+    const tbodyElm = FIRST_ELEMENT_CHILD(tableElm);
     setTimeout(() => {
-      if (this._opts.whiteSpaceNoWrap) {
-        tbodyElm?.classList.add('nowrap');
-      } else {
-        tbodyElm?.classList.remove('nowrap');
+      if (tbodyElm) {
+        const [cl, opts] = [tbodyElm.classList, this._opts];
+        if (opts.whiteSpaceNoWrap) { cl.add('nowrap'); } else { cl.remove('nowrap'); }
+        if (opts.noVerticalResize) { cl.add('novrsz'); } else { cl.remove('novrsz'); }
       }
     });
     [this.thFont, this.thWidth, this.thBgColor, this.thBorder, this.thWidth1, this.thWidth2, this.tdShadow]
@@ -84,10 +90,10 @@ export class TymTableEditorComponent implements AfterViewInit {
    * @memberof TymTreeViewComponent
    */
   constructor(
-    private elementRef: ElementRef,
-    private renderer: Renderer2
+    private _elmRef: ElementRef,
+    private _renderer: Renderer2
   ) {
-    this.thisElm = this.elementRef.nativeElement as HTMLElement;
+    this._thisElm = this._elmRef.nativeElement as HTMLElement;
   };
 
   /**
@@ -96,9 +102,9 @@ export class TymTableEditorComponent implements AfterViewInit {
   public ngAfterViewInit(): void {
     //---------------------------------------------------------------
     // ..
-    const thisElm = this.thisElm;
-    const tableElm = thisElm.firstElementChild as HTMLElement;
-    const tbodyElm = tableElm.firstElementChild as HTMLElement;
+    const thisElm = this._thisElm;
+    const tableElm = FIRST_ELEMENT_CHILD(thisElm);
+    const tbodyElm = FIRST_ELEMENT_CHILD(tableElm);
     const contentName = tableElm.attributes[0].name;
     //---------------------------------------------------------------
     // ..
@@ -117,7 +123,7 @@ export class TymTableEditorComponent implements AfterViewInit {
     //---------------------------------------------------------------
     // ..
     const { overflowX, overflowY } = window.getComputedStyle(thisElm);
-    const scrollElm = (!(overflowX == 'auto' || overflowX == 'scroll' || overflowY == 'auto' || overflowY == 'scroll'))
+    const scrollElm = (!(overflowX == AUTO || overflowX == SCROLL || overflowY == AUTO || overflowY == SCROLL))
       ? thisElm.parentElement as HTMLElement : thisElm;
     //---------------------------------------------------------------
     // ..
@@ -130,7 +136,7 @@ export class TymTableEditorComponent implements AfterViewInit {
       (td) ? [(td.parentElement as HTMLTableRowElement).rowIndex, td.cellIndex] : [1, 1];
     //---------------------------------------------------------------
     // create element
-    const createElm = (name: string) => this.renderer.createElement(name) as HTMLElement;
+    const createElm = (name: string) => this._renderer.createElement(name) as HTMLElement;
     //---------------------------------------------------------------
     // create th element
     const createTh = (tx: string) => {
@@ -334,7 +340,7 @@ export class TymTableEditorComponent implements AfterViewInit {
     const renumberRow = () => {
       for (let index = 1; index <= maxrow; index++) {
         const tr = tbodyElm.childNodes[index] as HTMLTableRowElement;
-        const th = tr.firstElementChild as HTMLTableCellElement;
+        const th = FIRST_ELEMENT_CHILD(tr);
         th.innerText = num2(index);
       }
     }
@@ -1123,7 +1129,7 @@ export class TymTableEditorComponent implements AfterViewInit {
      */
     const widen = (thElm: HTMLTableCellElement) => {
       const scrollLeft = scrollElm.scrollLeft; // スクロール状態を保持
-      const cntnrRect = scrollElm.firstElementChild!.getBoundingClientRect();
+      const cntnrRect = FIRST_ELEMENT_CHILD(scrollElm)!.getBoundingClientRect();
       const cellElms = tableElm.querySelectorAll(`tbody tr td:nth-child(${thElm.cellIndex + 1})`);
       if (cellElms.length <= 0) return;
       // padding, margin サイズを求める
@@ -1152,8 +1158,8 @@ export class TymTableEditorComponent implements AfterViewInit {
    * @param fnc 取得用コールバック関数
    */
   public getCells(rownum: number, colnum: number, fnc: (row: number, col: number, val: string, eol: boolean) => void) {
-    const tableElm = this.thisElm.firstElementChild as HTMLElement;
-    const tbodyElm = tableElm.firstElementChild as HTMLElement;
+    const tableElm = FIRST_ELEMENT_CHILD(this._thisElm);
+    const tbodyElm = FIRST_ELEMENT_CHILD(tableElm);
     for (let _row = 1; _row <= rownum; _row++) {
       for (let _col = 1; _col <= colnum; _col++) {
         const td = tbodyElm.children[_row].children[_col] as HTMLTableCellElement;

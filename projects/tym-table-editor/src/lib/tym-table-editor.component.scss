@@ -115,3 +115,6 @@ tbody.widen td, tbody.nowrap td {
     }
   }
 }
+tbody.novrsz tr:not(:first-child) th:first-child {
+  resize: none;
+}

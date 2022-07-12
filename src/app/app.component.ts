@@ -1154,4 +1154,29 @@ export class AppComponent {
     }
     this.setFormCustom();
   }
+
+  @Output() textContent: string = [
+    ['---', '---', '---'],
+    [123, 234, 345],
+  ].join('\n')
+
+  @Output() treetree = [
+    'A',
+    'B',
+    'C',
+    [
+      'a','b','c'
+    ],
+    'ZZZ'
+  ]
+
+  @Output()
+  leafclick = (event: MouseEvent, texts: string[]) => {
+    console.log(event, texts)
+  }
+  @Output() leafmenu = (event: MouseEvent, texts: string[]) => {
+    console.log(event, texts);
+    event.preventDefault();
+    return false;
+  }
 }

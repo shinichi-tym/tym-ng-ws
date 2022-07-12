@@ -1,6 +1,6 @@
 /*!
  * tym-table.js
- * Copyright (c) 2021 shinichi tayama
+ * Copyright (c) 2021, 2022 shinichi tayama
  * Released under the MIT license.
  * see https://opensource.org/licenses/MIT
  */
@@ -13,7 +13,7 @@ import { TYM_COL } from './tym-table.interface'
 })
 export class CellmkDirective implements OnInit {
 
-  private _txt?: string = '';
+  private _txt: string = '';
   private _col: TYM_COL = { title: '' };
 
   /**
@@ -29,11 +29,11 @@ export class CellmkDirective implements OnInit {
   /**
    * コンストラクタ
    *
-   * @param {ElementRef} elementRef このディレクティブがセットされたDOMへの参照
+   * @param {ElementRef} _elmRef このディレクティブがセットされたDOMへの参照
    * @memberof CellmkDirective
    */
   constructor(
-    private elementRef: ElementRef
+    private _elmRef: ElementRef
   ) {
   }
 
@@ -50,7 +50,7 @@ export class CellmkDirective implements OnInit {
     const svgPopup = ''
       + `<rect x="10" y="0" width="22" height="22" fill="#88f" stroke="blue"/>`
       + `<polyline points="5,6 1,30 23,27" fill="none" stroke="blue" stroke-width="2"/>`;
-    const tdElm = this.elementRef.nativeElement as HTMLElement;
+    const tdElm = this._elmRef.nativeElement as HTMLElement;
     const tdElmtxt = this._txt ?? '';
     tdElm.title = tdElmtxt;
     tdElm.style.textAlign = this._col.align ?? '';

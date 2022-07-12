@@ -1,6 +1,6 @@
 {
   "name": "tym-table",
-  "version": "0.9.2",
+  "version": "0.9.3",
   "description": "'tym-table' is a simple table component.",
   "keywords": ["angular", "front-end", "web", "table", "grid", "spreadsheet", "drag and drop"],
   "repository": {

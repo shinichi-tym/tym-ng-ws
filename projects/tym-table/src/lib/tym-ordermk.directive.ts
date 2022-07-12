@@ -31,11 +31,11 @@ export class OrdermkDirective implements OnInit {
   /**
    * コンストラクタ
    *
-   * @param {ElementRef} elementRef このディレクティブがセットされたDOMへの参照
+   * @param {ElementRef} _elmRef このディレクティブがセットされたDOMへの参照
    * @memberof OrdermkDirective
    */
   constructor(
-    private elementRef: ElementRef
+    private _elmRef: ElementRef
   ) {
   }
 
@@ -53,7 +53,7 @@ export class OrdermkDirective implements OnInit {
    * @param ordermk 昇順・降順マークタイプ {'asc','desc',other}
    */
   private _mkPolygon(ordermk: string) {
-    const svgElm = this.elementRef.nativeElement as HTMLElement;
+    const svgElm = this._elmRef.nativeElement as HTMLElement;
     const odridx = (ordermk == 'asc') ? 0 : (ordermk == 'desc') ? 1 : 2;
     const [point, width, opacity] = [
       ['1 9,9 9,5 1', '1.2', '.8'],             // 　昇順マーク描画データ,width,opacity

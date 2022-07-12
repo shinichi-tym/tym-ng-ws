@@ -17,7 +17,7 @@ export class TymTableInputComponent implements AfterViewInit, OnDestroy {
   /**
    * ダイアログ用トークン
    */
-  private static TYM_TABLE_INPUT_TOKEN = new InjectionToken<any>('TymTableInput');
+  private static _TYM_TABLE_INPUT_TOKEN = new InjectionToken<any>('TymTableInput');
 
   /**
    * 画面用値
@@ -26,25 +26,25 @@ export class TymTableInputComponent implements AfterViewInit, OnDestroy {
   /**
    * this native element
    */
-  private thisElm: HTMLElement;
+  private _thisElm: HTMLElement;
 
   /**
    * コンストラクター
    * @param vals_ StaticProviderのuseValue値
    */
   constructor(
-    @Inject(TymTableInputComponent.TYM_TABLE_INPUT_TOKEN) vals_: any,
-    private elementRef: ElementRef
+    @Inject(TymTableInputComponent._TYM_TABLE_INPUT_TOKEN) vals_: any,
+    private _elmRef: ElementRef
   ) {
     this.vals = vals_;
-    this.thisElm = this.elementRef.nativeElement as HTMLElement;
+    this._thisElm = this._elmRef.nativeElement as HTMLElement;
   }
 
   /**
    * ビューを初期化した後の処理
    */
   ngAfterViewInit() {
-    const [thisElm, vals] = [this.thisElm, this.vals];
+    const [thisElm, vals] = [this._thisElm, this.vals];
     const inputElm = thisElm.firstElementChild as HTMLInputElement;
     const divElm = thisElm.parentElement as HTMLDivElement; // 全画面
 
@@ -87,11 +87,11 @@ export class TymTableInputComponent implements AfterViewInit, OnDestroy {
     // コンテキストメニューが画面外に見切れた場合に移動させる
     setTimeout(resize);
     new MutationObserver(resize)
-      .observe(thisElm, { subtree: true, attributes: true, attributeFilter: ["class"] });
+      .observe(thisElm, { subtree: true, attributes: true, attributeFilter: ['class'] });
   }
 
   ngOnDestroy() {
-    const thisElm = this.thisElm;
+    const thisElm = this._thisElm;
     const inputElm = thisElm.firstElementChild as HTMLInputElement;
     this.vals.ret = inputElm.value;
   }
@@ -110,7 +110,7 @@ export class TymTableInputComponent implements AfterViewInit, OnDestroy {
   ): StaticProvider {
     const { top, left } = elm.getBoundingClientRect();
     return {
-      provide: TymTableInputComponent.TYM_TABLE_INPUT_TOKEN,
+      provide: TymTableInputComponent._TYM_TABLE_INPUT_TOKEN,
       useValue: {
         type: type,
         val: val,
