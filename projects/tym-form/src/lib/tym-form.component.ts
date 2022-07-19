@@ -72,12 +72,15 @@ export class TymFormComponent {
    * FORM用トークン
    */
   public static TYM_FORM_TOKEN = new InjectionToken<any>('TymForm');
-  public loading: Promise<string> = new Promise<string>(() => { });
-  private defmap = new Map<string, DEF>();
 
-  private thisElm: HTMLElement; // this table element
-  private bkuptext: string = '';
-  private borderLines: number[] = [];
+  private static idnum = 0;
+
+  public loading: Promise<string> = new Promise<string>(() => { });
+  private _defmap = new Map<string, DEF>();
+
+  private _thisElm: HTMLElement; // this table element
+  private _bkuptext: string = '';
+  private _borderLines: number[] = [];
 
   @HostBinding('style.--fm-bo') protected formBorder!: string;
   @HostBinding('style.--fm-co') protected formFontColor!: string;
@@ -85,11 +88,11 @@ export class TymFormComponent {
   @HostBinding('style.--fm-ol') protected formFocusOutline!: string;
   @HostBinding('style.--fm-ib') protected formInvalidBorder!: string;
 
-  @Input() vals = {}
+  @Input() vals: { [name: string]: string | string[] } = {}
 
   @Input() set opts(opts: TYM_FORM_OPTS) {
     if (!opts) return;
-    const thisElm = this.thisElm;
+    const thisElm = this._thisElm;
     const style = thisElm.style;
     const {
       zoom, fontColor, fontFamily, tabSize, lineHeight16px,
@@ -117,13 +120,13 @@ export class TymFormComponent {
     if (formBackgroundColor) this.formBackgroundColor = formBackgroundColor;
     if (formFocusOutline) this.formFocusOutline = formFocusOutline;
     if (formInvalidBorder) this.formInvalidBorder = formInvalidBorder;
-    this.borderLines = opts.borderLines ?? [];
-    this.createForm(this.bkuptext);
+    this._borderLines = opts.borderLines ?? [];
+    this._createForm(this._bkuptext);
   }
 
-  @Input() set formText(text: string) { this.createForm(text) }
+  @Input() set formText(text: string) { this._createForm(text) }
 
-  @Input() set formTextUrl(url: string) { this.setTextUrl(url) }
+  @Input() set formTextUrl(url: string) { this._setTextUrl(url) }
 
   @Input() button = (event: MouseEvent, vals: any, varname: string) => { }
 
@@ -132,25 +135,25 @@ export class TymFormComponent {
   /**
    * コンストラクタ
    *
-   * @param {ElementRef} elementRef このディレクティブがセットされたDOMへの参照
-   * @param {Renderer2} renderer DOMを操作用
-   * @param {any} vals_ StaticProviderのuseValue値
+   * @param {ElementRef} _elmRef このディレクティブがセットされたDOMへの参照
+   * @param {Renderer2} _renderer DOMを操作用
+   * @param {any} _vals StaticProviderのuseValue値
    * @memberof TymFormComponent
    */
   constructor(
-    private elementRef: ElementRef,
-    private renderer: Renderer2,
-    @Inject(TymFormComponent.TYM_FORM_TOKEN) private vals_: any,
+    private _elmRef: ElementRef,
+    private _renderer: Renderer2,
+    @Inject(TymFormComponent.TYM_FORM_TOKEN) private _vals: any,
   ) {
-    this.thisElm = this.elementRef.nativeElement as HTMLElement;
-    if (vals_.vals) {
-      this.vals = vals_.vals;
-      if (vals_.opts) this.opts = vals_.opts;
-      if (vals_.button) this.button = vals_.button;
-      if (vals_.enter) this.enter = vals_.enter;
-      if (vals_.text) this.createForm(vals_.text);
-      if (vals_.texturl) this.setTextUrl(vals_.texturl);
-      Object.assign(this.thisElm.style, {
+    this._thisElm = this._elmRef.nativeElement as HTMLElement;
+    if (_vals.vals) {
+      this.vals = _vals.vals;
+      if (_vals.opts) this.opts = _vals.opts;
+      if (_vals.button) this.button = _vals.button;
+      if (_vals.enter) this.enter = _vals.enter;
+      if (_vals.text) this._createForm(_vals.text);
+      if (_vals.texturl) this._setTextUrl(_vals.texturl);
+      Object.assign(this._thisElm.style, {
         width: 'min-content',
         height: 'min-content',
         maxWidth: 'calc(100vw * .8)',
@@ -172,27 +175,29 @@ export class TymFormComponent {
   /**
    * borderLinesから罫線用のタグを作成する
    */
-  private createBorderLines() {
-    const pre = this.thisElm.firstElementChild as HTMLPreElement;
+  private _createBorderLines() {
+    const pre = this._thisElm.firstElementChild as HTMLPreElement;
     const { lineHeight } = window.getComputedStyle(pre);
-    const borderLines = this.borderLines;
-    const create_div_element = () => this.renderer.createElement('div') as HTMLDivElement;
+    const borderLines = this._borderLines;
+    const create_div_element = () => this._renderer.createElement('div') as HTMLDivElement;
     let div1 = pre.nextElementSibling as HTMLDivElement;
     if (div1 && div1.tagName == 'DIV') {
       while (div1?.firstChild) { div1.removeChild(div1.firstChild); }
     } else {
-      div1 = this.thisElm.insertBefore(create_div_element(), div1);
+      div1 = this._thisElm.insertBefore(create_div_element(), div1);
     }
-    div1.style.width = `${pre.clientWidth - 16}px`;
-    div1.style.height = `${pre.clientHeight - 16}px`;
-    div1.style.transform = pre.style.transform;
+    const div1Style = div1.style;
+    div1Style.width = `${pre.clientWidth - 16}px`;
+    div1Style.height = `${pre.clientHeight - 16}px`;
+    div1Style.transform = pre.style.transform;
     const maxlinenum = Math.max(...borderLines);
     for (let index = 1; index <= maxlinenum; index++) {
       const div = div1.appendChild(create_div_element());
-      div.style.height = lineHeight;
-      div.style.boxSizing = 'border-box';
+      const divStyle = div.style;
+      divStyle.height = lineHeight;
+      divStyle.boxSizing = 'border-box';
       if (borderLines.indexOf(index) >= 0) {
-        div.style.borderBottom = 'solid 1px #ccc';
+        divStyle.borderBottom = 'solid 1px #ccc';
       }
     }
     if (div1.firstElementChild && borderLines.indexOf(0) >= 0) {
@@ -205,18 +210,18 @@ export class TymFormComponent {
    * @param url url文字列
    * @returns Promise<string>
    */
-  private async setTextUrl(url: string) {
+  private async _setTextUrl(url: string) {
     if (!url) return Promise.resolve('err');
     this.loading = fetch(url).then(res => {
       if (res.ok) {
         let p = res.text();
         p.then(text => {
-          this.createForm(text);
+          this._createForm(text);
           return Promise.resolve('ok');
         });
         return p;
       } else {
-        this.createForm(`load error.\r\n${url}`);
+        this._createForm(`load error.\r\n${url}`);
         return Promise.resolve('err');
       }
     });
@@ -227,11 +232,11 @@ export class TymFormComponent {
    * formテキストを表示する
    * @param text formテキスト
    */
-  private createForm(text: string) {
+  private _createForm(text: string) {
     if (text) {
       const [txt, def] = text.split('[DEF]', 2);
-      if (def != undefined) this.createDefMap(def);
-      if (txt.trim() != '') setTimeout(() => this.createView(txt));
+      if (def != undefined) this._createDefMap(def);
+      if (txt.trim() != '') setTimeout(() => this._createView(txt));
     }
   }
 
@@ -239,15 +244,17 @@ export class TymFormComponent {
    * 定義文字列から定義情報(map)を作成する
    * @param defstext 定義文字列
    */
-  private createDefMap(defstext: string) {
+  private _createDefMap(defstext: string) {
     if (!defstext) return;
-    this.defmap.clear();
+    //---------------------------------------------------------------
+    // ..
+    this._defmap.clear();
     defstext.split(/\r\n|\n/)?.forEach(def => {
       //{id}:{var name}:{type}:{inputmode}:{pattern}:{required}:{placeholder}:{title}:{line}:{option}
       const [_id, varname, type, inputmode, pattern, required, placeholder, title, line, option] = def.split(':');
       const id = _id.trim();
       if (id == '' || id[0] == '#') return;
-      this.defmap.set(id, {
+      this._defmap.set(id, {
         id: id,
         varname: varname?.trim(),
         type: type?.trim(),
@@ -266,22 +273,19 @@ export class TymFormComponent {
    * 画面テキストと定義データから画面を表示する
    * @param viewtext 画面テキスト
    */
-  private createView(viewtext: string) {
+  private _createView(viewtext: string) {
     if (!viewtext) return;
     //---------------------------------------------------------------
     // ..
-    const vals = this.vals as any;
-    const thisElm = this.thisElm;
-    const defmap = this.defmap;
-    const pre = thisElm.firstElementChild as HTMLPreElement;
-    const form = thisElm.lastElementChild as HTMLFormElement;
+    const { vals, _thisElm, _defmap, _renderer } = this;
+    const pre = _thisElm.firstElementChild as HTMLPreElement;
+    const form = _thisElm.lastElementChild as HTMLFormElement;
     while (form.firstChild) form.removeChild(form.firstChild);
     const { lineHeight } = window.getComputedStyle(pre);
     //---------------------------------------------------------------
     // ..
-    const renderer = this.renderer;
-    const create_text = (txt: string) => renderer.createText(txt);
-    const create_element = (elm: string) => renderer.createElement(elm);
+    const create_text = (txt: string) => _renderer.createText(txt);
+    const create_element = (elm: string) => _renderer.createElement(elm);
     const create_input_element = (type: string) => {
       const elm = create_element('input') as HTMLInputElement;
       elm.type = type;
@@ -291,6 +295,7 @@ export class TymFormComponent {
     const create_label_element = () => create_element('label') as HTMLLabelElement;
     const create_span_element = () => create_element('span') as HTMLSpanElement;
     const create_select_element = () => create_element('select') as HTMLSelectElement;
+    const create_datalist_element = () => create_element('datalist') as HTMLDataListElement;
     const create_option_element = () => create_element('option') as HTMLOptionElement;
     /****************************************************************
      * valsにメンバ変数/値を設定する
@@ -299,7 +304,7 @@ export class TymFormComponent {
      * @returns 
      */
     const set_prop = (varname: string, val: any) => {
-      if (vals.hasOwnProperty(varname) || val != '') Object.assign(vals, { [varname]: val });
+      if (vals.hasOwnProperty(varname) || val != '') vals[varname] = val;
     }
     /****************************************************************
      * keypressイベントでEnterイベントを登録する
@@ -332,9 +337,22 @@ export class TymFormComponent {
       if (def.required) input.required = (def.required == 'y');
       if (def.placeholder) input.placeholder = def.placeholder;
       if (def.title) input.title = def.title;
+      if (def.option) {
+        const idName = '_tymform-' + TymFormComponent.idnum++;
+        input.setAttribute('list', idName);
+        const dl = create_datalist_element();
+        dl.id = idName;
+        def.option.forEach(o => {
+          const option = create_option_element();
+          option.value = o;
+          option.appendChild(create_text(o));
+          dl.appendChild(option);
+        });
+        form.appendChild(dl);
+      }
       if (def.varname && vals && type != 'password') {
         if (vals.hasOwnProperty(def.varname)) {
-          input.value = vals[def.varname];
+          input.value = vals[def.varname] as string;
         }
       }
       return input;
@@ -349,7 +367,7 @@ export class TymFormComponent {
       const span = create_span_element();
       make_enter_event(span, def);
       const selvals: string[] =
-        (vals?.hasOwnProperty(def.varname)) ? vals[def.varname] : [];
+        (vals?.hasOwnProperty(def.varname)) ? vals[def.varname] as string[] : [];
       def.option?.forEach(o => {
         const label = create_label_element();
         const input = create_input_element(type);
@@ -477,9 +495,9 @@ export class TymFormComponent {
       const prev = matches.input.substring(0, matches.index);
       const hits = matches[1];
       const v = hits.charAt(1);
-      const def = defmap.get(v);
+      const def = _defmap.get(v);
       if (!def) return;
-      //-----------------
+      //-------------------------------------------------------------
       const type = def.type || 'text';
       const spec = ['checkbox', 'radio', 'file', 'select', 'reset', 'button', 'submit'];
       const fncs = [
@@ -501,12 +519,12 @@ export class TymFormComponent {
     form.style.width = `${pre.clientWidth - 16}px`;
     form.style.height = `${pre.clientHeight - 16}px`;
     const scales = window.getComputedStyle(pre).transform.split(/[(,)]/);
-    thisElm.style.width = `calc(${pre.clientWidth + 10}px * ${(scales.length >= 5) ? scales[1] : 1})`;
-    thisElm.style.height = `calc(${pre.clientHeight + 10}px * ${(scales.length >= 5) ? scales[4] : 1})`;
+    _thisElm.style.width = `calc(${pre.clientWidth + 10}px * ${(scales.length >= 5) ? scales[1] : 1})`;
+    _thisElm.style.height = `calc(${pre.clientHeight + 10}px * ${(scales.length >= 5) ? scales[4] : 1})`;
     //---------------------------------------------------------------
     // ..
     const calc_prex = create_element('pre');
-    thisElm.appendChild(calc_prex);
+    _thisElm.appendChild(calc_prex);
     const re = /(\[[a-z][ \t　]*\])/g;
     viewtext.split(/\r\n|\n/).forEach((tx, line) => {
       let matches;
@@ -515,11 +533,11 @@ export class TymFormComponent {
       }
     });
     calc_prex.parentElement.removeChild(calc_prex);
-    this.bkuptext = viewtext;
+    this._bkuptext = viewtext;
     if (form.querySelector('input[type=file]')) {
       form.enctype = 'multipart/form-data';
     }
-    this.createBorderLines();
+    this._createBorderLines();
   }
 
   /**

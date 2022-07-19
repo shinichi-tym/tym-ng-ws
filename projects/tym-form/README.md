@@ -242,7 +242,8 @@ export type TYM_FORM_OPTS = {
     - `type` の値によって生成されるタグが異なります。  
       `checkbox`, `radio` は `span` と複数の `input` タグ  
       `file` は `label`, `input` タグ  
-      `select` は `select`, `option` タグ
+      `select` は `select`, `option` タグ  
+      `datalist` は `input`, `datalist`, `option` タグ
   - カラム4 : `{inputmode}` (省略値:なし)
     - `input` タグの `inputmode` 属性の値を定義します。
   - カラム5 : `{pattern}` (省略値:なし)
@@ -267,6 +268,7 @@ export type TYM_FORM_OPTS = {
     - `type:submit` では,   
       `ボタン名`, `color`, `bgColor`, `method`, `action`, `target`  
       ※ `method`, `action`, `target` は`<form>` タグに設定します。
+    - `type:datalist` では, 複数の `項目`
   - `type` の値に `file` をすると, `<form>` タグに `enctype="multipart/form-data"` を設定します。
 
 <br>
