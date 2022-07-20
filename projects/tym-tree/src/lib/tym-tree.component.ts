@@ -114,7 +114,7 @@ const targetSpan = (e: Event): [HTMLElement, HTMLElement] => {
 const swap_open_close_str = (elm: HTMLElement) =>
   elm.classList.contains(CLS) ? [CLS, OPN] : elm.classList.contains(OPN) ? [OPN, CLS] : [NOC, NOC];
 const remove_children = (_div: any) => {
-  while (_div?.firstChild) { _div.removeChild(_div.firstChild); }
+  while (_div?.firstChild) _div.removeChild(_div.firstChild);
 }
 const prevElement = (elm: HTMLElement | null) => elm?.previousElementSibling as HTMLElement | null;
 const nextElement = (elm: HTMLElement | null) => elm?.nextElementSibling as HTMLElement | null;
@@ -675,7 +675,7 @@ export class TymTreeComponent implements OnInit {
    */
   private hover_off() {
     if (this.hover_elm) {
-      document.body.removeChild(this.hover_elm);
+      this.thisElm.removeChild(this.hover_elm);
       this.hover_elm = null;
     }
   }
@@ -729,7 +729,7 @@ export class TymTreeComponent implements OnInit {
     (hov_inn.lastElementChild as HTMLElement).style.maxWidth = hovWidth;
     //ドラッグ用のイベント等設定
     this.setDragElm(hov_inn, span);
-    document.body.appendChild(hov_div);
+    this.thisElm.appendChild(hov_div);
     this.hover_elm = hov_div;
 
     //ホバーは数秒後に消す

@@ -48,7 +48,8 @@ div {
     border: solid 1px transparent;
     border-radius: 2px;
     padding: 2px;
-    line-height: calc(1em + 4px);
+    line-height: calc(1em + 5px);
+    height: calc(1em + 5px);
 
     &:focus-visible {
       outline: none;
@@ -101,7 +102,8 @@ div {
     vertical-align: middle;
     * { vertical-align: middle; }
     >span {
-      line-height: calc(1em + 4px);
+      line-height: calc(1em + 5px);
+      height: calc(1em + 5px);
       min-width: fit-content;
       >span:last-child {
         overflow: hidden;
