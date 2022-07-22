@@ -36,12 +36,14 @@ export class TymSplitterDirective implements OnInit {
    * @memberof TymSplitterDirective
    */
   public ngOnInit() {
+    const computedStyle = (elm: HTMLElement) => window.getComputedStyle(elm);
+    const computedWidth = (elm: HTMLElement) => computedStyle(elm).width;
     const thisElm: HTMLElement = this.elementRef.nativeElement;
     const parentElm: HTMLElement = thisElm.parentElement as any;
-    const { paddingTop, paddingBottom, paddingLeft } = window.getComputedStyle(parentElm);
+    const { paddingTop, paddingBottom, paddingLeft } = computedStyle(parentElm);
     const nextElm: HTMLElement = thisElm.nextElementSibling as any;
     const prevElm: HTMLElement = thisElm.previousElementSibling as any;
-    const prevStyle = window.getComputedStyle(prevElm);
+    const prevStyleWidth = computedWidth(prevElm);
     const height = `calc(${parentElm.clientHeight}px - ${paddingTop} - ${paddingBottom} )`;
 
     const thisElmStyle = thisElm.style;
@@ -59,7 +61,7 @@ export class TymSplitterDirective implements OnInit {
       width: `${splitterSize + 2}px`,
       height: height,
       position: ABSOLUTE,
-      left: `calc(${prevStyle.width} + ${paddingLeft})`,
+      left: `calc(${prevStyleWidth} + ${paddingLeft})`,
       background: splitterBackground,
       border: `solid 1px ${splitterBorderColor}`,
       borderRadius: `${splitterRadius}px`,
@@ -69,33 +71,34 @@ export class TymSplitterDirective implements OnInit {
     const renderer = this.renderer;
     const childElm: HTMLElement = renderer.createElement('div');
     Object.assign(childElm.style, {
-      width: `calc(${prevStyle.width} + ${splitterSize}px)`,
+      width: `calc(${prevStyleWidth} + ${splitterSize}px)`,
       resize: 'horizontal',
       overflow: 'hidden',
       position: ABSOLUTE,
       height: `${parentElm.clientHeight * .5}px`,
-      left: `-${prevStyle.width}`,
-      clipPath: `inset(0 0 0 calc(${prevStyle.width} + 1px))`
+      left: `-${prevStyleWidth}`,
+      clipPath: `inset(0 0 0 calc(${prevStyleWidth} + 1px))`
     } as CSSStyleDeclaration);
     renderer.appendChild(thisElm, childElm);
     const childElmStyle = childElm.style;
-    const childStyle = window.getComputedStyle(childElm);
 
     Object.assign(prevElmStyle, {
-      width: prevStyle.width,
+      width: prevStyleWidth,
       height: height,
       position: ABSOLUTE
     } as CSSStyleDeclaration);
 
     Object.assign(nextElmStyle, {
       height: height,
-      marginLeft: `calc(${prevStyle.width} + ${splitterSize + 4}px)`,
+      marginLeft: `calc(${prevStyleWidth} + ${splitterSize + 4}px)`,
       left: '0',
       right: '0',
       position: 'relative'
     } as CSSStyleDeclaration);
 
     const childObserver = new MutationObserver(() => {
+      const prevStyleWidth = computedWidth(prevElm);
+      const childStyleWidth = computedWidth(childElm);
       [
         prevElmStyle.width,
         thisElmStyle.left,
@@ -103,11 +106,11 @@ export class TymSplitterDirective implements OnInit {
         childElmStyle.clipPath,
         nextElmStyle.marginLeft
       ] = [
-        `calc(${childStyle.width} - ${splitterSize}px)`,
-        `calc(${childStyle.width} + ${paddingLeft} - ${splitterSize}px)`,
-        `calc(-${childStyle.width} + ${splitterSize}px)`,
-        `inset(0 0 0 calc(${prevStyle.width} + 1px))`,
-        `calc(${childStyle.width} + 4px`
+        `calc(${childStyleWidth} - ${splitterSize}px)`,
+        `calc(${childStyleWidth} + ${paddingLeft} - ${splitterSize}px)`,
+        `calc(-${childStyleWidth} + ${splitterSize}px)`,
+        `inset(0 0 0 calc(${prevStyleWidth} + 1px))`,
+        `calc(${childStyleWidth} + 4px`
       ];
     });
     childObserver.observe(childElm, { attributes: true, attributeFilter: [STYLE] });

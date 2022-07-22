@@ -76,42 +76,40 @@ export class TymModalComponent implements OnInit, AfterViewInit {
     observer.observe(divElm, { childList: true });
   }
 
-  private createElm = (t: string) => this.renderer.createElement(t) as HTMLElement;
-  private createSpanElm = () => this.createElm('span');
-
   /**
    * ビューを初期化した後の処理
    */
   ngAfterViewInit() {
+    const createElm = (t: string) => this.renderer.createElement(t) as HTMLElement;
+    const createSpanElm = (idx: number) => {
+      const elm = createElm('span');
+      elm.tabIndex = idx;
+      return elm;
+    }
+    const addEventListener = (elm: HTMLElement, type: string, listener: any) =>
+      elm.addEventListener(type, listener);
     const vcr = this.vcr;
-    const cvr = this.createElm('div');
+    const cvr = createElm('div');
     cvr.tabIndex = 0;
-    const fin = this.createSpanElm();
-    fin.tabIndex = 1;
-    const fot = this.createSpanElm();
-    fot.tabIndex = 0;
-    const span = this.createSpanElm();
-    span.tabIndex = 0;
+    const fin = createSpanElm(1);
+    const fot = createSpanElm(0);
+    const span = createSpanElm(0);
 
     cvr.classList.value = 'cv';
-    cvr.addEventListener(KEYDOWN, e => {
+    addEventListener(cvr, KEYDOWN, (e: any) => {
       if (e.key == 'Tab' && e.shiftKey) span.focus();
     });
 
     const fcs = () => cvr.focus();
-    fin.addEventListener(FOCUSIN, fcs);
-    fot.addEventListener(FOCUSIN, fcs);
-    span.addEventListener(FOCUSIN, e => {
+    addEventListener(fin, FOCUSIN, fcs);
+    addEventListener(fot, FOCUSIN, fcs);
+    addEventListener(span, FOCUSIN, (e:any) => {
       if (e.relatedTarget != cvr) cvr.focus();
     });
-    span.addEventListener(KEYDOWN, fcs)
+    addEventListener(span, KEYDOWN, fcs)
 
     this.thisElm.appendChild(span);
-    const modal = this.modal;
-    modal.vcr = vcr;
-    modal.fin = fin;
-    modal.fot = fot;
-    modal.cvr = cvr;
+    Object.assign(this.modal, { vcr, fin, fot, cvr });
   }
 
   /**

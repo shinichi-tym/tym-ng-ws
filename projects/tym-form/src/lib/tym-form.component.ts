@@ -337,7 +337,7 @@ export class TymFormComponent {
       if (def.required) input.required = (def.required == 'y');
       if (def.placeholder) input.placeholder = def.placeholder;
       if (def.title) input.title = def.title;
-      if (def.option) {
+      if (def.option && def.type == 'datalist') {
         const idName = '_tymform-' + TymFormComponent.idnum++;
         input.setAttribute('list', idName);
         const dl = create_datalist_element();

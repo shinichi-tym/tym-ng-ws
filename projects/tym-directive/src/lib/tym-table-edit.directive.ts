@@ -111,7 +111,7 @@ export class TymTableEditDirective implements AfterViewInit {
       const thisCell = e.target as HTMLTableCellElement;
       const [thisRowIx, thisColIx] = cellRowCol(thisCell);
       //-------------------------------------------------------------
-      /** 矢印によるフォーカスの上下左右移動                         */
+      /** 矢印によるフォーカスの上下左右移動                       */
       const arrow = (rowcol: number[]) => {
         const td = cell(rowcol[0], rowcol[1]);
         td.blur();
@@ -119,16 +119,10 @@ export class TymTableEditDirective implements AfterViewInit {
         setCurrent(td);
       }
       const arrowmove = (isUpDown: boolean, isUpOrLeft: boolean) => {
-        // let [rowIx, colIx] = cellRowCol(thisCell);
         const [A, B, C] = (isUpDown)
           ? (isUpOrLeft) ? [(thisRowIx > 0), -1, 0] : [(thisRowIx < maxrow), 1, 0]
           : (isUpOrLeft) ? [(thisColIx > 0), 0, -1] : [(thisColIx < maxcol), 0, 1];
-        // [rowIx, colIx] = A ? [thisRowIx + B, thisColIx + C] : [thisRowIx, thisColIx];
         arrow(A ? [thisRowIx + B, thisColIx + C] : [thisRowIx, thisColIx]);
-        // const td = cell(rowIx, colIx);
-        // td.blur();
-        // td.focus();
-        // setCurrent(td);
       }
       //-------------------------------------------------------------
       const eKey = e.key + ((!!editElm && (e.key != 'Tab' && e.key != 'Enter')) ? '_EDIT' : '');

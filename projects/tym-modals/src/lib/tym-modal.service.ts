@@ -104,7 +104,7 @@ export class TymModalService {
    * @returns ComponentRef<unknown> | Promise<ComponentRef<unknown>>
    */
   public open(
-    componentType: any, provider: StaticProvider, modal = true,
+    componentType: any, provider: StaticProvider, modal: boolean = true,
     init?: (componentRef: ComponentRef<unknown>) => void
   ): ComponentRef<unknown> | Promise<ComponentRef<unknown>> {
 

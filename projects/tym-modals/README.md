@@ -56,35 +56,35 @@ import { TymModalService } from "tym-modals";
   constructor(private modal: TymModalService) { }
   :
   // コンポーネント(<Component>)を表示します。
-    let component_ref = this.modal.open(<Component>, provider);
+  let component_ref = this.modal.open(<Component>, provider);
   // 生成したコンポーネントにアクセスできます。
-    let component = (component_ref.instance as <Component>);
+  let component = (component_ref.instance as <Component>);
   // コンポーネントを非表示(破棄)にします。
   // ※ close() は 最後に open() されたコンポーネントを閉じます。
-    this.modal.close(); または component_ref.destroy();
+  this.modal.close(); または component_ref.destroy();
   :
   (または)
   :
   // コンポーネント(<Component>)を表示します。(promise inteface)
-    let component_ref = await this.modal.open(
-      <Component>,
-      provider,
-      true,  // true:モーダル, false:モーダレス
-      (component_ref) => {
-        // 生成したコンポーネントにアクセスできます。
-        let component = (component_ref.instance as <Component>);
-      });
+  let component_ref = await this.modal.open(
+    <Component>,
+    provider,
+    true,  // true:モーダル, false:モーダレス
+    (component_ref) => {
+      // 生成したコンポーネントにアクセスできます。
+      let component = (component_ref.instance as <Component>);
+    });
   :
   (または)
   :
   // コンポーネント(<Component>)を表示します。(promise inteface)
-    let promise = this.modal.open(..【省略】.., ()=>{});
-    promise.then(
-      (component_ref) => {
-        // 生成したコンポーネントにアクセスできます。
-        let component = (component_ref.instance as <Component>);
-      }
-    )
+  let promise = this.modal.open(..【省略】.., ()=>{});
+  promise.then(
+    (component_ref) => {
+      // 生成したコンポーネントにアクセスできます。
+      let component = (component_ref.instance as <Component>);
+    }
+  )
   :
 ```
 
@@ -212,29 +212,31 @@ ngx-tym-dialog footer button[name='ok'] {
 - 使い方4:
 
 ``` typescript :app.component.ts
-  async open() {
-    :
-    let componentRef = await this.modal.open(
-      TymDialogComponent, provider, false, ()=>{});
-    let component = componentRef.instance as TymDialogComponent;
-    if (component.actionId == 'ok') { }
-    if (component.actionId == 'cancel' || component.actionId == '') { }
-    ～ or ～
-    this.modal.open(TymDialogComponent, provider, false,
+async open() {
+  :
+  let componentRef = await this.modal.open(
+    TymDialogComponent, provider, false, ()=>{});
+  let component = componentRef.instance as TymDialogComponent;
+  if (component.actionId == 'ok') { }
+  if (component.actionId == 'cancel' || component.actionId == '') { }
+
+  ～ or ～
+
+  this.modal.open(TymDialogComponent, provider, false,
+    (componentRef) => {
+      const component = componentRef.instance as TymDialogComponent;
+      // タイトルを変更できます。
+      //   component.vals.title = 'title';
+      // メッセージを変更できます。
+      //   component.vals.messages = ['msg1', 'msg2'];
+    })
+    .then(
       (componentRef) => {
-        const component = componentRef.instance as TymDialogComponent;
-        // タイトルを変更できます。
-        //   component.vals.title = 'title';
-        // メッセージを変更できます。
-        //   component.vals.messages = ['msg1', 'msg2'];
-      })
-      .then(
-        (componentRef) => {
-          let component = componentRef.instance as TymDialogComponent;
-          if (component.actionId == 'ok') { }
-          if (component.actionId == 'cancel' || component.actionId == '') { }
-        }
-      )
+        let component = componentRef.instance as TymDialogComponent;
+        if (component.actionId == 'ok') { }
+        if (component.actionId == 'cancel' || component.actionId == '') { }
+      }
+    )
 ```
 
 ---
@@ -313,15 +315,15 @@ import { TymMenuComponent } from "tym-modals";
 - 使い方2:
 
 ``` typescript :app.component.ts
-    :
-    this.modal.open(TymMenuComponent, provider, false, ()=>{})
-      .then(
-        (componentRef)=>{
-          const component = componentRef.instance as TymMenuComponent;
-          console.log(component.groupId, component.itemId);
-        }
-      );
-    :
+  :
+this.modal.open(TymMenuComponent, provider, false, ()=>{})
+  .then(
+    (componentRef)=>{
+      const component = componentRef.instance as TymMenuComponent;
+      console.log(component.groupId, component.itemId);
+    }
+  );
+  :
 ```
 
 <br>
@@ -329,26 +331,26 @@ import { TymMenuComponent } from "tym-modals";
 - 使い方3: メニュー項目にアイコンを表示
 
 ``` typescript :app.component.ts
-  // アイコン用のクラス名を指定します。
-    // 全てのメニュー項目を事前に定義しておきます。
-    // * {<group-id>: {
-    // *   '': [<group-name>, <icon-class-name's>],
-    // *   <id>: [<name>, <icon-class-name's>],
-    // *   ...}...}
-    TymMenuComponent.MENU_DEFS = {
-      'file': {
-        // Font Awesome 5 Free利用の場合の例
-        '': ['ファイル', 'far fa-file'],
-        :
-      },
-      'folder': {
-        :
-        // 不要な場合は省略可
-        'edit': '編集',
-        // 独自画像などを指定する場合の例 
-        'remove': ['削除', 'menu remove']
-      }, ...
-    };
+// アイコン用のクラス名を指定します。
+  // 全てのメニュー項目を事前に定義しておきます。
+  // * {<group-id>: {
+  // *   '': [<group-name>, <icon-class-name's>],
+  // *   <id>: [<name>, <icon-class-name's>],
+  // *   ...}...}
+  TymMenuComponent.MENU_DEFS = {
+    'file': {
+      // Font Awesome 5 Free利用の場合の例
+      '': ['ファイル', 'far fa-file'],
+      :
+    },
+    'folder': {
+      :
+      // 不要な場合は省略可
+      'edit': '編集',
+      // 独自画像などを指定する場合の例 
+      'remove': ['削除', 'menu remove']
+    }, ...
+  };
 ```
 
 ``` scss
@@ -391,20 +393,20 @@ iconイメージ ([16px] x [16px * n])
 - 使い方4: メニュー項目にアイコングループを表示
 
 ``` typescript :app.component.ts
-    // 表示するアイコングループを指定します。
-    // * [[<group-id>, <id>], ...]
-    const icons: IconItems = [
-      ['file', 'copy'], ['file','remove']
-    ];
-    :
-    // 表示内容をプロバイダーとして定義します。
-    const provider = TymMenuComponent.provider(
-      menu,
-      item_action,
-      event.clientX, event.clientY,
-      icons                  // アイコングループを指定します。
-    );
-    this.modal.open(TymMenuComponent, provider, false);
+// 表示するアイコングループを指定します。
+// * [[<group-id>, <id>], ...]
+const icons: IconItems = [
+  ['file', 'copy'], ['file','remove']
+];
+:
+// 表示内容をプロバイダーとして定義します。
+const provider = TymMenuComponent.provider(
+  menu,
+  item_action,
+  event.clientX, event.clientY,
+  icons                  // アイコングループを指定します。
+);
+this.modal.open(TymMenuComponent, provider, false);
 ```
 
 - 表示イメージ
@@ -432,11 +434,11 @@ ngx-tym-menu {
 ```
 または
 ``` typescript
-  this.modal.open(TymDialogComponent, provider, false,
-    (componentRef) => {
-      const element = componentRef.location.nativeElement as HTMLElement;
-      element.style.setProperty('--bs-sz', '20px');
-    });
+this.modal.open(TymDialogComponent, provider, false,
+  (componentRef) => {
+    const element = componentRef.location.nativeElement as HTMLElement;
+    element.style.setProperty('--bs-sz', '20px');
+  });
 ```
 
 - 表示イメージ
@@ -457,22 +459,22 @@ ngx-tym-menu {
 
 ``` typescript :app.component.ts
   :
-    // 表示内容をプロバイダーとして定義します。
-    const provider1 = TymDialogComponent.provider(
-      'メッセージのタイトル .. 長い長い長い長い',
-      ['メッセージ１', 'メッセージ２', 'メッセージ３', 'メッセージ４'],
-      ok_button, cancel_button
-    );
-    this.modal.open(TymDialogComponent, provider1);
+// 表示内容をプロバイダーとして定義します。
+const provider1 = TymDialogComponent.provider(
+  'メッセージのタイトル .. 長い長い長い長い',
+  ['メッセージ１', 'メッセージ２', 'メッセージ３', 'メッセージ４'],
+  ok_button, cancel_button
+);
+this.modal.open(TymDialogComponent, provider1);
 
-    // 表示内容をプロバイダーとして定義します。
-    const provider2 = TymDialogComponent.provider(
-      'メッセージのタイトル',
-      ['メッセージ１', 'メッセージ２'],
-      ok_button, cancel_button
-    );
-    // 簡易メッセージダイアログを表示します。
-    this.modal.open(TymDialogComponent, provider2);
+// 表示内容をプロバイダーとして定義します。
+const provider2 = TymDialogComponent.provider(
+  'メッセージのタイトル',
+  ['メッセージ１', 'メッセージ２'],
+  ok_button, cancel_button
+);
+// 簡易メッセージダイアログを表示します。
+this.modal.open(TymDialogComponent, provider2);
   :
 ```
 
