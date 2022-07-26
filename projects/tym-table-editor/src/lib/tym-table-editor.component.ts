@@ -19,10 +19,12 @@ type RANGE = { r1: number, c1: number, r2: number, c2: number };
 export type TYM_EDITOR_DEF = {
   /** 対象列番号(1～) */
   col: number;
-  /** 対象例タイプ */
+  /** 対象列タイプ */
   type?: string;
   /** 対象列揃え指定 {'left' | 'center' | 'right'}, 規定値: 'left' */
   align?: 'left' | 'center' | 'right';
+  /** 表示モードだけにする, 規定値: false */
+  readonly?: boolean;
   /** 値を表示文字に変換する関数, 規定値: なし */
   viewfnc?: (val: string, type?: string, col?: number) => string;
   /** 値を編集する関数, 規定値: なし */
@@ -47,6 +49,7 @@ export type TYM_EDITOR_OPTS = {
 })
 export class TymTableEditorComponent implements AfterViewInit {
 
+  private static idnum = 0;
   private _thisElm: HTMLElement; // this table element
 
   @Input() row: number = 30;
@@ -105,7 +108,8 @@ export class TymTableEditorComponent implements AfterViewInit {
     const thisElm = this._thisElm;
     const tableElm = FIRST_ELEMENT_CHILD(thisElm);
     const tbodyElm = FIRST_ELEMENT_CHILD(tableElm);
-    const contentName = tableElm.attributes[0].name;
+    const contentName = '_tymtableeditor-' + TymTableEditorComponent.idnum++;
+    tableElm.setAttribute(contentName,'');
     //---------------------------------------------------------------
     // ..
     const maxrow = this.row;
@@ -172,15 +176,18 @@ export class TymTableEditorComponent implements AfterViewInit {
       return (def?.viewfnc) ? (val: string) => def.viewfnc!(val, def.type) : undefined;
     }
     //---------------------------------------------------------------
-    // get align style
-    const getAlignStyle = (td: HTMLTableCellElement) => {
-      const align = getEditorDef(td)?.align;
-      return (align) ? `td[${contentName}]:nth-child(${td.cellIndex + 1}){text-align:${align};}` : '';
+    // get align / background style
+    const getDynamicStyle = (td: HTMLTableCellElement) => {
+      const def = getEditorDef(td);
+      const style = ''
+        + ((def?.align) ? `text-align:${def?.align};` : '')
+        + ((def?.readonly) ? 'background-color:#f8f8f8;' : '');
+      return (style == '') ? '' : `table[${contentName}] td:nth-child(${td.cellIndex + 1}){${style}}`;
     }
     //---------------------------------------------------------------
     // get style texts
     const getStyleText = () =>
-      Array.from(headTrElm.children).map(th => getAlignStyle(th as HTMLTableCellElement)).join('');
+      Array.from(headTrElm.children).map(th => getDynamicStyle(th as HTMLTableCellElement)).join('');
     //---------------------------------------------------------------
     // create header th element
     const createRowTh = (col: number, def?: TYM_EDITOR_DEF) => {
@@ -900,7 +907,7 @@ export class TymTableEditorComponent implements AfterViewInit {
             break;
           case 'Backspace':
             const newtd = toEdit(thisCell, '');
-            setText(newtd, '');
+            if (newtd) setText(newtd, '');
             e.preventDefault();
             break;
           case 'Delete':
@@ -1003,6 +1010,8 @@ export class TymTableEditorComponent implements AfterViewInit {
      * @returns 対象セルエレメント または 作り直したセルエレメント
      */
     const toEdit = (td: HTMLTableCellElement, val?: string) => {
+      const realStyle = window.getComputedStyle(td);
+      if (realStyle.backgroundColor == 'rgb(248, 248, 248)') return null;
       clearCpyRangeStyle();
       const [r, c] = cellRowCol(td);
       const editfnc = getEditFunc(td);

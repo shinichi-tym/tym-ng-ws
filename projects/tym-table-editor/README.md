@@ -30,7 +30,7 @@ npm install tym-table-editor
 
 <br>
 
-表示される場所に htmlタグ を用意し，その中に`<ngx-tym-table-editor>`タグを作成します。
+表示される場所に htmlタグ を用意し，その中に `<ngx-tym-table-editor>` タグを作成します。
 
 ``` html
 <div style="width:90%;height:400px;overflow:auto;">
@@ -161,10 +161,12 @@ let data = [
 export type TYM_EDITOR_DEF = {
   /** 対象列番号(1～) */
   col: number;
-  /** 対象例タイプ */
+  /** 対象列タイプ */
   type?: string;
   /** 対象列揃え指定 {'left' | 'center' | 'right'}, 規定値: 'left' */
   align?: 'left' | 'center' | 'right';
+  /** 表示モードだけにする, 規定値: false */
+  readonly?: boolean;
   /** 値を表示文字に変換する関数, 規定値: なし */
   viewfnc?: (val: string, type?: string, col?: number) => string;
   /** 値を編集する関数, 規定値: なし */
@@ -205,37 +207,37 @@ export type TYM_EDITOR_OPTS = {
 
 [表示モード]
 - 上下左右のキーでフォーカス位置を移動できます。
-- `Shift`キーと上下左右キーで選択範囲を変更できます。
-- `Shift`キーとマウスクリックで選択範囲を変更できます。
-- `Shift`キー無し, 上下左右キーで選択範囲が解除されます。
-- `Tab`, `Shift+Tab`キーでフォーカス位置を左右に移動できます。
-- `Enter`, `Shift+Enter`キーでフォーカス位置を上下に移動できます。
-- `Tab`, `Shift+Tab`キーでは, 選択範囲内を移動します。
-- `Enter`, `Shift+Enter`キーでは, 選択範囲内を移動します。
-- `Home`, `End`キーでフォーカス位置を行頭行末に移動できます。
-- `Ctrl+Home`, `Ctrl+End`キーでフォーカス位置をテーブルの先頭末尾に移動できます。
-- `F2`キーで **編集モード** になります。
-- `Backspace`キーで文字を消去し **編集モード** になります。
-- `Delete`キーでフォーカス位置または選択範囲内の文字を消去します。
-- `Shift+Delete`キーでフォーカス位置または選択範囲内の文字を切り取ります。
-- `Ctrl+x`キーでフォーカス位置または選択範囲内の文字を切り取ります。
-- `Ctrl+c`, `Ctrl+Insert`キーでフォーカス位置または選択範囲内の文字をコピーします。
-- `Ctrl+v`, `Shift+Insert`キーでフォーカス位置に文字列を貼り付けます。  
+- `Shift` キーと上下左右キーで選択範囲を変更できます。
+- `Shift` キーとマウスクリックで選択範囲を変更できます。
+- `Shift` キー無し, 上下左右キーで選択範囲が解除されます。
+- `Tab`, `Shift+Tab` キーでフォーカス位置を左右に移動できます。
+- `Enter`, `Shift+Enter` キーでフォーカス位置を上下に移動できます。
+- `Tab`, `Shift+Tab` キーでは, 選択範囲内を移動します。
+- `Enter`, `Shift+Enter` キーでは, 選択範囲内を移動します。
+- `Home`, `End` キーでフォーカス位置を行頭行末に移動できます。
+- `Ctrl+Home`, `Ctrl+End` キーでフォーカス位置をテーブルの先頭末尾に移動できます。
+- `F2` キーで **編集モード** になります。
+- `Backspace` キーで文字を消去し **編集モード** になります。
+- `Delete` キーでフォーカス位置または選択範囲内の文字を消去します。
+- `Shift+Delete` キーでフォーカス位置または選択範囲内の文字を切り取ります。
+- `Ctrl+x` キーでフォーカス位置または選択範囲内の文字を切り取ります。
+- `Ctrl+c`, `Ctrl+Insert` キーでフォーカス位置または選択範囲内の文字をコピーします。
+- `Ctrl+v`, `Shift+Insert` キーでフォーカス位置に文字列を貼り付けます。  
   文字列は, 単純文字列またはタブ文字/改行文字区切りの文字群。
-- `Ctrl+z`キーで変更を元に戻します。
-- `Ctrl+y`, `Ctrl+Shift+z`キーで元に戻した変更をやり直します。
-- `Escape`キー 2回 でクリップボードを消去します。
+- `Ctrl+z` キーで変更を元に戻します。
+- `Ctrl+y`, `Ctrl+Shift+z` キーで元に戻した変更をやり直します。
+- `Escape` キー 2回 でクリップボードを消去します。
 - その他のキーで **編集モード** になり, 入力した文字に置き換えます。
 
 [編集モード]
-- `Tab`, `Shift+Tab`キーで **表示モード** になります。
-- `Tab`, `Shift+Tab`キーで, 入力文字を確定し, フォーカス位置を左右に移動できます。
-- `Enter`, `Shift+Enter`キーで **表示モード** になります。
-- `Enter`, `Shift+Enter`キーで, 入力文字を確定し, フォーカス位置を上下に移動できます。
-- `Tab`, `Shift+Tab`キーでは, 選択範囲内を移動します。
-- `Enter`, `Shift+Enter`キーでは, 選択範囲内を移動します。
-- `Shift`キーとマウスクリックで **表示モード** になり, 選択範囲を変更できます。
-- `Escape`キーで編集を中止し, **表示モード** になります。
+- `Tab`, `Shift+Tab` キーで **表示モード** になります。
+- `Tab`, `Shift+Tab` キーで, 入力文字を確定し, フォーカス位置を左右に移動できます。
+- `Enter`, `Shift+Enter` キーで **表示モード** になります。
+- `Enter`, `Shift+Enter` キーで, 入力文字を確定し, フォーカス位置を上下に移動できます。
+- `Tab`, `Shift+Tab` キーでは, 選択範囲内を移動します。
+- `Enter`, `Shift+Enter` キーでは, 選択範囲内を移動します。
+- `Shift` キーとマウスクリックで **表示モード** になり, 選択範囲を変更できます。
+- `Escape` キーで編集を中止し, **表示モード** になります。
 
 <br>
 
@@ -275,8 +277,8 @@ export type TYM_EDITOR_OPTS = {
 
 <br>
 
-- `Shift`キーと上下左右キーで選択範囲を変更できます。
-- `Shift`キー無し, 上下左右キーで選択範囲が解除されます。
+- `Shift` キーと上下左右キーで選択範囲を変更できます。
+- `Shift` キー無し, 上下左右キーで選択範囲が解除されます。
 - マウスドラッグでセルが選択されます。
 - 行ヘッダー, 列ヘッダーをクリックすると行/列が選択されます。
 - 行ヘッダー, 列ヘッダーをドラッグすると複数の行/列が選択されます。
@@ -292,10 +294,12 @@ export type TYM_EDITOR_OPTS = {
 
 <br>
 
-- `defs[n].type`にセル(列)の形式を指定できます。
+- `defs[n].type` にセル(列)の形式を指定できます。
 - セル形式は, 処理に影響をあたえません。
 - セル形式は, 表示文字編集機能, 文字編集機能切替 の引数となります。
-- `defs[n].align`にセルの値揃えを指定できます。
+- `defs[n].align` にセルの値揃えを指定できます。
+- `defs[n].readonly` を設定すると, 編集モードにならなくなります。  
+  `公開関数` で値は変更できます。
 
 <br>
 
@@ -307,12 +311,12 @@ export type TYM_EDITOR_OPTS = {
 
 <br>
 
-- `defs[n].viewfnc`に表示文字編集する関数を指定できます。
+- `defs[n].viewfnc` に表示文字編集する関数を指定できます。
 - [引数]
   - `val: string`
     - 対象セルのオリジナルの文字
   - `type: string`
-    - `defs[n].type`に指定した文字
+    - `defs[n].type` に指定した文字
   - `col: number`
     - 対象セルの列番号
 
@@ -340,7 +344,7 @@ let defs = [def];
 
 <br>
 
-- `defs[n].editfnc`に文字編集する関数を指定できます。
+- `defs[n].editfnc` に文字編集する関数を指定できます。
 - [引数]
   - `elm: HTMLElement`
     - 対象セルのエレメント
@@ -353,7 +357,7 @@ let defs = [def];
 
 - [戻値]
   - `val: string | null`
-    - 編集後の文字, `null`の場合は反映されません  
+    - 編集後の文字, `null` の場合は反映されません  
 
 ``` typescript
 // TymModalService / TymTableInputComponent を利用した例
@@ -530,7 +534,7 @@ this.tymTableEditor?.setData(data, row1, col1);
 ```
 
 - 指定したデータをテーブルに設定する。
-- `row1, col1`を指定すると, 指定位置から設定する。
+- `row1, col1` を指定すると, 指定位置から設定する。
 
 - [引数]
   - `data: any[][]`
@@ -554,8 +558,8 @@ let data  = this.tymTableEditor?.getData(rownum, colnum);
 let range = this.tymTableEditor?.getData(row1, col1, row2, col2);
 ```
 
-- `rownum, colnum`を指定すると, 先頭から指定した範囲のデータを取得する。
-- `row1, col1, row2, col2`を指定すると, 指定した範囲のデータを取得する。
+- `rownum, colnum` を指定すると, 先頭から指定した範囲のデータを取得する。
+- `row1, col1, row2, col2` を指定すると, 指定した範囲のデータを取得する。
 
 - [引数]
   - `rownum: number`

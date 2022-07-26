@@ -885,6 +885,25 @@ export class AppComponent {
     { col: 10, align: 'left', type: 'email', editfnc: this.editinput },
     { col: 11, align: 'right', type: 'range', editfnc: this.editinput },
   ];
+  @Output() defs2: TYM_EDITOR_DEF[] = [
+    { col: 1, align: 'center' },
+    { col: 2, align: 'left' },
+    {
+      col: 3, align: 'right', type: 'number', viewfnc: this.viewfnc
+    },
+    {
+      col: 4, type: 'xyz', readonly:true, viewfnc: (val: string, type?: string, col?: number) => {
+        return (val) ? '<' + val + '>' : '';
+      }
+    },
+    { col: 5, align: 'right', type: 'number', editfnc: this.editinput },
+    { col: 6, align: 'center', type: 'date', editfnc: this.editinput },
+    { col: 7, align: 'center', type: 'datetime-local', editfnc: this.editinput },
+    { col: 8, align: 'center', type: 'time', editfnc: this.editinput },
+    { col: 9, align: 'left', type: 'tel', editfnc: this.editinput },
+    { col: 10, align: 'left', type: 'email', editfnc: this.editinput },
+    { col: 11, align: 'right', type: 'range', editfnc: this.editinput },
+  ];
   @Output() editordata = () => {
     return [
       ['data 1', 'data 2', 123,     '', 'number', 'date', 'datetime-local', 'time', 'tel', 'email', 'range'],
