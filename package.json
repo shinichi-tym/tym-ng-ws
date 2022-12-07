@@ -1,6 +1,6 @@
 {
   "name": "tym-ng-ws",
-  "version": "0.6.6",
+  "version": "0.6.7",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -24,7 +24,7 @@
     "@angular/forms": "~12.2.0",
     "@angular/platform-browser": "~12.2.0",
     "@angular/platform-browser-dynamic": "~12.2.0",
-    "rxjs": "~6.6.0",
+    "rxjs": "~7.6.0",
     "tslib": "^2.2.0",
     "zone.js": "~0.11.4"
   },
@@ -41,6 +41,6 @@
     "karma-jasmine": "~4.0.0",
     "karma-jasmine-html-reporter": "~1.7.0",
     "ng-packagr": "^12.1.0",
-    "typescript": "~4.3.5"
+    "typescript": "~4.5.5"
   }
 }
