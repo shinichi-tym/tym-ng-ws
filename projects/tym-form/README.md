@@ -412,8 +412,8 @@ import { TymFormComponent } from "tym-form";
 ---
 ### `comments`
 ```text
-* supports angular 12 and 13.
-* need support for angular 11? please contact us by email
+* supports angular 13, 14 and 15.
+* need support for angular 12? please contact us by email
 ```
 ---
 ### ライセンス (License)

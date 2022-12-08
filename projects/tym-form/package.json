@@ -1,6 +1,6 @@
 {
   "name": "tym-form",
-  "version": "0.8.3",
+  "version": "0.8.4",
   "description": "'tym-form' is a simple form component.",
   "keywords": ["angular", "front-end", "web", "form", "input", "panel"],
   "repository": {
@@ -11,8 +11,8 @@
   "homepage": "https://github.com/shinichi-tym/",
   "license" : "MIT",
   "peerDependencies": {
-    "@angular/common": "^12.0.0 || ^13.0.0",
-    "@angular/core": "^12.0.0 || ^13.0.0"
+    "@angular/common": "^13.0.0 || ^14.0.0 || ^15.0.0",
+    "@angular/core": "^13.0.0  || ^14.0.0 || ^15.0.0"
   },
   "dependencies": {
     "tslib": "^2.2.0"

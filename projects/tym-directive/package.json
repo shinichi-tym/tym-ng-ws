@@ -1,6 +1,6 @@
 {
   "name": "tym-directive",
-  "version": "0.8.9",
+  "version": "0.9.0",
   "description": "'tym' directive collections.",
   "keywords": ["angular", "front-end", "web", "directive", "resize", "table", "grid", "splitter", "event", "tree", "folder", "editor"],
   "repository": {
@@ -11,8 +11,8 @@
   "homepage": "https://github.com/shinichi-tym/",
   "license" : "MIT",
   "peerDependencies": {
-    "@angular/common": "^12.0.0 || ^13.0.0",
-    "@angular/core": "^12.0.0 || ^13.0.0"
+    "@angular/common": "^13.0.0 || ^14.0.0 || ^15.0.0",
+    "@angular/core": "^13.0.0  || ^14.0.0 || ^15.0.0"
   },
   "dependencies": {
     "tslib": "^2.2.0"
