@@ -1,6 +1,6 @@
 {
   "name": "tym-tree",
-  "version": "0.8.6",
+  "version": "0.8.7",
   "description": "'tym-tree' is a simple tree view component.",
   "keywords": ["angular", "front-end", "web", "tree", "folder"],
   "repository": {
@@ -11,8 +11,8 @@
   "homepage": "https://github.com/shinichi-tym/",
   "license" : "MIT",
   "peerDependencies": {
-    "@angular/common": "^13.0.0 || ^14.0.0 || ^15.0.0",
-    "@angular/core": "^13.0.0  || ^14.0.0 || ^15.0.0"
+    "@angular/common": "^13.0.0 || ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0",
+    "@angular/core": "^13.0.0  || ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0"
   },
   "dependencies": {
     "tslib": "^2.2.0"

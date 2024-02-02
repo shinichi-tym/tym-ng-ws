@@ -754,8 +754,7 @@ redo();
 ---
 ### `comments`
 ```text
-* supports angular 13, 14 and 15.
-* need support for angular 12? please contact us by email
+* supports angular 15, 16 and 17.
 ```
 ---
 ### ライセンス (License)
