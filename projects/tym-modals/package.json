@@ -1,6 +1,6 @@
 {
   "name": "tym-modals",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "description": "'tym-modals' is a simple modal component.",
   "keywords": ["angular", "front-end", "web", "modal", "modal-less", "modeless", "dialog", "contextmenu"],
   "repository": {
@@ -11,8 +11,8 @@
   "homepage": "https://github.com/shinichi-tym/",
   "license" : "MIT",
   "peerDependencies": {
-    "@angular/common": "^13.0.0 || ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0",
-    "@angular/core": "^13.0.0  || ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0"
+    "@angular/common": "^13.0.0 || ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0",
+    "@angular/core": "^13.0.0 || ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0"
   },
   "dependencies": {
     "tslib": "^2.2.0"

@@ -641,7 +641,7 @@ ngx-tym-tree {
 ---
 ### `comments`
 ```text
-* supports angular 15, 16 and 17.
+* supports angular 16, 17 and 18.
 ```
 ---
 ### ライセンス (License)
