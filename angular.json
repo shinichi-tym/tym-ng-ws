@@ -72,10 +72,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "tym-ng-ws:build:production"
+              "buildTarget": "tym-ng-ws:build:production"
             },
             "development": {
-              "browserTarget": "tym-ng-ws:build:development"
+              "buildTarget": "tym-ng-ws:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -83,7 +83,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "tym-ng-ws:build"
+            "buildTarget": "tym-ng-ws:build"
           }
         },
         "test": {
