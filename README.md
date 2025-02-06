@@ -8,10 +8,6 @@
 
 <br/>
 
-＊ 2023/12 頃から更新を再開します ＊
-
-<br/>
-
 ---
 
 ## 目次 (Table of contents)
@@ -68,7 +64,7 @@
 ---
 ### `comments`
 ```text
-* supports angular 16, 17 and 18.
+* supports angular 17, 18 and 19.
 ```
 ---
 ### ライセンス (License)

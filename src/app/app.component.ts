@@ -1020,7 +1020,7 @@ export class AppComponent {
                 break;
             }
             break;
-          case 'cell':
+          case 'other':
             switch (id) {
               case 'undo':
                 this.tymTableEditor?.undo();

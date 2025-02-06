@@ -927,7 +927,6 @@ export class TymTableEditorComponent implements AfterViewInit {
             }
             break;
           case 'c':
-          case 'Insert':
             if (e.ctrlKey) {
               // copy
               elm2clipboard();
@@ -942,6 +941,11 @@ export class TymTableEditorComponent implements AfterViewInit {
             }
             break;
           case 'Insert':
+            if (e.ctrlKey) {
+              // copy
+              elm2clipboard();
+              e.preventDefault();
+            }
             if (e.shiftKey) {
               // paste
               clipboard2elm();

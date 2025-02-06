@@ -412,7 +412,7 @@ import { TymFormComponent } from "tym-form";
 ---
 ### `comments`
 ```text
-* supports angular 16, 17 and 18.
+* supports angular 17, 18 and 19.
 ```
 ---
 ### ライセンス (License)
